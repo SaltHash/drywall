@@ -19,7 +19,7 @@ button {
 /* Areas Styling */
 #area1 {
 	position: absolute;
-	display: none;
+	display: block;
 	width: 100vw;
 	height: 100vh;
 	left: 0;
@@ -35,7 +35,7 @@ button {
 }
 #area2 {
 	position: absolute;
-	display: block;
+	display: none;
 	width: 100vw;
 	height: 100vh;
 	left: 0;
