@@ -1,0 +1,252 @@
+/* General Changes */
+* {
+	margin: 0;
+	padding: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	color: #f2f2f2;
+}
+
+html, body {
+	background-color: #000;
+	font-size: 16pt;
+}
+
+button {
+	user-select: none;
+}
+
+
+/* Areas Styling */
+#area1 {
+	position: absolute;
+	display: none;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	background-color: #262626;
+	background-image: 
+		linear-gradient(45deg, #2a2a2a 25%, transparent 25%),
+		linear-gradient(-45deg, #2a2a2a 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
+		linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+	background-size: 80px 80px;
+	background-position: 0 0, 0 40px, 40px -40px, -40px 0px;
+}
+#area2 {
+	position: absolute;
+	display: block;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	background-color: #262626;
+	background-image: 
+		linear-gradient(45deg, #2a2a2a 25%, transparent 25%),
+		linear-gradient(-45deg, #2a2a2a 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
+		linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+	background-size: 80px 80px;
+	background-position: 0 0, 0 40px, 40px -40px, -40px 0px;
+}
+
+/* Area Selector */
+#areaSelect {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 200px;
+	height: 300px;
+	border-radius: 20px;
+	background-color: #40404040;
+	backdrop-filter: blur(8px);
+	border: 1px solid #60606060;
+	padding: 8px;
+	text-align: center;
+}
+#areaSelect button {
+	margin-block: 3px;
+	background-color: #40404040;
+	backdrop-filter: blur(4px);
+	border: 1px solid #60606060;
+	width: 100%;
+	padding-block: 4px;
+	border-radius: 10px;
+	transition: background-color 0.15s ease-in-out;
+}
+#areaSelect button:hover {
+	background-color: #404040a0;
+}
+#areaSelect button:active {
+	background-color: #40404040;
+}
+
+
+
+/* Stats Display */
+#stats {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 200px;
+	padding: 4px 8px 8px 8px;
+	background-color: #40404040;
+	backdrop-filter: blur(8px);
+	border: 1px solid #60606060;
+	border-radius: 8px;
+	left: 50%;
+	top: 10px;
+	transform: translate(-50%, 0);
+}
+
+
+/* Clickers Styling */
+.clicker {
+	cursor: pointer;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 200px;
+	height: 200px;
+	border-radius: 20px;
+	backdrop-filter: blur(16px);
+	transform: translate(-50%, -50%);
+	transition: background-color 0.15s ease-in-out;
+}
+#area1 .clicker {
+	background-color: #99599940;
+	border: 1px solid #a969a960;
+}
+#area1 .clicker:hover {
+	background-color: #99599948;
+}
+#area1 .clicker:active {
+	background-color: #99599940;
+}
+
+#area2 .clicker {
+	background-color: #9ee36440;
+	border: 1px solid #adef7750;
+}
+#area2 .clicker:hover {
+	background-color: #9ee36448;
+}
+#area2 .clicker:active {
+	background-color: #9ee36440;
+}
+
+.clickerText {
+	font-weight: 600;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	height: 100%;
+}
+
+/* Upgrades Stuff */
+.upgradeTable {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	bottom: 80px;
+	padding-inline: 40px;
+	box-sizing: border-box;
+
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(2, 100px);
+	gap: 10px;
+}
+
+#area1 .upgrade {
+	margin: 6px;
+	font-size: 12pt;
+
+	cursor: pointer;
+	background-color: #463f9140;
+	border: 1px solid #6059b160;
+	border-radius: 20px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#area1 .upgrade:hover {
+	background-color: #5049a440;
+}
+#area1 .upgrade:active {
+	background-color: #463f9140;
+}
+
+#area2 .upgrade {
+	margin: 6px;
+	font-size: 12pt;
+
+	cursor: pointer;
+	background-color: #56c08a40;
+	border: 1px solid #60d49960;
+	border-radius: 20px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#area2 .upgrade:hover {
+	background-color: #56c08a48;
+}
+#area2 .upgrade:active {
+	background-color: #56c08a40;
+}
+
+
+/* Rebirth Stuff */
+.rebirthDiv {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 80px;
+	bottom: 0px;
+	padding: 15px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#rebirthButton1 {
+	width: 50%;
+	height: 100%;
+	font-size: 12pt;
+
+	cursor: pointer;
+	background-color: #4960a640;
+	border: 1px solid #5671c060;
+	border-radius: 15px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#rebirthButton1:hover {
+	background-color: #4d66b240;
+}
+#rebirthButton1:active {
+	background-color: #4960a640;
+}
+
+#rebirthButton2 {
+	width: 50%;
+	height: 100%;
+	font-size: 12pt;
+
+	cursor: pointer;
+	background-color: #75d45f40;
+	border: 1px solid #72d95b60;
+	border-radius: 15px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#rebirthButton2:hover {
+	background-color: #75d45f48;
+}
+#rebirthButton2:active {
+	background-color: #75d45f40;
+}
