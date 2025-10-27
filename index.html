@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <div id="trophyArea">
+      <div class="centerContents">
+        <div class="leaderboard" id="leaderboard1Div">
+          <h3>Drywall Leaderboard</h3>
+          <p>
+            Loading...
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div id="area1">
       <div class="clicker">
         <div class="clickerText">
@@ -71,12 +82,15 @@
       </div>
     </div>
 
-    <div id="area4">
+    <div id="skillTreeArea">
+      <canvas id="skillCanvas" width="3000" height="3000"></canvas>
       <button id="skillResetButton">Reset</button>
     </div>
 
-    <div id="area5">
-          
+    <div id="settingsButtonDiv">
+      <button id="settingsButton">
+        Settings
+      </button>
     </div>
 
     <div id="stats">
@@ -96,6 +110,7 @@
       <button id="area5Selector"></button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
   </body>
 </html>
