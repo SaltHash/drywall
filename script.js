@@ -370,12 +370,13 @@ if (data) {
 	}
 } else {
 	player = {
+		mylbkey: randomString(12),
 		drywall: 0,
 		drywallPS: 0,
 		drywallPC: 1,
 		rebirths: 0,
 		skillPoints: 0,
-		skillUpgrades: {},
+		skillUpgrades: [],
 		skillBoosts: {},
 		boosts: {},
 	}
