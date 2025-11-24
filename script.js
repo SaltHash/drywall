@@ -1,4 +1,5 @@
 // Settings
+const dustSpawnDebounceTime = 80;
 const upgrades = [
 	{
 		cost: [25, "drywall"],
@@ -454,6 +455,9 @@ elts.settingsButton.onclick = function() {
 elts.closeSettingsButton.onclick = function() {
 	elts.settings.style.display = "none";
 }
+
+
+let dustSpawnDebounce = Date.now();
 for (let i = 0; i < elts.areas.length; i += 1) {
 	const bg = elts.areas[i].getElementsByClassName("areaBackground")[0];
 	if (!bg) continue;
@@ -462,22 +466,24 @@ for (let i = 0; i < elts.areas.length; i += 1) {
 		player.drywall += (player.drywallPC * player.boosts.drywall.multiplier) ** player.boosts.drywall.exponent;
 
 		const rect = bg.getBoundingClientRect();
+		if (Date.now() - dustSpawnDebounce >= dustSpawnDebounceTime) {
+			dustSpawnDebounce = Date.now();
+			for (let j = 0; j < 6; j++) {
+				const dust = document.createElement("div");
+				dust.className = "dust";
 
-		for (let j = 0; j < 6; j++) {
-			const dust = document.createElement("div");
-			dust.className = "dust";
+				// random small horizontal spread
+				const offsetX = (Math.random() - 0.5) * 50;
+				// start slightly above the actual click
+				const offsetY = (Math.random() - 0.5) * 20;
 
-			// random small horizontal spread
-			const offsetX = (Math.random() - 0.5) * 50;
-			// start slightly above the actual click
-			const offsetY = (Math.random() - 0.5) * 20;
+				dust.style.left = (e.clientX - rect.left + offsetX) + "px";
+				dust.style.top = (e.clientY - rect.top + offsetY) + "px";
 
-			dust.style.left = (e.clientX - rect.left + offsetX) + "px";
-			dust.style.top = (e.clientY - rect.top + offsetY) + "px";
+				bg.appendChild(dust);
 
-			bg.appendChild(dust);
-
-			setTimeout(() => dust.remove(), 600);
+				setTimeout(() => dust.remove(), 600);
+			}
 		}
 	};
 }
