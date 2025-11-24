@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Drywall Clicker</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="settings">
+      <h2>Settings</h2>
+      <div class="settingRow" id="darkModeSettingDiv">
+        <span>Dark mode:</span>
+        <label class="switch">
+          <input id="darkModeSetting" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settingRow" id="scientificNotationSettingDiv">
+        <span>Scientific notation:</span>
+        <label class="switch">
+          <input id="scientificNotationSetting" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settingRow" id="usernameSettingDiv">
+        <span>Username:</span>
+        <input id="usernameSetting" type="text">
+      </div>
+
+      <button id="closeSettingsButton">Close</button>
+    </div>
+
+    <div id="trophyArea">
+      <div class="centerContents">
+        <div class="leaderboard" id="leaderboard1Div">
+          <h3>Drywall Leaderboard</h3>
+          <p>
+            Loading...
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="area1">
+      <div class="areaBackground"></div>
+      <p class="clickNotification">Click for drywall</p>
+
+      <div class="upgradeTable">
+        <button class="upgrade" id="upgrade1">Loading...</button>
+        <button class="upgrade" id="upgrade2">Loading...</button>
+        <button class="upgrade" id="upgrade3">Loading...</button>
+        <button class="upgrade" id="upgrade4">Loading...</button>
+        <button class="upgrade" id="upgrade5">Loading...</button>
+        <button class="upgrade" id="upgrade6">Loading...</button>
+      </div>
+
+      <div class="rebirthDiv">
+        <button id="rebirthButton1">
+          Rebirth for 1m drywall
+        </button>
+      </div>
+    </div>
+
+    <div id="area2">
+      <div class="areaBackground"></div>
+      <p class="clickNotification">Click for drywall</p>
+
+      <div class="upgradeTable">
+        <button class="upgrade" id="upgrade7">Loading...</button>
+        <button class="upgrade" id="upgrade8">Loading...</button>
+        <button class="upgrade" id="upgrade9">Loading...</button>
+        <button class="upgrade" id="upgrade10">Loading...</button>
+        <button class="upgrade" id="upgrade11">Loading...</button>
+        <button class="upgrade" id="upgrade12">Loading...</button>
+      </div>
+
+      <div class="rebirthDiv">
+        <button id="rebirthButton2">
+          Rebirth TWICE for 3m drywall
+        </button>
+      </div>
+    </div>
+
+    <div id="area3">
+      <div class="areaBackground"></div>
+      <p class="clickNotification">Click for drywall</p>
+      <div class="upgradeTable">
+        <button class="upgrade" id="upgrade13">Loading...</button>
+        <button class="upgrade" id="upgrade14">Loading...</button>
+        <button class="upgrade" id="upgrade15">Loading...</button>
+        <button class="upgrade" id="upgrade16">Loading...</button>
+        <button class="upgrade" id="upgrade17">Loading...</button>
+        <button class="upgrade" id="upgrade18">Loading...</button>
+      </div>
+    </div>
+
+    <div id="skillTreeArea">
+      <canvas id="skillCanvas" width="3000" height="3000"></canvas>
+      <button id="skillResetButton">Reset</button>
+    </div>
+
+    <div id="settingsButtonDiv">
+      <button id="settingsButton">
+        Settings
+      </button>
+    </div>
+
+    <div id="stats">
+      <span id="drywallStat">Drywall: 0</span>
+      <span id="drywallPCStat">Drywall/click: 1</span>
+      <span id="drywallPSStat">Drywall/sec: 0</span>
+      <span id="rebirthsStat">Rebirths: 0</span>
+      <span id="skillPointsStat">Skill Points: 0</span>
+    </div>
+
+    <div id="areaSelect">
+      <p>Areas</p>
+      <button id="area1Selector"></button>
+      <button id="area2Selector"></button>
+      <button id="area3Selector"></button>
+      <button id="area4Selector"></button>
+      <button id="area5Selector"></button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

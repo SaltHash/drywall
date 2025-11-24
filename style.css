@@ -1,0 +1,523 @@
+/* Files */
+@font-face {
+  font-family: ByteBounce; /* set name */
+  src: url(assets/ByteBounce.ttf); /* url of the font */
+}
+
+
+
+/* General Changes */
+* {
+	margin: 0;
+	padding: 0;
+	font-family: ByteBounce, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	color: #f2f2f2;
+	user-select: none;
+}
+
+html, body {
+	background-color: #000;
+	font-size: 32pt;
+}
+
+button {
+	user-select: none;
+}
+
+
+
+/* Dust */
+.dust {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	background-color: #909090aa;
+	border-radius: 50%;
+	pointer-events: none;
+	opacity: 1;
+	transform: translate(-50%, -50%);
+	animation: dustFall 0.9s ease-out forwards;
+}
+
+@keyframes dustFall {
+	0% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+	}
+	20% {
+		transform: translate(-50%, -100%) scale(0.9); /* slight lift */
+	}
+	100% {
+		opacity: 0;
+		transform: translate(-50%, 150%) scale(0.6); /* fall downward */
+	}
+}
+
+/* Settings Styling */
+#settings {
+	position: fixed;
+	display: none;
+	left: 50%;
+	top: 50%;
+	width: 50%;
+	height: 50%;
+	background-color: #000000aa;
+	backdrop-filter: blur(8px);
+	border: 1px solid #000000;
+	border-radius: 20px;
+	z-index: 1001;
+	padding: 10px;
+	text-align: center;
+
+	transform: translate(-50%, -50%);
+}
+.settingRow {
+	margin:;
+	display: flex;
+	width: fit-content;
+	flex-direction: row;
+	align-items: center;
+	margin-inline: auto;
+	margin-top: 10px;
+}
+#usernameSetting {
+	width: 200px;
+	padding: 4px 8px;
+	border-radius: 10px;
+	background-color: #303030;
+	border: 2px solid #404040;
+	color: #f2f2f2;
+	font-size: 20pt;
+	margin-left: 20px;
+}
+#usernameSetting:focus {
+	outline: 1px solid #999;
+}
+#closeSettingsButton {
+	position: fixed;
+	cursor: pointer;
+	background-color: #90909040;
+	width: 150px;
+	height: 50px;
+	bottom: 10px;
+	left: 50%;
+	border: none;
+	font-size: 24pt;
+	border-radius: 10px;
+	transform: translate(-50%, 0);
+}
+.switch:has(#darkModeSetting) > .slider {
+	cursor: not-allowed!important;
+}
+
+/* Areas Styling */
+#trophyArea {
+	position: absolute;
+	display: none;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	background-color: #a38e38;
+	background-image: url(assets/trophiesbg.jpg);
+	background-size: 100% 100%;
+}
+#area1 {
+	position: absolute;
+	display: block;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	background-color: #909090;
+}
+#area1 > .areaBackground {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-image: url(assets/area1bg.jpg);
+	background-size: 100% 100%;
+}
+#area2 {
+	position: absolute;
+	display: none;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	background-color: #909090;
+}
+#area2 > .areaBackground {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-image: url(assets/area2bg.jpg);
+	background-size: 100% 100%;
+}
+#area3 {
+	position: absolute;
+	display: none;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	background-color: #909090;
+}
+#area3 > .areaBackground {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-image: url(assets/area3bg.jpg);
+	background-size: 100% 100%;
+}
+#skillTreeArea {
+	position: absolute;
+	display: none;
+	width: 3000px;
+	height: 3000px;
+	left: 0;
+	top: 0;
+	background-color: #909090;
+	background-image: url(assets/skilltreebg.jpg);
+	background-size: 1920px 1080px;
+	background-position: 0 0, 0 40px, 40px -40px, -40px 0px;
+}
+.darkBG {
+	filter: invert(1) contrast(0.95) brightness(0.9);
+}
+
+.centerContents {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.leaderboard {
+	width: 400px;
+	height: 500px;
+	background-color: #20202060;
+	border: 1px solid #40404080;
+	border-radius: 16px;
+	backdrop-filter: blur(12px);
+	text-align: center;
+	padding: 16px;
+	box-sizing: border-box;
+}
+.leaderboard > h3 {
+	font-size: 18pt;
+	font-weight: 700;
+	margin-bottom: 4px;
+}
+.leaderboard > p {
+	font-size: 15pt;
+	font-weight: 400;
+}
+
+/* Area Selector */
+#areaSelect {
+	position: fixed;
+	right: 10px;
+	top: 10px;
+	width: 200px;
+	height: 300px;
+	border-radius: 20px;
+	background-color: #30303040;
+	backdrop-filter: blur(8px);
+	border: 1px solid #606060a0;
+	padding: 8px;
+	text-align: center;
+}
+#areaSelect button {
+	margin-block: 3px;
+	background-color: #40404030;
+	backdrop-filter: blur(2px);
+	border: 1px solid #60606060;
+	width: 100%;
+	padding-block: 4px;
+	border-radius: 10px;
+	transition: background-color 0.15s ease-in-out;
+	font-size: 20pt;
+}
+#areaSelect button:hover {
+	background-color: #50505038;
+}
+#areaSelect button:active {
+	background-color: #40404030;
+}
+
+/* Switch styling */
+/* The switch - the box around the slider */
+.switch {
+ font-size: 17px;
+ position: relative;
+ display: inline-block;
+ width: 62px;
+ height: 35px;
+ margin-left: 20px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+ opacity: 1;
+ width: 0;
+ height: 0;
+}
+
+/* The slider */
+.slider {
+ position: absolute;
+ cursor: pointer;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0px;
+ background: #fff;
+ transition: .4s;
+ border-radius: 30px;
+ border: 1px solid #ccc;
+}
+
+.slider:before {
+ position: absolute;
+ content: "";
+ height: 1.9em;
+ width: 1.9em;
+ border-radius: 16px;
+ left: 1.2px;
+ top: 0;
+ bottom: 0;
+ background-color: white;
+ box-shadow: 0 2px 5px #999999;
+ transition: .4s;
+}
+
+input:checked + .slider {
+ background-color: #5fdd54;
+ border: 1px solid transparent;
+}
+
+input:checked + .slider:before {
+ transform: translateX(1.5em);
+}
+
+
+/* Settings Div */
+#settingsButtonDiv {
+	position: fixed;
+	top: 8px;
+	left: 8px;
+}
+
+#settingsButton {
+	border: 1px solid #606060a0;
+	background-color: #40404080;
+	backdrop-filter: blur(8px);
+	padding: 8px 16px;
+	border-radius: 8px;
+	font-size: 20pt;
+	transition: background-color 0.15s ease-in-out;
+}
+#settingsButton:hover {
+	background-color: #40404060;
+}
+#settingsButton:active {
+	background-color: #40404040;
+}
+
+/* Clicker Styling */
+.clickNotification {
+	color: #00000050;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: 48pt;
+	transform: translate(-50%, -50%);
+}
+
+/* Stats Display */
+#stats {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 350px;
+	padding: 4px 8px 8px 8px;
+	background-color: #30303080;
+	backdrop-filter: blur(8px);
+	border: 1px solid #606060a0;
+	border-radius: 10px;
+	left: 50%;
+	top: 10px;
+	font-size: 20pt;
+	transform: translate(-50%, 0);
+}
+
+/* Upgrades Stuff */
+.upgradeTable {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	bottom: 80px;
+	padding-inline: 40px;
+	box-sizing: border-box;
+
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(2, 100px);
+	gap: 10px;
+}
+
+#area1 .upgrade {
+	margin: 6px;
+	font-size: 24pt;
+
+	cursor: pointer;
+	background-color: #463f9180;
+	border: 1px solid #6059b1a0;
+	border-radius: 20px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#area1 .upgrade:hover {
+	background-color: #5049a480;
+}
+#area1 .upgrade:active {
+	background-color: #463f9180;
+}
+
+#area2 .upgrade {
+	margin: 6px;
+	font-size: 24pt;
+
+	cursor: pointer;
+	background-color: #56c08a80;
+	border: 1px solid #60d499a0;
+	border-radius: 20px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#area2 .upgrade:hover {
+	background-color: #56c08a88;
+}
+#area2 .upgrade:active {
+	background-color: #56c08a80;
+}
+
+#area3 .upgrade {
+	margin: 6px;
+	font-size: 24pt;
+
+	cursor: pointer;
+	background-color: #ee6e7d80;
+	border: 1px solid #f28794a0;
+	border-radius: 20px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#area3 .upgrade:hover {
+	background-color: #ee6e7d85;
+}
+#area3 .upgrade:active {
+	background-color: #ee6e7d80;
+}
+
+/* Skill Tree */
+#skillResetButton {
+	position: absolute;
+	width: 400px;
+	height: 300px;
+	padding: 32px;
+	font-size: 32pt;
+	left: 50vw;
+	top: 200px;
+	transform: translate(-50%, 0%);
+	background-color: #15151560;
+	border: 1px solid #70707080;
+	border-radius: 30px;
+	backdrop-filter: blur(12px);
+	transition: background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
+	box-shadow: 0px 0px 8px #00000040;
+}
+#skillResetButton:hover {
+	background-color: #15151570;
+	transform: translate(-50%, -50%), scale(1.02);
+}
+#skillResetButton:active {
+	background-color: #15151560;
+	transform: translate(-50%, -50%), scale(1);
+}
+
+.skillUpgrade {
+	width: 150px;
+	height: 150px;
+	border-radius: 15px;
+	background-color: #30303050;
+	border: 1px solid #80808080;
+	backdrop-filter: blur(8px);
+	transform: translate(-50%, -50%);
+	padding-inline: 4px;
+	font-size: 16pt;
+	cursor: pointer;
+	transition: background-color 0.15s ease-in-out, color 0.5 ease-in-out;
+}
+
+/* Rebirth Stuff */
+.rebirthDiv {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 80px;
+	bottom: 0px;
+	padding: 15px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#rebirthButton1 {
+	width: 50%;
+	height: 100%;
+	font-size: 24pt;
+
+	cursor: pointer;
+	background-color: #4960a680;
+	border: 1px solid #5671c0a0;
+	border-radius: 15px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#rebirthButton1:hover {
+	background-color: #4d66b280;
+}
+#rebirthButton1:active {
+	background-color: #4960a680;
+}
+
+#rebirthButton2 {
+	width: 50%;
+	height: 100%;
+	font-size: 24pt;
+
+	cursor: pointer;
+	background-color: #75d45f80;
+	border: 1px solid #72d95ba0;
+	border-radius: 15px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#rebirthButton2:hover {
+	background-color: #75d45f88;
+}
+#rebirthButton2:active {
+	background-color: #75d45f80;
+}
