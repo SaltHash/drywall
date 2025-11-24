@@ -329,6 +329,7 @@ let elts = {
 	clickers: document.getElementsByClassName("clicker"),
 	rebirthButton1: document.getElementById("rebirthButton1"),
 	rebirthButton2: document.getElementById("rebirthButton2"),
+	rebirthButton3: document.getElementById("rebirthButton3"),
 	skillResetButton: document.getElementById("skillResetButton"),
 	area1: document.getElementById("area1"),
 	area2: document.getElementById("area2"),
@@ -558,6 +559,9 @@ elts.rebirthButton1.onclick = function() {
 }
 elts.rebirthButton2.onclick = function() {
 	rebirth(2);
+}
+elts.rebirthButton3.onclick = function() {
+	rebirth(4);
 }
 elts.skillResetButton.onclick = function() {
 	if (player.drywall >= 10 ** 18) {
@@ -945,6 +949,7 @@ function render(dt) {
 	elts.rebirthsStat.textContent = abbrevNum(player.rebirths) + " rebirths";
 	elts.rebirthButton1.textContent = "Rebirth for " + abbrevNum((2 ** player.rebirths) * 1000000);
 	elts.rebirthButton2.textContent = "Rebirth TWICE for " + abbrevNum((2 ** player.rebirths) * 1000000 * 3);
+	elts.rebirthButton3.textContent = "Rebirth FOUR TIMES for " + abbrevNum((2 ** player.rebirths) * 1000000 * 15);
 	if (player.drywall > 10 ** 18) {
 		elts.skillResetButton.textContent = "Reset for +" + abbrevNum(getSkillPoints()) + " skill points";
 	} else {

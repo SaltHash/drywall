@@ -411,7 +411,7 @@ input:checked + .slider:before {
 	transition: background-color 0.15s ease-in-out;
 }
 #area2 .upgrade:hover {
-	background-color: #56c08a88;
+	background-color: #56c08a70;
 }
 #area2 .upgrade:active {
 	background-color: #56c08a80;
@@ -429,7 +429,7 @@ input:checked + .slider:before {
 	transition: background-color 0.15s ease-in-out;
 }
 #area3 .upgrade:hover {
-	background-color: #ee6e7d85;
+	background-color: #ee6e7d6a;
 }
 #area3 .upgrade:active {
 	background-color: #ee6e7d80;
@@ -525,4 +525,23 @@ input:checked + .slider:before {
 }
 #rebirthButton2:active {
 	background-color: #75d45f80;
+}
+
+#rebirthButton3 {
+	width: 50%;
+	height: 100%;
+	font-size: 24pt;
+
+	cursor: pointer;
+	background-color: #b0608080;
+	border: 1px solid #b06080a0;
+	border-radius: 15px;
+	backdrop-filter: blur(16px);
+	transition: background-color 0.15s ease-in-out;
+}
+#rebirthButton2:hover {
+	background-color: #b0608088;
+}
+#rebirthButton2:active {
+	background-color: #b0608080;
 }
