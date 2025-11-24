@@ -1,13 +1,3 @@
-// TODO:
-// Adding settings:
-// - display name
-// - number format
-// - disable leaderboard
-// - advanced info
-// Finish balancing area 3
-
-
-
 // Settings
 const upgrades = [
 	{
