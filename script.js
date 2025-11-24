@@ -11,7 +11,7 @@ const upgrades = [
 	},
 	{
 		cost: [40000, "drywall"],
-		reward: [250, "drywallPC"]
+		reward: [350, "drywallPC"]
 	},
 	{
 		cost: [50, "drywall"],
@@ -27,11 +27,11 @@ const upgrades = [
 	},
 	{
 		cost: [1 * (10 ** 9), "drywall"],
-		reward: [8000, "drywallPC"]
+		reward: [40000, "drywallPC"]
 	},
 	{
 		cost: [150 * (10 ** 15), "drywall"],
-		reward: [350000, "drywallPC"]
+		reward: [2 * (10 ** 6), "drywallPC"]
 	},
 	{
 		cost: [5 * (10 ** 24), "drywall"],
@@ -55,7 +55,7 @@ const upgrades = [
 	},
 	{
 		cost: [10 * (10 ** 69), "drywall"],
-		reward: [3.5 * (10 ** 12), "drywallPC"]
+		reward: [12 * (10 ** 12), "drywallPC"]
 	},
 	{
 		cost: [100 * (10 ** 108), "drywall"],

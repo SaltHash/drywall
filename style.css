@@ -349,16 +349,21 @@ input:checked + .slider:before {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-width: 350px;
-	padding: 4px 8px 8px 8px;
-	background-color: #30303080;
+	min-width: 500px;
+	padding: 8px;
+	/*background-color: #30303080;
 	backdrop-filter: blur(8px);
-	border: 1px solid #606060a0;
+	border: 1px solid #606060a0;*/
 	border-radius: 10px;
 	left: 50%;
 	top: 10px;
-	font-size: 20pt;
+	font-size: 28pt;
 	transform: translate(-50%, 0);
+	line-height: 0.85;
+}
+
+#stats * {
+	color: #202328;
 }
 
 /* Upgrades Stuff */
