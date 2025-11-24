@@ -412,7 +412,7 @@ let myInterval = setInterval(tick, (1/10));
 
 let drywallLeaderboard = [];
 let rebirthsLeaderboard = [];
-let skillPointsLeaderboard = [];
+let skillPointLeaderboard = [];
 let lastLeaderboardUpdate = Date.now();
 let supabase = window.supabase.createClient(
 	"https://chboqcllfpnrzivwocti.supabase.co",
@@ -837,7 +837,6 @@ async function loadLeaderboard() {
   }
 
   // --- Drywalls leaderboard ---
-  console.log(data)
   let drywallData = data
     .filter((entry) => entry.drywall !== null) // remove null scores
     .map((entry) => ({
