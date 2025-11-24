@@ -237,7 +237,7 @@ const skillUpgrades = {
 		y: 1800,
 	},
 	"Exponential VI": {
-		cost: [2 * (10 ** 12), "skillPoints"],
+		cost: [500 * (10 ** 9), "skillPoints"],
 		reward: [1.03, "drywall", true],
 		connects: ["Exponential V"],
 		x: 200,
