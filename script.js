@@ -237,7 +237,7 @@ const skillUpgrades = {
 		y: 1800,
 	},
 	"Exponential VI": {
-		cost: [10 * (10 ** 12), "skillPoints"],
+		cost: [2 * (10 ** 12), "skillPoints"],
 		reward: [1.03, "drywall", true],
 		connects: ["Exponential V"],
 		x: 200,
@@ -250,13 +250,13 @@ const skillUpgrades = {
 		x: 400,
 		y: 2000,
 	},
-	"Exponential VIII": {
-		cost: [1 * (10 ** 100), "skillPoints"],
-		reward: [2, "drywall", true],
-		connects: ["Exponential VII"],
-		x: 600,
-		y: 2000,
-	},
+	// "Exponential VIII": {
+	// 	cost: [1 * (10 ** 100), "skillPoints"],
+	// 	reward: [2, "drywall", true],
+	// 	connects: ["Exponential VII"],
+	// 	x: 600,
+	// 	y: 2000,
+	// },
 	"Self-boost I": {
 		cost: [100 * (10 ** 21), "skillPoints"],
 		reward: "Drywall exponentiated by itself (^0.0001)",
@@ -337,6 +337,7 @@ let elts = {
 	skillTreeArea: document.getElementById("skillTreeArea"),
 	trophyArea: document.getElementById("trophyArea"),
 	leaderboard1Div: document.getElementById("leaderboard1Div"),
+	leaderboard2Div: document.getElementById("leaderboard2Div"),
 
 	settings: document.getElementById("settings"),
 	settingsButton: document.getElementById("settingsButton"),
@@ -411,6 +412,7 @@ let myInterval = setInterval(tick, (1/10));
 
 let drywallLeaderboard = [];
 let rebirthsLeaderboard = [];
+let skillPointsLeaderboard = [];
 let lastLeaderboardUpdate = Date.now();
 let supabase = window.supabase.createClient(
 	"https://chboqcllfpnrzivwocti.supabase.co",
@@ -827,7 +829,7 @@ function randomString(length) {
 async function loadLeaderboard() {
   let { data, error } = await supabase
     .from("leaderboard")
-    .select("key, displayName, drywall, rebirths");
+    .select("key, displayName, drywall, rebirths, skill_points");
 
   if (error) {
     console.error("Error loading leaderboard:", error.message);
@@ -835,6 +837,7 @@ async function loadLeaderboard() {
   }
 
   // --- Drywalls leaderboard ---
+  console.log(data)
   let drywallData = data
     .filter((entry) => entry.drywall !== null) // remove null scores
     .map((entry) => ({
@@ -853,6 +856,15 @@ async function loadLeaderboard() {
     }));
   rebirthData.sort((a, b) => b.rebirths - a.rebirths);
   rebirthLeaderboard = rebirthData.slice(0, 10);
+
+  let skillPointData = data
+    .filter((entry) => entry.skill_points !== null && !isNaN(parseFloat(entry.skill_points))) // remove null scores
+    .map((entry) => ({
+      ...entry,
+      skill_points: parseFloat(entry.skill_points),
+    }));
+  skillPointData.sort((a, b) => b.skill_points - a.skill_points);
+  skillPointLeaderboard = skillPointData.slice(0, 10);
 }
 
 async function submitScore(name, score) {
@@ -877,6 +889,7 @@ async function saveDataToLeaderboard() {
       key: player.mylbkey,
       drywall: leaderboardDrywall,
       rebirths: Math.floor(player.rebirths),
+      skill_points: Math.floor(player.skillPoints),
       displayName: player.username || player.mylbkey,
     },
     { onConflict: "key" } // overwrite if same name exists
@@ -890,10 +903,20 @@ async function saveDataToLeaderboard() {
   }
 }
 
-function getLeaderboardText() {
+function getLeaderboardText(boardType) {
 	let text = "";
-	for (var i = 0; i < drywallLeaderboard.length; i += 1) {
-		text += drywallLeaderboard[i].displayName + " - " + abbrevNum(drywallLeaderboard[i].drywalls) + "<br>";
+	if (boardType == "drywall") {
+		for (var i = 0; i < drywallLeaderboard.length; i += 1) {
+			text += drywallLeaderboard[i].displayName + " - " + abbrevNum(drywallLeaderboard[i].drywalls) + "<br>";
+		}
+	} else if (boardType == "rebirth") {
+		for (var i = 0; i < rebirthLeaderboard.length; i += 1) {
+			text += rebirthLeaderboard[i].displayName + " - " + abbrevNum(rebirthLeaderboard[i].rebirths) + "<br>";
+		}
+	} else if (boardType == "skill_point") {
+		for (var i = 0; i < skillPointLeaderboard.length; i += 1) {
+			text += skillPointLeaderboard[i].displayName + " - " + abbrevNum(skillPointLeaderboard[i].skill_points) + "<br>";
+		}
 	}
 	return text;
 }
@@ -956,7 +979,8 @@ function render(dt) {
 		elts.skillResetButton.textContent = "Reach 1qn to reset";
 	}
 	elts.skillPointsStat.textContent = "Skill Points: " + abbrevNum(player.skillPoints);
-	elts.leaderboard1Div.querySelector("p").innerHTML = getLeaderboardText();
+	elts.leaderboard1Div.querySelector("p").innerHTML = getLeaderboardText("drywall");
+	elts.leaderboard2Div.querySelector("p").innerHTML = getLeaderboardText("skill_point");
 
 	updateSkillTreeElements();
 
