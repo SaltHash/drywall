@@ -271,6 +271,13 @@ const skillUpgrades = {
 		x: -200,
 		y: 0,
 	},
+	"Skill Enhancement II": {
+		cost: [30000, "skillPoints"],
+		reward: [2, "skillPoints"],
+		connects: ["Skill Enhancement I"],
+		x: -400,
+		y: 0,
+	},
 	"Time-saver I": {
 		cost: [0, "skillPoints"],
 		reward: "Rebirth no longer resets.",
