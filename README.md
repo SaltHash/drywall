@@ -7,3 +7,18 @@ There are currently:
 - 29 skill upgrades
 - 4 infinity milestones
 - 6 generator upgrades
+
+# Update Log
+v0.3.0
+Finished the skill tree
+Balancing changes
+Small changes/additions like the 4 rebirths button
+
+v0.4.0
+Created this changelog :)
+Added Infinity: Infinity Milestones, Infinity Points, and Infinity Power
+Added global messaging system
+2 new settings (fixed Dark Mode)
+Added infinity leaderboard
+Small improvements and additions
+Bugfixes
