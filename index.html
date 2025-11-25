@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <div id="screenOverlay"></div>-
+
+    <div id="titleScreen">
+      <div class="areaBackground"></div>
+      <h1>Drywall Clicker</h1>
+      <h3>v0.4.0</h3>
+      <button id="playButton">Play!</button>
+    </div>
+
+    <div id="globalMessageBox">
+      <h2 id="globalMessageLabel">Global</h2>
+      <p id="globalMessageTime">0:00:00 am</p>
+      <p id="globalMessageText">Message loading...</p>
+    </div>
+
     <div id="settings">
       <h2>Settings</h2>
       <div class="settingRow" id="darkModeSettingDiv">
@@ -21,6 +36,13 @@
         <span>Scientific notation:</span>
         <label class="switch">
           <input id="scientificNotationSetting" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settingRow" id="minimalParticlesSettingDiv">
+        <span>Minimal particles:</span>
+        <label class="switch">
+          <input id="minimalParticlesSetting" type="checkbox">
           <span class="slider"></span>
         </label>
       </div>
@@ -41,7 +63,7 @@
           </div>
 
           <div class="leaderboard" id="leaderboard2Div">
-            <h3>Skill Point Leaderboard</h3>
+            <h3>Infinities Leaderboard</h3>
             <p>Loading...</p>
           </div>
         </div>
@@ -113,6 +135,98 @@
       <button id="skillResetButton">Reset</button>
     </div>
 
+    <div id="infinityArea">
+      <div class="areaBackground"></div>
+      <button id="infinityResetButton">INFINITY</button>
+      <div id="milestonesContainer">
+        <div class="infinityMilestone">
+          <h2>1 Infinity</h2>
+          <p>All previous automation becomes permanent</p>
+          <p>Unlock infinity generators</p>
+          <h3>(scroll right to see infinity generators)</h3>
+        </div>
+        <div class="infinityMilestone">
+          <h2>2 Infinities</h2>
+          <p>3x EVERYTHING before Infinity (except rebirths)</p>
+          <p>2x Infinity Points</p>
+        </div>
+        <div class="infinityMilestone">
+          <h2>3 Infinities</h2>
+          <p>Generate skill points at a rate of 0.1%/s</p>
+          <p>5x Infinity Power</p>
+          <p>100x drywall</p>
+        </div>
+        <div class="infinityMilestone">
+          <h2>5 Infinities</h2>
+          <p>Generate skill points at a rate of 1%/s</p>
+        </div>
+        <div class="infinityMilestone">
+          <h2>8 Infinities</h2>
+          <p>Generate skill points at a rate of 5%/s</p>
+          <p>Unlock <i>coming soon...</i></p>
+        </div>
+      </div>
+
+      <div id="infinityGeneratorsContainer">
+        <h2 id="infinityPointsStat">Infinity Points: 0</h2>
+        <h3 id="infinityPowerStat">Infinity Power: 0</h2>
+
+        <div id="generatorUpgrades">
+          <button>
+            <p class="description">
+              Start generating infinity power (0.01/s)
+            </p>
+            <p class="cost">
+              1 Infinity Point
+            </p>
+          </button>
+          <button>
+            <p class="description">
+              x2 Infinity Power
+            </p>
+            <p class="cost">
+              1,000 Infinity Power
+            </p>
+          </button>
+        </div>
+
+        <div id="infinityPowerUpgrades">
+          <button>
+            <p class="description">
+              x3 drywall
+            </p>
+            <p class="cost">
+              0.25 Infinity Power
+            </p>
+          </button>
+          <button>
+            <p class="description">
+              x2 drywall/sec
+            </p>
+            <p class="cost">
+              1 Infinity Power
+            </p>
+          </button>
+          <button>
+            <p class="description">
+              x2 Skill Points
+            </p>
+            <p class="cost">
+              5 Infinity Power
+            </p>
+          </button>
+          <button>
+            <p class="description">
+              x2 Infinities
+            </p>
+            <p class="cost">
+              1,000,000 Infinity Power
+            </p>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="settingsButtonDiv">
       <button id="settingsButton">
         Settings
@@ -134,8 +248,10 @@
       <button id="area3Selector"></button>
       <button id="area4Selector"></button>
       <button id="area5Selector"></button>
+      <button id="area6Selector"></button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
   </body>

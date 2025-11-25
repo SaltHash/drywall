@@ -74,6 +74,7 @@ const upgrades = [
 		reward: [85 * (10 ** 18), "drywallPS"]
 	},
 ];
+
 const skillUpgrades = {
 	"Drywall Efficiency I": {
 		cost: [1, "skillPoints"],
@@ -237,7 +238,7 @@ const skillUpgrades = {
 		y: 1800,
 	},
 	"Exponential VI": {
-		cost: [500 * (10 ** 9), "skillPoints"],
+		cost: [2 * (10 ** 12), "skillPoints"],
 		reward: [1.03, "drywall", true],
 		connects: ["Exponential V"],
 		x: 200,
@@ -293,7 +294,27 @@ const skillUpgrades = {
 		y: 0,
 	},
 };
+const infinityMilestones = [1, 2, 3, 5, 8];
+const infinityUpgradeNames = [
+	"Infinity Power I",
+	"Infinity Power II",
+	"Drywall I",
+	"Drywall/sec I",
+	"Skill Points I",
+	"Infinities I"
+]
+const infinityUpgradeCosts = {
+	"Infinity Power I": [[1, 1, 1, 2, 3, 4, 6], "infinityPoints"],
+	"Infinity Power II": [[1000, 10 ** 6, 10 ** 9], "infinityPower"],
+	"Drywall I": [[0.25, 4, 25, 400, 50000, 5 * (10 ** 6)], "infinityPower"],
+	"Drywall/sec I": [[1, 100, 500, 15000], "infinityPower"],
+	"Skill Points I": [[5, 50, 225, 30000], "infinityPower"],
+	"Infinities I": [[10 ** 6, 10 ** 12, 10 ** 18], "infinityPower"],
+}
 
+const settingNames = [
+	"darkMode", "scientificNotation", "minimalParticles"
+]
 
 const displayName = {
 	drywall: " drywall",
@@ -301,6 +322,9 @@ const displayName = {
 	drywallPS: " drywall/sec",
 	rebirths: " rebirths",
 	skillPoints: " skill points",
+	infinities: " Infinities",
+	infinityPoints: " Infinity Points",
+	infinityPower: " Infinity Power",
 };
 const suffixes = [
 	"", "k", "m", "b", "t", "qa", "qn", "sx", "sp", "oc", "no",
@@ -314,30 +338,50 @@ const suffixes = [
 	"ocg", "uocg", "docg", "tocg", "qaocg", "qnocg", "sxocg", "spocg", "ococg", "nvocg",
 	"nvg", "unvg", "dnvg", "tnvg", "qanvg", "qnnvg", "sxnvg", "spnvg", "ocnvg", "nvnvg",
 	"tgnt", "tgnde", "tgng", "tgntg", "tgnqg", "tgnsxg", "tgnspg", "tgnocg", "tgnnvg",
-	"ce"
 ];
 const areas = [
 	["Trophies", "trophyArea"],
- 	["Area 1", "area1"],
-	["Area 2", "area2"],
-	["Area 3", "area3"],
+ 	["Home", "area1"],
+	["High-rise", "area2"],
+	["Luxury", "area3"],
 	["Skill Tree", "skillTreeArea"],
+	["Infinity", "infinityArea"],
 ];
 
 // Elements
 let elts = {
+	screenOverlay: document.getElementById("screenOverlay"),
+
+	globalMessageText: document.getElementById("globalMessageText"),
+	globalMessageTime: document.getElementById("globalMessageTime"),
+	globalMessageBox: document.getElementById("globalMessageBox"),
+
+	titleScreen: document.getElementById("titleScreen"),
+	playButton: document.getElementById("playButton"),
+
 	clickers: document.getElementsByClassName("clicker"),
 	rebirthButton1: document.getElementById("rebirthButton1"),
 	rebirthButton2: document.getElementById("rebirthButton2"),
 	rebirthButton3: document.getElementById("rebirthButton3"),
 	skillResetButton: document.getElementById("skillResetButton"),
+	infinityResetButton: document.getElementById("infinityResetButton"),
 	area1: document.getElementById("area1"),
 	area2: document.getElementById("area2"),
 	area3: document.getElementById("area3"),
 	skillTreeArea: document.getElementById("skillTreeArea"),
+	infinityTreeArea: document.getElementById("infinityTreeArea"),
 	trophyArea: document.getElementById("trophyArea"),
 	leaderboard1Div: document.getElementById("leaderboard1Div"),
 	leaderboard2Div: document.getElementById("leaderboard2Div"),
+
+	infinityResetButton: document.getElementById("infinityResetButton"),
+	infinityMilestones: document.getElementsByClassName("infinityMilestone"),
+	generatorUpgrades: document.getElementById("generatorUpgrades"),
+	infinityPowerUpgrades: document.getElementById("infinityPowerUpgrades"),
+	infinityUpgrades: [
+		...document.getElementById("generatorUpgrades").children,
+		...document.getElementById("infinityPowerUpgrades").children
+	],
 
 	settings: document.getElementById("settings"),
 	settingsButton: document.getElementById("settingsButton"),
@@ -352,6 +396,8 @@ let elts = {
 	drywallPCStat: document.getElementById("drywallPCStat"),
 	rebirthsStat: document.getElementById("rebirthsStat"),
 	skillPointsStat: document.getElementById("skillPointsStat"),
+	infinityPointsStat: document.getElementById("infinityPointsStat"),
+	infinityPowerStat: document.getElementById("infinityPowerStat"),
 
 	upgrades: [
 
@@ -383,8 +429,14 @@ if (data) {
 		rebirths: data.rebirths || 0,
 		skillPoints: data.skillPoints || 0,
 		skillUpgrades: data.skillUpgrades || [],
+		infinities: data.infinities || 0,
+		infinityPoints: data.infinityPoints || 0,
+		infinityPower: data.infinityPower || 0,
+		infinityUpgrades: data.infinityUpgrades || Object.fromEntries(infinityUpgradeNames.map(name => [name, 0])),
+		globalToken: data.globalToken || null,
 		skillBoosts: {},
 		boosts: {},
+		passive: {},
 		settings: data.settings || {},
 		username: data.username || lbKey,
 	}
@@ -398,8 +450,14 @@ if (data) {
 		rebirths: 0,
 		skillPoints: 0,
 		skillUpgrades: [],
+		infinities: 0,
+		infinityPoints: 0,
+		infinityPower: 0,
+		infinityUpgrades: Object.fromEntries(infinityUpgradeNames.map(name => [name, 0])),
+		globalToken: null,
 		skillBoosts: {},
 		boosts: {},
+		passive: {},
 		settings: {},
 		username: lbKey,
 	}
@@ -413,19 +471,76 @@ let myInterval = setInterval(tick, (1/10));
 let drywallLeaderboard = [];
 let rebirthsLeaderboard = [];
 let skillPointLeaderboard = [];
+let infinitiesLeaderboard = [];
 let lastLeaderboardUpdate = Date.now();
 let supabase = window.supabase.createClient(
 	"https://chboqcllfpnrzivwocti.supabase.co",
 	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoYm9xY2xsZnBucnppdndvY3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwMzIyOTIsImV4cCI6MjA3NDYwODI5Mn0.ZLkFa20ZNeheiOaOKMG4wUOtgccJ_791Gpf3SfUxsMA" // yes this is a public key
 );
 
+
+// Replace with your Render URL
+let latestGlobalMessage = null;
+
+const token = player.secretToken || null;
+const ws = new WebSocket(`wss://render-global-messaging.onrender.com?token=${token}`);
+
+ws.onopen = () => console.log('Connected to global chat');
+
+let receiveTime = Date.now();
+ws.onmessage = async e => {
+	receiveTime = Date.now();
+	const data = e.data;
+	displayMessage(JSON.parse(data));
+};
+
+// Example function to use the message in your UI
+function displayMessage(msg) {
+	console.log(msg);
+	let text = msg.message;
+	let timestamp = msg.timestamp;
+
+	elts.globalMessageText.innerText = text;
+	elts.globalMessageTime.innerText = timestamp;
+	elts.globalMessageBox.classList.add("showGlobal");
+	setTimeout(function() {
+		elts.globalMessageBox.classList.remove("showGlobal");
+	}, 8000)
+}
+
+// Send a message
+function sendMessage(msg) {
+	const date = new Date();
+
+	const shortFormat = new Intl.DateTimeFormat('en-US', {
+	  timeZoneName: 'short'
+	}).format(date).split(", ")[1];
+	if (player.globalToken) {
+  		ws.send(JSON.stringify({message: msg, token: player.globalToken, timestamp: formatTime(Date.now()) + " " + shortFormat}));
+  	} else {
+  		return "Send failed: no token"
+  	}
+}
+
 loadLeaderboard();
+checkBoosts();
 
+// highlight unlocked infinity milestones
+for (let i = 0; i < infinityMilestones.length; i += 1) {
+	if (player.infinities >= infinityMilestones[i]) {
+		elts.infinityMilestones[i].classList.add("unlocked");
+	} else {
+		elts.infinityMilestones[i].classList.remove("unlocked");
+	}
+}
 
+// add text to regular upgrades
 for (let i = 0; i < upgrades.length; i += 1) {
 	elts.upgrades.push(document.getElementById("upgrade" + (i + 1)));
 	elts.upgrades[i].innerHTML = abbrevNum(upgrades[i].cost[0]) + " " + displayName[upgrades[i].cost[1]] + " → +" + abbrevNum(upgrades[i].reward[0]) + displayName[upgrades[i].reward[1]];
 }
+
+// add text to skill tree upgrades
 for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 	let upgrade = document.createElement("button");
 	let upg = skillUpgrades[Object.keys(skillUpgrades)[i]];
@@ -446,16 +561,53 @@ for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 	document.querySelector("#skillTreeArea").appendChild(upgrade);
 	elts.skillUpgrades[Object.keys(skillUpgrades)[i]] = upgrade;
 }
+
+// create area selectors
 for (let i = 0; i < areas.length; i += 1) {
 	elts.areaSelectors.push(document.getElementById("area" + (i + 1) + "Selector"));
 	elts.areas.push(document.getElementById(areas[i][1]));
 	elts.areaSelectors[i].textContent = areas[i][0];
 }
 
-checkBoosts();	
+
+// setup click events
+
+// title screen
+elts.playButton.onclick = function() {
+	elts.titleScreen.classList.add("fadeOut");
+	elts.titleScreen.style.pointerEvents = "none";
+	setTimeout(function() {
+		elts.titleScreen.style.display = "none";
+	}, 1000);
+}
 
 
-// Setup Click Events
+// infinity stuff
+elts.infinityResetButton.onclick = () => {
+	if (player.drywall === Infinity && player.infinities < infinityMilestones[infinityMilestones.length - 1]) {
+		infinity();
+		if (player.infinities > infinityMilestones[infinityMilestones.length]) {
+			player.infinities = infinityMilestones[infinityMilestones.length];
+		}
+		updateAllText();
+	}
+};
+for (let i = 0; i < elts.infinityUpgrades.length; i += 1) {
+	let elt = elts.infinityUpgrades[i];
+	let upgName = infinityUpgradeNames[i];
+	let upgCost = infinityUpgradeCosts[upgName]
+	elt.onclick = function() {
+		let upgLevel = player.infinityUpgrades[upgName];
+		if (player[upgCost[1]] >= upgCost[0][upgLevel]) {
+			player.infinityUpgrades[upgName] += 1;
+			player[upgCost[1]] -= upgCost[0][upgLevel];
+		}
+	}
+}
+
+
+// settings
+applySettings();
 usernameSetting.onchange = function() {
 	player.username = usernameSetting.value;
 }
@@ -466,7 +618,21 @@ elts.closeSettingsButton.onclick = function() {
 	elts.settings.style.display = "none";
 }
 
+for (let i = 0; i < settingNames.length; i += 1) {
+	let sn = settingNames[i];
+	let setting = document.getElementById(sn + "Setting");
+	if (player.settings[sn]) {
+		setting.checked = player.settings[sn];
+	}
+	setting.onchange = function() {
+		player.settings[sn] = setting.checked;
+		applySettings();
+		saveData("DRYWALL", player);
+	}
+}
 
+
+// Clicking for drywall + dust
 let dustSpawnDebounce = Date.now();
 for (let i = 0; i < elts.areas.length; i += 1) {
 	const bg = elts.areas[i].getElementsByClassName("areaBackground")[0];
@@ -478,7 +644,7 @@ for (let i = 0; i < elts.areas.length; i += 1) {
 		const rect = bg.getBoundingClientRect();
 		if (Date.now() - dustSpawnDebounce >= dustSpawnDebounceTime) {
 			dustSpawnDebounce = Date.now();
-			for (let j = 0; j < 6; j++) {
+			for (let j = 0; j < (player.settings.minimalParticles ? 1 : 6); j++) {
 				const dust = document.createElement("div");
 				dust.className = "dust";
 
@@ -502,21 +668,66 @@ for (let i = 0; i < elts.areaSelectors.length; i += 1) {
 		loadArea(i);
 	};
 }
-elts.darkModeSetting.onchange = function() {
-	player.settings.darkMode = elts.darkModeSetting.checked;
-	applySettings();
-	saveData("DRYWALL", player);
-}
-elts.scientificNotationSetting.onchange = function() {
-	player.settings.scientificNotation = elts.scientificNotationSetting.checked;
-	updateAllText();
-	saveData("DRYWALL", player);
-	render(0);
-}
 
 
 
 // Functions
+function formatTime(unixMs) {
+	const date = new Date(unixMs);
+	let hours = date.getHours();
+	const minutes = date.getMinutes();
+	const seconds = date.getSeconds();
+	const ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12;
+	if (hours === 0) hours = 12;
+
+	// pad minutes and seconds with leading zero if needed
+	const minStr = minutes.toString().padStart(2, '0');
+	const secStr = seconds.toString().padStart(2, '0');
+
+	return `${hours}:${minStr}:${secStr}${ampm}`;
+}
+
+function applySettings() {
+	if (player.settings.darkMode) {
+		document.querySelector("#area1 .areaBackground").classList.add("darkBG");
+		document.querySelector("#area2 .areaBackground").classList.add("darkBG");
+		document.querySelector("#area3 .areaBackground").classList.add("darkBG");
+	} else {
+		document.querySelector("#area1 .areaBackground").classList.remove("darkBG");
+		document.querySelector("#area2 .areaBackground").classList.remove("darkBG");
+		document.querySelector("#area3 .areaBackground").classList.remove("darkBG");
+	}
+	updateAllText();
+}
+
+
+function infinity() {
+	checkBoosts();
+	player.infinities += (1 * player.boosts.infinities.multiplier) ** player.boosts.infinities.exponent;
+	player.infinityPoints += ((1 * player.boosts.infinityPoints.multiplier) ** player.boosts.infinityPoints.exponent) * ((1 * player.boosts.infinities.multiplier) ** player.boosts.infinities.exponent);
+
+	player.drywall = 0;
+	player.drywallPC = 1;
+	player.drywallPS = 0;
+	player.rebirths = 0;
+	player.skillPoints = 0;
+	player.skillUpgrades = [];
+
+	elts.screenOverlay.classList.add("playFlash");
+	setTimeout(function() {
+		elts.screenOverlay.classList.remove("playFlash");
+	}, 5000);
+
+	for (let i = 0; i < infinityMilestones.length; i += 1) {
+		if (player.infinities >= infinityMilestones[i]) {
+			elts.infinityMilestones[i].classList.add("unlocked");
+		} else {
+			elts.infinityMilestones[i].classList.remove("unlocked");
+		}
+	}
+}
+
 function updateAllText() {
 	for (let i = 0; i < upgrades.length; i += 1) {
 		elts.upgrades[i].innerHTML = abbrevNum(upgrades[i].cost[0]) + " " + displayName[upgrades[i].cost[1]] + " → +" + abbrevNum(upgrades[i].reward[0]) + displayName[upgrades[i].reward[1]];
@@ -637,6 +848,7 @@ function abbrevNum(val) {
 	if (val === Infinity) {
 		return "Infinity";
 	}
+	if (val < 1000) return roundToSigFigs(val, 3);
 	if (player.settings.scientificNotation) {
 		let exp = Math.floor(Math.log10(val));
 		if (!(exp >= 0)) exp = 0;
@@ -657,36 +869,55 @@ function tick() {
     render(dt);
 }
 
-function update(dt) {
-	checkBoosts();
-	if (player.drywall !== Infinity) {
-		player.drywall += ((player.drywallPS * player.boosts.drywall.multiplier) ** player.boosts.drywall.exponent) * dt / 1000;
+
+// Boosts
+function checkInfinityUpgrades() {
+	if (player.infinities >= 1) {
+		if (!player.skillUpgrades.includes("Time-saver I")) {
+			player.skillUpgrades.push("Time-saver I");
+		}
+		if (!player.skillUpgrades.includes("Time-saver II")) {
+			player.skillUpgrades.push("Time-saver II");
+		}
+	}
+	if (player.infinities >= 2) {
+		player.boosts.drywall.multiplier *= 3;
+		player.boosts.drywallPC.multiplier *= 3;
+		player.boosts.drywallPS.multiplier *= 3;
+		player.boosts.skillPoints.multiplier *= 3;
+		player.boosts.infinityPoints.multiplier *= 2;
+	}
+	if (player.infinities >= 3) {
+		player.passive.skillPoints = 0.001;
+		player.boosts.infinityPower.multiplier *= 5;
+		player.boosts.drywall.multiplier *= 100;
+	}
+	if (player.infinities >= 5) {
+		player.passive.skillPoints = 0.01;
+	}
+	if (player.infinities >= 8) {
+		player.passive.skillPoints = 0.05;
 	}
 
-	if (player.skillUpgrades.includes("Time-saver II")) {
-		rebirth(1);
+	if (player.infinityUpgrades["Infinity Power I"] >= 1) {
+		player.boosts.infinityPower.multiplier = 0.01
+	} else {
+		player.boosts.infinityPower.multiplier = 0;
 	}
-
-	if (Date.now() - lastLeaderboardUpdate >= 60000) {
-		saveDataToLeaderboard();
-		lastLeaderboardUpdate = Date.now();
-	}
-	saveData("DRYWALL", player);
-}
-
-function saveData(key, data) {
-	const now = Date.now();
-	if (now - lastSave > 1000) { // 1 second limit
-		localStorage.setItem(key, JSON.stringify(data));
-		lastSave = now;
-	}
+	player.boosts.infinityPower.multiplier *= (10 ** (player.infinityUpgrades["Infinity Power I"] - 1)) * (2 ** player.infinityUpgrades["Infinity Power II"]);
+	player.boosts.drywall.multiplier *= 3 ** player.infinityUpgrades["Drywall I"];
+	player.boosts.drywallPS.multiplier *= 2 ** player.infinityUpgrades["Drywall/sec I"];
+	player.boosts.skillPoints.multiplier *= 2 ** player.infinityUpgrades["Skill Points I"];
+	player.boosts.infinities.multiplier *= 2 ** player.infinityUpgrades["Infinities I"];
 }
 
 function checkBoosts() {
 	// Reset
 	for (var i = 0; i < Object.keys(player).length; i += 1) {
 		player.boosts[Object.keys(player)[i]] = {multiplier: 1, exponent: 1};
+		player.passive[Object.keys(player)[i]] = 0;
 	}
+	checkInfinityUpgrades();
 
 	// Check upgrades which boost other upgrades
 	let convExp = 0.2;
@@ -731,6 +962,15 @@ function checkBoosts() {
 	}
 
 	player.boosts.drywall.multiplier *= (1.5 ** player.rebirths);
+}
+
+
+function saveData(key, data) {
+	const now = Date.now();
+	if (now - lastSave > 1000) { // 1 second limit
+		localStorage.setItem(key, JSON.stringify(data));
+		lastSave = now;
+	}
 }
 
 function updateSkillTreeElements() {
@@ -829,14 +1069,13 @@ function randomString(length) {
 async function loadLeaderboard() {
   let { data, error } = await supabase
     .from("leaderboard")
-    .select("key, displayName, drywall, rebirths, skill_points");
+    .select("key, displayName, drywall, rebirths, skill_points, infinities");
 
   if (error) {
     console.error("Error loading leaderboard:", error.message);
     return;
   }
 
-  // --- Drywalls leaderboard ---
   let drywallData = data
     .filter((entry) => entry.drywall !== null) // remove null scores
     .map((entry) => ({
@@ -846,7 +1085,6 @@ async function loadLeaderboard() {
   drywallData.sort((a, b) => b.drywall - a.drywall);
   drywallLeaderboard = drywallData.slice(0, 10);
 
-  // --- Rebirth leaderboard ---
   let rebirthData = data
     .filter((entry) => entry.rebirths !== null) // remove null scores
     .map((entry) => ({
@@ -864,6 +1102,15 @@ async function loadLeaderboard() {
     }));
   skillPointData.sort((a, b) => b.skill_points - a.skill_points);
   skillPointLeaderboard = skillPointData.slice(0, 10);
+
+  let infinitiesData = data
+    .filter((entry) => entry.infinities !== null && !isNaN(parseFloat(entry.infinities))) // remove null scores
+    .map((entry) => ({
+      ...entry,
+      infinities: parseFloat(entry.infinities),
+    }));
+  infinitiesData.sort((a, b) => b.infinities - a.infinities);
+  infinitiesLeaderboard = infinitiesData.slice(0, 10);
 }
 
 async function submitScore(name, score) {
@@ -889,6 +1136,7 @@ async function saveDataToLeaderboard() {
       drywall: leaderboardDrywall,
       rebirths: Math.floor(player.rebirths),
       skill_points: Math.floor(player.skillPoints),
+      infinities: Math.floor(player.infinities),
       displayName: player.username || player.mylbkey,
     },
     { onConflict: "key" } // overwrite if same name exists
@@ -915,6 +1163,10 @@ function getLeaderboardText(boardType) {
 	} else if (boardType == "skill_point") {
 		for (var i = 0; i < skillPointLeaderboard.length; i += 1) {
 			text += skillPointLeaderboard[i].displayName + " - " + abbrevNum(skillPointLeaderboard[i].skill_points) + "<br>";
+		}
+	} else if (boardType == "infinities") {
+		for (var i = 0; i < infinitiesLeaderboard.length; i += 1) {
+			text += infinitiesLeaderboard[i].displayName + " - " + abbrevNum(infinitiesLeaderboard[i].infinities) + "<br>";
 		}
 	}
 	return text;
@@ -964,11 +1216,63 @@ function drawLinesFromUpgrade(upgrade) {
 }
 
 
+function update(dt) {
+	checkBoosts();
+	if (player.drywall !== Infinity) {
+		player.drywall += ((player.drywallPS * player.boosts.drywall.multiplier) ** player.boosts.drywall.exponent) * dt / 1000;
+	}
+
+	if (player.skillUpgrades.includes("Time-saver II")) {
+		rebirth(1);
+	}
+
+	player.infinityPower += ((player.boosts.infinityPower.multiplier) ** player.boosts.infinityPower.exponent) * dt / 1000;
+	player.skillPoints += getSkillPoints() * player.passive.skillPoints * dt / 1000;
+
+	if (Date.now() - lastLeaderboardUpdate >= 60000) {
+		saveDataToLeaderboard();
+		lastLeaderboardUpdate = Date.now();
+	}
+	saveData("DRYWALL", player);
+}
+
+
 function render(dt) {
 	elts.drywallStat.textContent = "Drywall: " + abbrevNum(player.drywall) + " (x" + abbrevNum(player.boosts.drywall.multiplier) + ")";
 	elts.drywallPCStat.textContent = "Drywall/click: " + abbrevNum(player.drywallPC) + " (x" + abbrevNum(player.boosts.drywallPC.multiplier) + ")";
 	elts.drywallPSStat.textContent = "Drywall/sec: " + abbrevNum(player.drywallPS) + " (x" + abbrevNum(player.boosts.drywallPS.multiplier) + ")";
 	elts.rebirthsStat.textContent = abbrevNum(player.rebirths) + " rebirths";
+	elts.skillPointsStat.textContent = "Skill Points: " + abbrevNum(player.skillPoints);
+	elts.infinityPointsStat.textContent = "Infinity Points: " + abbrevNum(player.infinityPoints);
+	elts.infinityPowerStat.textContent = "Infinity Power: " + abbrevNum(player.infinityPower);
+
+	for (let i = 0; i < elts.infinityUpgrades.length; i += 1) {
+		let upg = elts.infinityUpgrades[i];
+		let upgCost = infinityUpgradeCosts[infinityUpgradeNames[i]];
+
+		if (player.infinityUpgrades[infinityUpgradeNames[i]] < upgCost[0].length) {
+			upg.children[1].textContent = abbrevNum(upgCost[0][player.infinityUpgrades[infinityUpgradeNames[i]]]) + displayName[upgCost[1]];
+		} else {
+			upg.children[1].textContent = "Max level!"
+		}
+
+		if (i == 0 && player.infinityUpgrades["Infinity Power I"] >= 1) {
+			upg.children[0].textContent = "x10 Infinity Power";
+		}
+	}
+
+	if (player.drywall >= 1 * (10 ** 15) || player.skillPoints > 0 || player.infinities > 0) {
+		elts.areaSelectors[4].style.display = "inline-block";
+	} else {
+		elts.areaSelectors[4].style.display = "none";
+	}
+	if (player.drywall >= 10 ** 300 || player.infinities > 0) {
+		elts.areaSelectors[5].style.display = "inline-block";
+	} else {
+		elts.areaSelectors[5].style.display = "none";
+	}
+
+
 	elts.rebirthButton1.textContent = "Rebirth for " + abbrevNum((2 ** player.rebirths) * 1000000);
 	elts.rebirthButton2.textContent = "Rebirth TWICE for " + abbrevNum((2 ** player.rebirths) * 1000000 * 3);
 	elts.rebirthButton3.textContent = "Rebirth FOUR TIMES for " + abbrevNum((2 ** player.rebirths) * 1000000 * 15);
@@ -977,9 +1281,8 @@ function render(dt) {
 	} else {
 		elts.skillResetButton.textContent = "Reach 1qn to reset";
 	}
-	elts.skillPointsStat.textContent = "Skill Points: " + abbrevNum(player.skillPoints);
 	elts.leaderboard1Div.querySelector("p").innerHTML = getLeaderboardText("drywall");
-	elts.leaderboard2Div.querySelector("p").innerHTML = getLeaderboardText("skill_point");
+	elts.leaderboard2Div.querySelector("p").innerHTML = getLeaderboardText("infinities");
 
 	updateSkillTreeElements();
 

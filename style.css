@@ -7,11 +7,15 @@
 
 
 /* General Changes */
+:root {
+	--text-color: #f0f0f0;
+}
+
 * {
 	margin: 0;
 	padding: 0;
 	font-family: ByteBounce, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-	color: #f2f2f2;
+	color: var(--text-color);
 	user-select: none;
 }
 
@@ -24,6 +28,130 @@ button {
 	user-select: none;
 }
 
+
+
+/* Title screen */
+#titleScreen {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	background-color: #000;
+	left: 0;
+	top: 0;
+	z-index: 1000;
+}
+#titleScreen > .areaBackground {
+	position: absolute;
+	width: calc(100% + 100px);
+	height: calc(100% + 100px);;
+	left: -50px;
+	top: -50px;
+
+	filter: brightness(0.8);
+	background-image: url(assets/titlescreen.png);
+	z-index: -1;
+	animation: circle 40s linear infinite;
+}
+
+#titleScreen > h1 {
+	font-size: 128pt;
+	color: #202020;
+	margin-top: 50px;
+	text-align: center;
+}
+#titleScreen > h3 {
+	font-size: 48pt;
+	color: #404040;
+	margin-top: 10px;
+	text-align: center;
+}
+
+#globalMessageBox {
+	position: fixed;
+	opacity: 0;
+	pointer-events: none;
+	left: 50%;
+	top: 20px;
+	transform: translateX(-50%);
+	width: 50%;
+	background-color: #00000040;
+	border: 2px solid #00000020;
+	backdrop-filter: blur(32px);
+	z-index: 100000;
+	padding: 16px 24px;
+	box-sizing: border-box;
+	border-radius: 20px;
+}
+#globalMessageLabel {
+	font-size: 32pt;
+	text-align: center;
+	margin-bottom: 8px;
+}
+#globalMessageText {
+	font-size: 24pt;
+	color: #d0d0d0;
+}
+#globalMessageTime {
+	font-size: 20pt;
+	color: #b0b0b0;
+	position: absolute;
+	top: 16px;
+	right: 16px;
+}
+.showGlobal {
+	animation: showGlobal 8s linear forwards;
+}
+@keyframes showGlobal {
+	0% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+#playButton {
+	position: absolute;
+	left: 50vw;
+	top: 50vh;
+	transform: translate(-50%, -50%);
+	width: 400px;
+	height: 150px;
+	font-size: 64pt;
+	background-color: #00000040;
+	backdrop-filter: blur(8px);
+	border: 2px solid #00000020;
+	border-radius: 20px;
+	transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+#playButton:hover {
+	background: #00000050;
+	transform: translate(-50%, -50%) scale(1.02);
+}
+.fadeOut {
+	animation: fadeOut 1s ease-out forwards;
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes circle {
+	from { transform: rotate(0deg) translate(50px, 0) rotate(0deg); }
+	to   { transform: rotate(360deg) translate(50px, 0) rotate(-360deg); }
+}
 
 
 /* Dust */
@@ -106,9 +234,6 @@ button {
 	border-radius: 10px;
 	transform: translate(-50%, 0);
 }
-.switch:has(#darkModeSetting) > .slider {
-	cursor: not-allowed!important;
-}
 
 /* Areas Styling */
 #trophyArea {
@@ -186,7 +311,26 @@ button {
 	background-color: #909090;
 	background-image: url(assets/skilltreebg.jpg);
 	background-size: 1920px 1080px;
-	background-position: 0 0, 0 40px, 40px -40px, -40px 0px;
+}
+#infinityArea {
+	position: absolute;
+	display: none;
+	width: 3000px;
+	height: 3000px;
+	left: 0;
+	top: 0;
+	background: #121940;
+	background: linear-gradient(120deg,rgba(18, 25, 64, 1) 0%, rgba(73, 30, 89, 1) 100%);
+}
+#infinityArea > .areaBackground {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-image: url(assets/area1bg.jpg);
+	background-size: 1920px 1080px;
+	opacity: 0.1;
 }
 .darkBG {
 	filter: invert(1) contrast(0.95) brightness(0.9);
@@ -348,6 +492,7 @@ input:checked + .slider:before {
 	left: 50%;
 	font-size: 48pt;
 	transform: translate(-50%, -50%);
+	pointer-events: none;
 }
 
 /* Stats Display */
@@ -370,6 +515,7 @@ input:checked + .slider:before {
 }
 
 #stats * {
+	text-shadow: -1px -1px 0 #ddd, 1px -1px 0 #ddd, -1px 1px 0 #ddd, 1px 1px 0 #ddd;
 	color: #202328;
 }
 
@@ -400,7 +546,7 @@ input:checked + .slider:before {
 	transition: background-color 0.15s ease-in-out;
 }
 #area1 .upgrade:hover {
-	background-color: #5049a480;
+	background-color: #463f9170;
 }
 #area1 .upgrade:active {
 	background-color: #463f9180;
@@ -418,7 +564,7 @@ input:checked + .slider:before {
 	transition: background-color 0.15s ease-in-out;
 }
 #area2 .upgrade:hover {
-	background-color: #56c08a70;
+	background-color: #56c08a60;
 }
 #area2 .upgrade:active {
 	background-color: #56c08a80;
@@ -436,10 +582,43 @@ input:checked + .slider:before {
 	transition: background-color 0.15s ease-in-out;
 }
 #area3 .upgrade:hover {
-	background-color: #ee6e7d6a;
+	background-color: #ee6e7d60;
 }
 #area3 .upgrade:active {
 	background-color: #ee6e7d80;
+}
+
+@keyframes bounceUp {
+	0% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-4px);
+	}
+	100% {
+		transform: translateY(-3px);
+	}
+}
+@keyframes bounceDown {
+	0% {
+		transform: translateY(-3px);
+	}
+	50% {
+		transform: translateY(1px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
+}
+.upgrade {
+	transition: transform 0.5s ease-in-out;
+	box-shadow: 2px 4px 4px #00000030;
+}
+.upgrade:hover {
+	animation: bounceUp 0.3s ease-in-out forwards;
+}
+.upgrade:active {
+	animation: bounceDown 0.3s ease-in-out forwards;
 }
 
 /* Skill Tree */
@@ -481,6 +660,232 @@ input:checked + .slider:before {
 	cursor: pointer;
 	transition: background-color 0.15s ease-in-out, color 0.5 ease-in-out;
 }
+
+/* Infinity Stuff */
+#infinityResetButton {
+	position: absolute;
+	width: 400px;
+	height: 300px;
+	padding: 32px;
+	font-size: 64pt;
+	left: 50vw;
+	top: 200px;
+	color: #000;
+	transform: translate(-50%, 0%);
+	background-color: #15151560;
+	border: 1px solid #70707080;
+	border-radius: 30px;
+	backdrop-filter: blur(12px);
+	text-shadow: -2px -2px 0 #ff0088, 2px -2px 0 #aa00ff, -2px 2px 0 #aa00ff, 2px 2px 0 #ff0088;
+	transition: background-color 0.1s ease-in-out, transform 0.15s ease-in-out;
+	/*box-shadow: 0px 0px 32px #000000f0;*/
+}
+@keyframes infinityHover {
+	0% {
+		box-shadow: 0px 0px 0px #ffffff40;
+	}
+	100% {
+		box-shadow: 0px 0px 32px #ffffff40;
+	}
+}
+@keyframes bounceUpInfinity {
+	0% {
+		transform: translate(-50%, 0);
+	}
+	50% {
+		transform: translate(-50%, -12px);
+	}
+	100% {
+		transform: translate(-50%, -9px);
+	}
+}
+@keyframes bounceDownInfinity {
+	0% {
+		transform: translate(-50%, -9px);
+	}
+	50% {
+		transform: translate(-50%, 3px);
+	}
+	100% {
+		transform: translate(-50%, 0px);
+	}
+}
+#infinityResetButton:hover {
+	background-color: #15151590;
+	animation: infinityHover 1s ease-out forwards, bounceUpInfinity 0.5s ease-in-out forwards;
+}
+#infinityResetButton:active {
+	background-color: #15151550;
+	animation: infinityHover 1s ease-out forwards, bounceDownInfinity 0.3s ease-in-out forwards;
+}
+
+#screenOverlay {
+	display: block;
+	width: 100vw;
+	height: 100vw;
+	position: fixed;
+	pointer-events: none;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+}
+.playFlash {
+	animation: flashBlack 5s ease-out forwards;
+}
+@keyframes flashBlack {
+	0% {
+		background-color: #00000000;
+	}
+	2% {
+		background-color: #000000ff;
+	}
+	10% {
+		background-color: #000000ff;
+	}
+	100% {
+    background-color: #00000000;
+	}
+}
+
+
+/* Infinity Milestones */
+.infinityMilestone {
+	width: 600px;
+	height: 200px;
+	border-radius: 15px;
+	background-color: #30303050;
+	border: 1px solid #80808080;
+	backdrop-filter: blur(8px);
+	padding-inline: 4px;
+	font-size: 16pt;
+	transition: background-color 0.15s ease-in-out, color 0.5 ease-in-out;
+	padding: 16px;
+	box-sizing: border-box;
+	text-align: center;
+	margin-bottom: 40px;
+}
+.infinityMilestone * {
+	opacity: 0.5;
+}
+.infinityMilestone.unlocked * {
+	opacity: 1;
+}
+.infinityMilestone > h2 {
+	text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+	color: #000;
+	margin-bottom: 5px;
+	font-size: 32pt;
+}
+.infinityMilestone > h3 {
+	margin-top: 15px;
+	font-size: 16pt;
+	font-weight: 400;
+}
+.infinityMilestone > p {
+	font-size: 24pt;
+}
+#milestonesContainer {
+	position: absolute;
+	left: 50vw;
+	top: 600px;
+	width: 600px;
+	transform: translate(-50%, 0);
+	text-align: center;
+}
+
+/* Infinity Generators */
+#infinityGeneratorsContainer {
+	position: absolute;
+	left: calc(50vw + 500px);
+	top: 200px;
+
+	width: 1000px;
+	height: 1000px;
+}
+
+#infinityPointsStat {
+	color: #e978eb;
+	text-align: center;
+}
+#infinityPowerStat {
+	color: #f9c87b;
+	text-align: center;
+}
+
+#generatorUpgrades {
+	display: flex;
+	width: fit-content;
+	margin: 40px auto;
+	flex-direction: row;
+	gap: 20px;
+}
+
+#generatorUpgrades button {
+	width: 400px;
+	height: 150px;
+	border-radius: 20px;
+	padding: 24px;
+	box-sizing: border-box;
+	background-color: #30303090;
+	border: 1px solid #80808080;
+	backdrop-filter: blur(8px);
+	transition: background-color 0.15s ease-in-out;
+}
+#generatorUpgrades button:hover {
+	background-color: #30303060;
+	animation: bounceUp 0.3s ease-out forwards;
+}
+#generatorUpgrades button:active {
+	background-color: #30303090;
+	animation: bounceDown 0.3s ease-out forwards;
+}
+#generatorUpgrades button .description {
+	font-size: 24pt;
+}
+#generatorUpgrades button .cost {
+	margin-top: 10px;
+	font-size: 20pt;
+	color: #d0d0d0;
+}
+
+
+#infinityPowerUpgrades {
+	display: grid;
+	width: fit-content;
+	margin: 40px auto;
+	gap: 20px;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(2, 1fr);
+}
+
+#infinityPowerUpgrades button {
+	width: 250px;
+	height: 150px;
+	border-radius: 20px;
+	padding: 16px;
+	box-sizing: border-box;
+	background-color: #30303090;
+	border: 1px solid #80808080;
+	backdrop-filter: blur(8px);
+	transition: background-color 0.15s ease-in-out;
+}
+#infinityPowerUpgrades button:hover {
+	background-color: #30303060;
+	animation: bounceUp 0.3s ease-out forwards;
+}
+#infinityPowerUpgrades button:active {
+	background-color: #30303090;
+	animation: bounceDown 0.3s ease-out forwards;
+}
+#infinityPowerUpgrades button .description {
+	font-size: 24pt;
+}
+#infinityPowerUpgrades button .cost {
+	margin-top: 10px;
+	font-size: 20pt;
+	color: #d0d0d0;
+}
+
 
 /* Rebirth Stuff */
 .rebirthDiv {
@@ -546,9 +951,9 @@ input:checked + .slider:before {
 	backdrop-filter: blur(16px);
 	transition: background-color 0.15s ease-in-out;
 }
-#rebirthButton2:hover {
+#rebirthButton3:hover {
 	background-color: #b0608088;
 }
-#rebirthButton2:active {
+#rebirthButton3:active {
 	background-color: #b0608080;
 }
