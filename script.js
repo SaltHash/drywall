@@ -872,6 +872,17 @@ function tick() {
 
 // Boosts
 function checkInfinityUpgrades() {
+	if (player.infinityUpgrades["Infinity Power I"] >= 1) {
+		player.boosts.infinityPower.multiplier = 0.01
+	} else {
+		player.boosts.infinityPower.multiplier = 0;
+	}
+	player.boosts.infinityPower.multiplier *= (10 ** (player.infinityUpgrades["Infinity Power I"] - 1)) * (2 ** player.infinityUpgrades["Infinity Power II"]);
+	player.boosts.drywall.multiplier *= 3 ** player.infinityUpgrades["Drywall I"];
+	player.boosts.drywallPS.multiplier *= 2 ** player.infinityUpgrades["Drywall/sec I"];
+	player.boosts.skillPoints.multiplier *= 2 ** player.infinityUpgrades["Skill Points I"];
+	player.boosts.infinities.multiplier *= 2 ** player.infinityUpgrades["Infinities I"];
+	
 	if (player.infinities >= 1) {
 		if (!player.skillUpgrades.includes("Time-saver I")) {
 			player.skillUpgrades.push("Time-saver I");
@@ -898,17 +909,6 @@ function checkInfinityUpgrades() {
 	if (player.infinities >= 8) {
 		player.passive.skillPoints = 0.05;
 	}
-
-	if (player.infinityUpgrades["Infinity Power I"] >= 1) {
-		player.boosts.infinityPower.multiplier = 0.01
-	} else {
-		player.boosts.infinityPower.multiplier = 0;
-	}
-	player.boosts.infinityPower.multiplier *= (10 ** (player.infinityUpgrades["Infinity Power I"] - 1)) * (2 ** player.infinityUpgrades["Infinity Power II"]);
-	player.boosts.drywall.multiplier *= 3 ** player.infinityUpgrades["Drywall I"];
-	player.boosts.drywallPS.multiplier *= 2 ** player.infinityUpgrades["Drywall/sec I"];
-	player.boosts.skillPoints.multiplier *= 2 ** player.infinityUpgrades["Skill Points I"];
-	player.boosts.infinities.multiplier *= 2 ** player.infinityUpgrades["Infinities I"];
 }
 
 function checkBoosts() {
