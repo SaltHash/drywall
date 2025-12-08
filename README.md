@@ -22,3 +22,11 @@ v0.4.0
 - Added infinity leaderboard
 - Small improvements and additions
 - Bugfixes
+
+v0.4.1
+- Added achievements
+- Revamped settings visually
+- Added auto-rebirth setting
+- Added stats (playtime & clicks)
+- Added cover art (credit: PNAPPL)
+- Rebalancing of areas 1 & 2 and other small changes
