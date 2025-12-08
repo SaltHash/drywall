@@ -912,6 +912,7 @@ elts.usernameSetting.value = player.username || player.mylbkey;
 
 // Clicking for drywall + dust
 let dustSpawnDebounce = Date.now();
+let clickDebounce = Date.now();
 for (let i = 0; i < elts.areas.length; i += 1) {
 	const bg = elts.areas[i].getElementsByClassName("areaBackground")[0];
 	if (!bg) continue;
