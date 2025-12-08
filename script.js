@@ -772,7 +772,6 @@ for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 	elts.skillUpgrades[Object.keys(skillUpgrades)[i]] = upgrade;
 }
 
-
 // setup click events
 
 // title screen
@@ -860,7 +859,6 @@ for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 	}
 }
 
-
 // infinity stuff
 elts.infinityResetButton.onclick = () => {
 	if (player.drywall === Infinity && player.infinities < infinityMilestones[infinityMilestones.length - 1]) {
@@ -914,7 +912,6 @@ elts.usernameSetting.value = player.username || player.mylbkey;
 
 // Clicking for drywall + dust
 let dustSpawnDebounce = Date.now();
-let clickDebounce = Date.now();
 for (let i = 0; i < elts.areas.length; i += 1) {
 	const bg = elts.areas[i].getElementsByClassName("areaBackground")[0];
 	if (!bg) continue;
@@ -1192,7 +1189,6 @@ function checkBoosts() {
 		player.passive[Object.keys(player)[i]] = 0;
 	}
 	checkInfinityUpgrades();
-	checkAchievementBoosts();
 
 	// Check upgrades which boost other upgrades
 	let convExp = 0.2;
@@ -1422,7 +1418,6 @@ function getLeaderboardText(boardType) {
 			console.warn("Leaderboard '" + boardType + "' not found (somethings broken)");
 		}
 	}
-
 	return text;
 }
 
@@ -1551,13 +1546,11 @@ function showAchievement(name) {
 	}, 5000);
 }
 
-
 function update(dt) {
 	checkBoosts();
 	if (player.drywall !== Infinity) {
 		player.drywall += ((player.drywallPS * player.boosts.drywall.multiplier) ** player.boosts.drywall.exponent) * dt / 1000;
 	}
-
 	if (player.skillUpgrades.includes("Time-saver II") && player.settings.autoRebirth) {
 		rebirth(1);
 	}
