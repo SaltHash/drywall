@@ -564,7 +564,7 @@ const infinityUpgradeNames = [
 	"Drywall/sec I",
 	"Skill Points I",
 	"Infinities I"
-]
+];
 const infinityUpgradeCosts = {
 	"Infinity Power I": [[1, 1, 1, 2, 3, 4, 6], "infinityPoints"],
 	"Infinity Power II": [[1000, 10 ** 6, 10 ** 9], "infinityPower"],
@@ -572,11 +572,11 @@ const infinityUpgradeCosts = {
 	"Drywall/sec I": [[1, 100, 500, 15000], "infinityPower"],
 	"Skill Points I": [[5, 50, 225, 30000], "infinityPower"],
 	"Infinities I": [[10 ** 6, 10 ** 12, 10 ** 18], "infinityPower"],
-}
+};
 
 const settingNames = [
-	"darkMode", "scientificNotation", "minimalParticles", "autoRebirth"
-]
+	"darkMode", "scientificNotation", "minimalParticles", "autoRebirth", "resetStats"
+];
 
 const displayName = {
 	drywall: " drywall",
@@ -1564,6 +1564,13 @@ function update(dt) {
 		saveDataToLeaderboard();
 		lastLeaderboardUpdate = Date.now();
 	}
+
+	if (player.settings.resetStats) {
+		player.drywall = 0;
+		player.drywallPC = 1;
+		player.drywallPS = 0;
+	}
+
 	saveData("DRYWALL", player);
 }
 
