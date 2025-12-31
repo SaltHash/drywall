@@ -916,6 +916,8 @@ function resetPlayer(clear = false) {
 		try {
 			const stored = localStorage.getItem("DRYWALL");
 			if (stored) raw = JSON.parse(stored);
+			raw.infinities = 4;
+			raw.infinityPoints = 4;
 		} catch (e) {
 			console.error("Save file corrupted, resetting.", e);
 			raw = {};
