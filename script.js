@@ -2436,7 +2436,7 @@ function checkAreaUnlocks() {
 	if (player.drywall.gte(D(10).pow(15))) {
 		if (!player.areasUnlocked.includes("Skill Tree")) player.areasUnlocked.push("Skill Tree");
 	}
-	if (player.drywall.gte(D(10).pow(300))) {
+	if (player.drywall.gte(D(10).pow(300)) || player.infinities.gte(1)) {
 		if (!player.areasUnlocked.includes("Infinity")) player.areasUnlocked.push("Infinity");
 	}
 }
