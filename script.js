@@ -382,7 +382,7 @@ const upgrades = [
 	},
 	{
 		cost: [D(1).times(D(10).pow(1200)), "drywall"],
-		reward: [D(6.5).times(D(10).pow(45)), "drywallPS"]
+		reward: [D(6.5).times(D(10).pow(55)), "drywallPS"]
 	},
 ];
 
@@ -1309,6 +1309,8 @@ for (let i = 0; i < elts.areas.length; i += 1) {
 		}
 	};
 }
+
+// area selectors
 for (let i = 0; i < elts.areaSelectors.length; i += 1) {
 	elts.areaSelectors[i].onclick = function() {
 		loadArea(i);
@@ -1478,6 +1480,11 @@ function loadArea(area) {
 		} else {
 			elts.areas[i].style.display = "none";
 		}
+	}
+
+	if (area == 1) {
+		updateAchievementGrid();
+		updateAchievementImages();
 	}
 }
 
@@ -1713,6 +1720,7 @@ function checkBoosts(dontCall) {
 	}
 
 	checkInfinityUpgrades(dontCall);
+	checkAchievementBoosts();
 
 	player.boosts.skillPoints.multiplier = player.boosts.skillPoints.multiplier.times(
 		D(player.achievements.length).div(100).plus(1)
@@ -2091,7 +2099,7 @@ function randomString(length) {
 async function loadLeaderboard() {
 	const { data, error } = await supabaseLib
 		.from("leaderboard")
-		.select("key, displayName, drywall, rebirths, skill_points, infinities, achievements");
+		.select("key, display_name, drywall, rebirths, skill_points, infinities, achievements");
 
 	if (error) {
 		console.error("Error loading leaderboard:", error.message);
@@ -2142,7 +2150,7 @@ async function saveDataToLeaderboard() {
 		infinities: D(player.infinities).toString(),
 		achievements: player.achievements.length,      // Standard number is fine here
 		flagged: false,
-		displayName: player.username || player.mylbkey,
+		display_name: player.username || player.mylbkey,
 	};
 
 	let { error } = await supabaseLib.from("leaderboard").upsert(

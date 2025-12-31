@@ -52,15 +52,15 @@ button {
 }
 #titleScreen > .areaBackground {
 	position: absolute;
-	width: calc(100%);
-	height: calc(100%);
+	width: 100%;
+	height: 100%;
 	left: 0;
 	top: 0;
 
 	filter: brightness(0.8);
 	background-color: #ddd;
 	background-image: url(assets/titlescreen.png);
-	background-size: 100%;
+	background-size: 100% 100%;
 	z-index: -1;
 	animation: circle 40s linear infinite;
 }
@@ -870,16 +870,15 @@ input:checked + .slider:before {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-width: 500px;
+	width: 100%;
 	padding: 8px;
 	/*background-color: #30303080;
 	backdrop-filter: blur(8px);
 	border: 1px solid #606060a0;*/
 	border-radius: 10px;
-	left: 50%;
-	top: 10px;
+	left: 0;
+	top: 5px;
 	font-size: 28pt;
-	transform: translate(-50%, 0);
 	line-height: 0.85;
 	pointer-events: none;
 }
