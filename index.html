@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Drywall Clicker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
   </head>
   <body>
     <div id="screenOverlay"></div>-
@@ -14,8 +17,25 @@
       <div class="areaBackground"></div>
       <p id="titleCredits">Game by ICodeBugs • Art by PNAPPL ♥</p>
       <h1>Drywall Clicker</h1>
-      <h3>v0.4.1</h3>
+      <h3>v0.5.0</h3>
       <button id="playButton">Play!</button>
+      <div id="changelogContainer">
+        <button id="changelogButton">
+          Changelog
+        </button>
+        <div id="changelogContent">
+          <h4>v0.5.0</h4>
+          <p>- Replaced Infinity Milestones with a tree</p>
+          <p>- Extended Infinity Power content</p>
+          <p>- BREAK INFINITY</p>
+          <p>- Created an achievements tab (trophies v0.5.1-2)</p>
+          <p>- Tree upgrades only appear one upgrade in advance</p>
+          <p>- MASSIVE performance improvements</p>
+          <p>- Added multipliers to the stat text of many more stats</p>
+          <p>- Renamed old trophies tab to Leaderboards</p>
+          <p>- Bugfixes + other things I forgot</p>
+        </div>
+      </div>
     </div>
 
     <div id="usernamePopup">
@@ -44,6 +64,7 @@
       <h2 id="globalMessageLabel">Global</h2>
       <p id="globalMessageTime">0:00:00 am</p>
       <p id="globalMessageText">Message loading...</p>
+      <p id="globalDismissMessage">Click to dismiss</p>
     </div>
 
     <div id="settings">
@@ -79,13 +100,20 @@
             <span class="slider"></span>
           </label>
         </div>
-        <!-- <div class="settingRow">
-          <span>Auto-infinity:</span>
+        <div class="settingRow">
+          <span>Automate skill tree:</span>
           <label class="switch">
-            <input id="minimalParticlesSetting" type="checkbox">
+            <input id="autoSkillTreeSetting" type="checkbox">
             <span class="slider"></span>
           </label>
-        </div> -->
+        </div>
+        <div class="settingRow">
+          <span>Auto-infinity:</span>
+          <label class="switch">
+            <input id="autoInfinitySetting" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
         <h3>Miscellaneous</h3>
         <div class="settingRow">
           <span>Reset first 3 stats:</span>
@@ -106,7 +134,7 @@
       <button id="closeSettingsButton">Close</button>
     </div>
 
-    <div id="trophyArea">
+    <div id="leaderboardArea">
       <div class="centerWrapper">
         <div class="centerRow">
           <div class="leaderboard" id="leaderboard1Div">
@@ -187,6 +215,19 @@
       </div>
     </div>
 
+    <div id="area4">
+      <div class="areaBackground"></div>
+      <p class="clickNotification">Click for drywall</p>
+      <div class="upgradeTable">
+        <button class="upgrade" id="upgrade19">Loading...</button>
+        <button class="upgrade" id="upgrade20">Loading...</button>
+        <button class="upgrade" id="upgrade21">Loading...</button>
+        <button class="upgrade" id="upgrade22">Loading...</button>
+        <button class="upgrade" id="upgrade23">Loading...</button>
+        <button class="upgrade" id="upgrade24">Loading...</button>
+      </div>
+    </div>
+
     <div id="skillTreeArea">
       <canvas id="skillCanvas" width="3000" height="3000"></canvas>
       <button id="skillResetButton">Reset</button>
@@ -194,44 +235,29 @@
 
     <div id="infinityArea">
       <div class="areaBackground"></div>
-      <button id="infinityResetButton">INFINITY</button>
-      <div id="milestonesContainer">
-        <div class="infinityMilestone">
-          <h2>1 Infinity</h2>
-          <p>All previous automation becomes permanent</p>
-          <p>Unlock infinity generators</p>
-          <h3>(scroll right to see infinity generators)</h3>
-        </div>
-        <div class="infinityMilestone">
-          <h2>2 Infinities</h2>
-          <p>3x EVERYTHING before Infinity (except rebirths)</p>
-          <p>2x Infinity Points</p>
-        </div>
-        <div class="infinityMilestone">
-          <h2>3 Infinities</h2>
-          <p>Generate skill points at a rate of 0.1%/s</p>
-          <p>5x Infinity Power</p>
-          <p>100x drywall</p>
-        </div>
-        <div class="infinityMilestone">
-          <h2>5 Infinities</h2>
-          <p>Generate skill points at a rate of 1%/s</p>
-        </div>
-        <div class="infinityMilestone">
-          <h2>8 Infinities</h2>
-          <p>Generate skill points at a rate of 5%/s</p>
-          <p>Unlock <i>coming soon...</i></p>
-        </div>
+      <button id="infinityResetButton">
+        <p class="innerText">INFINITY</p>
+        <p id="ipReward">+1 IP</p>
+      </button>
+      <p id="infinityStat"></p>
+      <h3 id="infinityPointsStat">Infinity Points: 0</h2>
+      <p id="infinityDisclaimer">Scroll right for infinity generators (not recommended on first infinity)</p>
+      <div id="breakInfinityBar">
+        <p id="breakInfinityLabel">0% to x10 infinity points</p>
+        <div id="breakInfinityProgressBar"></div>
+      </div>
+
+      <div id="infinityTreeArea">
+        <canvas id="infinityCanvas" width="1500" height="2500"></canvas>
       </div>
 
       <div id="infinityGeneratorsContainer">
-        <h2 id="infinityPointsStat">Infinity Points: 0</h2>
         <h3 id="infinityPowerStat">Infinity Power: 0</h2>
 
         <div id="generatorUpgrades">
           <button>
             <p class="description">
-              Start generating infinity power (0.01/s)
+              x10 Infinity Power
             </p>
             <p class="cost">
               1 Infinity Point
@@ -282,6 +308,31 @@
           </button>
         </div>
       </div>
+
+      <div id="gameDiv">
+        <h2>Minigames</h2>
+        <button id="geometryDashButton" class="minigameButton">Geometry Dash</button>
+        <button id="flappyBirdButton" class="minigameButton">Flappy Bird</button>
+        <h3>Bonuses</h3>
+        <p id="minigameInfinityBonus">x1 Infinities</p>
+        <p id="minigameIPBonus">x1 Infinity Points</p>
+
+        <!-- <iframe id="gdCanvas" class="minigameCanvas" src="https://editor.p5js.org/CodeForSchool/full/MUKIumbFE"></iframe>
+        <iframe id="fbCanvas" class="minigameCanvas" src="https://editor.p5js.org/CodeForSchool/full/igLYT9mLL"></iframe> -->
+      </div>
+    </div>
+
+    <div id="achievementsArea">
+      <h2 id="achievementsTitle">Achievements (0/99)</h1>
+      <p id="achievementsBoost">These achievements give a boost of +0% drywall.</p>
+      <div id="achievementsContainer">
+
+      </div>
+      <div id="achievementHover">
+        <p id="achievementHoverName"></p>
+        <p id="achievementHoverDescription"></p>
+        <p id="achievementHoverReward"></p>
+      </div>
     </div>
 
     <div id="settingsButtonDiv">
@@ -299,7 +350,7 @@
     </div>
 
     <div id="areaSelect">
-      <p>Areas</p>
+      <h2>Areas</h2>
       <div id="areaSelectorsDiv">
         <button id="areaSelector1"></button>
         <button id="areaSelector2"></button>
@@ -307,11 +358,15 @@
         <button id="areaSelector4"></button>
         <button id="areaSelector5"></button>
         <button id="areaSelector6"></button>
+        <button id="areaSelector7"></button>
+        <button id="areaSelector8"></button>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
+    <script src="/geometrydash.js"></script>
+    <script src="/flappybird.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

@@ -18,10 +18,9 @@ let elts = {
 const areas = [
 	["Leaderboards", "leaderboardArea"],
 	["Achievements", "achievementsArea"],
-	["Home", "area1"],
+ 	["Home", "area1"],
 	["High-rise", "area2"],
 	["Luxury", "area3"],
-	["Bungalow", "area4"],
 	["Skill Tree", "skillTreeArea"],
 	["Infinity", "infinityArea"],
 ];
@@ -35,202 +34,199 @@ for (let i = 0; i < areas.length; i += 1) {
 
 
 // Settings
+const infinityThreshold = D(2).pow(1024);
+
 const dustSpawnDebounceTime = false;
 const clickDebounceTime = 65;
 
-const infinityThreshold = D(2).pow(1024);
+
 
 const achievements = {
 	// drywall achievements
 	"Welcome!": {
-		requirement: {amount: D(1), type: ["drywall"]},
+		requirement: {amount: 1, type: ["drywall"]},
 		description: "Your first drywall, we all start somewhere.",
 		tier: 1,
 	},
 	"Millionaire": {
-		requirement: {amount: D(10).pow(6), type: ["drywall"]},
-		reward: {amount: D(1.1), type: "drywall"},
+		requirement: {amount: 10 ** 6, type: ["drywall"]},
+		reward: {amount: 1.1, type: "drywall"},
 		description: "Reach 1 million drywall. Still poor btw.",
 		tier: 1,
 	},
 	"Billionaire": {
-		requirement: {amount: D(10).pow(9), type: ["drywall"]},
-		reward: {amount: D(1.2), type: "drywall"},
+		requirement: {amount: 10 ** 9, type: ["drywall"]},
+		reward: {amount: 1.2, type: "drywall"},
 		description: "Wow a billion? Thats enough for a big mac!",
 		tier: 1,
 	},
 	"Trillionaire": {
-		requirement: {amount: D(10).pow(12), type: ["drywall"]},
-		reward: {amount: D(1.2), type: "drywall"},
+		requirement: {amount: 10 ** 12, type: ["drywall"]},
+		reward: {amount: 1.2, type: "drywall"},
 		description: "Reach 1 trillion drywall. I ran out of corny jokes.",
 		tier: 1,
 	},
 	"Decillionaire": {
-		requirement: {amount: D(10).pow(33), type: ["drywall"]},
-		reward: {amount: D(1.3), type: "drywall"},
+		requirement: {amount: 10 ** 33, type: ["drywall"]},
+		reward: {amount: 1.3, type: "drywall"},
 		description: "Reach 1 decillion drywall. A big gap, but you made it, right?",
 		tier: 2,
 	},
 	"Vigintillionaire": {
-		requirement: {amount: D(10).pow(63), type: ["drywall"]},
-		reward: {amount: D(1.3), type: "drywall"},
+		requirement: {amount: 10 ** 63, type: ["drywall"]},
+		reward: {amount: 1.3, type: "drywall"},
 		description: "Reach 1 vigintillion drywall. You almost beat the game! nah jk",
 		tier: 2,
 	},
 	"Scrooge Mc. Duck": {
-		requirement: {amount: D(2.5).times(D(10).pow(135)), type: ["drywall"]},
-		reward: {amount: D(1.3), type: "drywall"},
+		requirement: {amount: 2.5 * (10 ** 135), type: ["drywall"]},
+		reward: {amount: 1.3, type: "drywall"},
 		description: "Reach 2.5e135 drywall. Thats enough to buy the final drywall upgrade! Well, for now at least.",
 		tier: 2,
-	},
-	"THATS A LOT OF DRYWALL": {
-		requirement: {amount: D(10).pow(1000), type: ["drywall"]},
-		reward: {amount: D(1000), type: "drywall"},
-		description: "Reach 1e1000 drywall. Not a jump at all :D",
 	},
 	
 	// playtime achievements
 	"Fulfillment": {
-		requirement: {amount: D(10).times(60).times(1000), type: ["stats", "playtime"]},
-		reward: {amount: D(1.1), type: "drywallPS"},
+		requirement: {amount: 10 * 60 * 1000, type: ["stats", "playtime"]},
+		reward: {amount: 1.1, type: "drywallPS"},
 		description: "Play for 10 minutes.",
 		tier: 1,
 	},
 	"Enjoyment": {
-		requirement: {amount: D(60).times(60).times(1000), type: ["stats", "playtime"]},
-		reward: {amount: D(1.2), type: "drywallPS"},
+		requirement: {amount: 60 * 60 * 1000, type: ["stats", "playtime"]},
+		reward: {amount: 1.2, type: "drywallPS"},
 		description: "Play for an hour. Starting to have fun now?",
 		tier: 1,
 	},
 	"Dedication": {
-		requirement: {amount: D(5).times(60).times(60).times(1000), type: ["stats", "playtime"]},
-		reward: {amount: D(1.3), type: "drywallPS"},
+		requirement: {amount: 5 * 60 * 60 * 1000, type: ["stats", "playtime"]},
+		reward: {amount: 1.3, type: "drywallPS"},
 		description: "Play for 5 hours.",
 		tier: 2,
 	},
 	"Connoisseur": {
-		requirement: {amount: D(24).times(60).times(60).times(1000), type: ["stats", "playtime"]},
-		reward: {amount: D(1.5), type: "drywallPS"},
+		requirement: {amount: 24 * 60 * 60 * 1000, type: ["stats", "playtime"]},
+		reward: {amount: 1.5, type: "drywallPS"},
 		description: "Play for a day (24 hours). Still enjoying it?",
 		tier: 2,
 	},
 	"Beyond no-life": {
-		requirement: {amount: D(7).times(24).times(60).times(60).times(1000), type: ["stats", "playtime"]},
-		reward: {amount: D(5), type: "drywallPS"},
+		requirement: {amount: 7 * 24 * 60 * 60 * 1000, type: ["stats", "playtime"]},
+		reward: {amount: 5, type: "drywallPS"},
 		description: "Play for a whole week (168 hours). Go touch grass or something.",
 		tier: 3,
 	},
 
 	// click achievements
 	"Beginner Clicker": {
-		requirement: {amount: D(10).pow(2), type: ["stats", "clicks"]},
-		reward: {amount: D(1.1), type: "drywallPC"},
+		requirement: {amount: 10 ** 2, type: ["stats", "clicks"]},
+		reward: {amount: 1.1, type: "drywallPC"},
 		description: "Click 100 times.",
 		tier: 1,
 	},
 	"Mouse Abuse": {
-		requirement: {amount: D(10).pow(3), type: ["stats", "clicks"]},
-		reward: {amount: D(1.3), type: "drywallPC"},
+		requirement: {amount: 10 ** 3, type: ["stats", "clicks"]},
+		reward: {amount: 1.3, type: "drywallPC"},
 		description: "Click a thousand times.",
 		tier: 1,
 	},
 	"Nuclear Clicker": {
-		requirement: {amount: D(10).pow(4), type: ["stats", "clicks"]},
-		reward: {amount: D(1.5), type: "drywallPC"},
+		requirement: {amount: 10 ** 4, type: ["stats", "clicks"]},
+		reward: {amount: 1.5, type: "drywallPC"},
 		description: "Click 10 thousand times. Fun fact: you can click at most once every 65 milliseconds (~15 cps).",
 		tier: 2,
 	},
 	"Supernova": {
-		requirement: {amount: D(10).pow(5), type: ["stats", "clicks"]},
-		reward: {amount: D(3), type: "drywallPC"},
+		requirement: {amount: 10 ** 5, type: ["stats", "clicks"]},
+		reward: {amount: 3, type: "drywallPC"},
 		description: "Click 100 THOUSAND times. 1.8 hours of nonstop clicking. Ya done yet?",
 		tier: 2,
 	},
 	"Godly Clicker": {
-		requirement: {amount: D(10).pow(6), type: ["stats", "clicks"]},
-		reward: {amount: D(2), type: "infinityPower"},
+		requirement: {amount: 10 ** 6, type: ["stats", "clicks"]},
+		reward: {amount: 2, type: "infinityPower"},
 		description: "Click one MILLION times. That takes at LEAST 18 hours, just why...",
 		tier: 3,
 	},
 
 	// infinity achievements
 	"Infinity": {
-		requirement: {amount: D(1), type: ["infinities"]},
-		reward: {amount: D(1.5), type: "drywall"},
+		requirement: {amount: 1, type: ["infinities"]},
+		reward: {amount: 1.5, type: "drywall"},
 		description: "Hit ~1.79e308 drywall and perform the infinity reset. Welcome to the big leagues, I guess.",
 		tier: 1,
 	},
 	"Deca-infinity": {
-		requirement: {amount: D(10), type: ["infinities"]},
-		reward: {amount: D(2), type: "drywallPS"},
+		requirement: {amount: 10, type: ["infinities"]},
+		reward: {amount: 2, type: "drywallPS"},
 		description: "Reach 10 infinities. ",
 		tier: 2,
 	},
 	"Infinity Centipede": {
-		requirement: {amount: D(100), type: ["infinities"]},
-		reward: {amount: D(1.5), type: "infinityPower"},
+		requirement: {amount: 100, type: ["infinities"]},
+		reward: {amount: 1.5, type: "infinityPower"},
 		description: "Reach 100 infinities",
 		tier: 2,
 	},
 	"Need. More. Infinities.": {
-		requirement: {amount: D(1000), type: ["infinities"]},
-		reward: {amount: D(1.5), type: "drywall"},
+		requirement: {amount: 1000, type: ["infinities"]},
+		reward: {amount: 1.5, type: "drywall"},
 		description: "Reach one THOUSAND infinities. It only gets crazier from here.",
 		tier: 2,
 	},
 	"The Gap": {
-		requirement: {amount: D(10000), type: ["infinities"]},
-		reward: {amount: D(1.5), type: "drywall"},
+		requirement: {amount: 10000, type: ["infinities"]},
+		reward: {amount: 1.5, type: "drywall"},
 		description: "Reach 10 thousand infinities. Now its time to max out every part of the game. Getting to the next milestone won't be easy.",
 		tier: 2,
 	},
 	"Particle Accelerator": {
-		requirement: {amount: D(1000000), type: ["infinities"]},
-		reward: {amount: D(5), type: "infinityPower"},
+		requirement: {amount: 1000000, type: ["infinities"]},
+		reward: {amount: 5, type: "infinityPower"},
 		description: "Reach one MILLION infinities. You're almost there...",
 		tier: 3,
 	},
 
 	// infinity power
 	"potato": {
-		requirement: {amount: D(100), type: ["infinityPower"]},
-		reward: {amount: D(1.1), type: "infinityPower"},
+		requirement: {amount: 100, type: ["infinityPower"]},
+		reward: {amount: 1.1, type: "infinityPower"},
 		description: "<span style='color: #eee; font-weight: 700; font-family: &quot;Comic Neue&quot;, &quot;Comic Sans MS&quot;, &quot;Comic Sans&quot;, cursive;'>make 100 infinity power 🥔</span>",
 		tier: 1,
 	},
 	"Megajoule": {
-		requirement: {amount: D(10).pow(6), type: ["infinityPower"]},
-		reward: {amount: D(1.2), type: "infinityPower"},
+		requirement: {amount: 10 ** 6, type: ["infinityPower"]},
+		reward: {amount: 1.2, type: "infinityPower"},
 		description: "Generate 1 million infinity power. *insert energy buzzing sound*",
 		tier: 2,
 	},
 	"Power Enthusiast": {
-		requirement: {amount: D(10).pow(9), type: ["infinityPower"]},
-		reward: {amount: D(1.5), type: "infinityPower"},
+		requirement: {amount: 10 ** 9, type: ["infinityPower"]},
+		reward: {amount: 1.5, type: "infinityPower"},
 		description: "Generate 1 billion infinity power. Having fun?",
 		tier: 2,
 	},
 	"Trillionaire pt. 2": {
-		requirement: {amount: D(10).pow(12), type: ["infinityPower"]},
-		reward: {amount: D(2), type: "infinityPower"},
+		requirement: {amount: 10 ** 12, type: ["infinityPower"]},
+		reward: {amount: 2, type: "infinityPower"},
 		description: "Generate 1 trillion infinity power. I am SO proud of you.",
 		tier: 2,
 	},
 	"Suspicious amounts of power": {
-		requirement: {amount: D(10).pow(18), type: ["infinityPower"]},
-		reward: {amount: D(10), type: "drywallPC"},
+		requirement: {amount: 10 ** 18, type: ["infinityPower"]},
+		reward: {amount: 10, type: "drywallPC"},
 		description: "Generate 1 quintillion infinity power. Where did you even get this power?",
 		tier: 3,
 	},
 	"Nuclear reactor": {
-		requirement: {amount: D(10).pow(33), type: ["infinityPower"]},
-		reward: {amount: D(2), type: "infinities"},
+		requirement: {amount: 10 ** 33, type: ["infinityPower"]},
+		reward: {amount: 2, type: "infinities"},
 		description: "Generate 1 DECILLION infinity power. Too. Much. Power.",
 		tier: 3,
 	},
 	"Dyson sphere": {
-		requirement: {amount: D(10).pow(63), type: ["infinityPower"]},
-		reward: {amount: D(3), type: "infinities"},
+		requirement: {amount: 10 ** 63, type: ["infinityPower"]},
+		reward: {amount: 3, type: "infinities"},
 		description: "Generate 1 VIGINTILLION infinity power. Are you almost done with the infinity tree? nah prolly not",
 		tier: 4,
 	},
@@ -245,28 +241,28 @@ const achievements = {
 		tier: 0,
 	},
 	"Informed Voter": {
-		reward: {amount: D(1.11), type: "drywall"},
+		reward: {amount: 1.11, type: "drywall"},
 		tier: 1,
 		description: "Read the changelog.",
 	},
 	"Infinity Tree Completionist": {
-		reward: {amount: D(10), type: "infinityPower"},
+		reward: {amount: 10, type: "infinityPower"},
 		description: "Buy every single upgrade in the infinity tree.",
 		tier: 3,
 	},
 
 	"EZ Rebirth": {
-		reward: {amount: D(1.5), type: "drywall"},
+		reward: {amount: 1.5, type: "drywall"},
 		description: "Rebirth in 10 clicks (ALL clicks) or less!",
 		tier: 1,
 	},
 	"EZ Skill Reset": {
-		reward: {amount: D(1.5), type: "skillPoints"},
+		reward: {amount: 1.5, type: "skillPoints"},
 		description: "Skill reset in 10 clicks (ALL clicks) or less!",
 		tier: 2,
 	},
 	"EZ Infinity": {
-		reward: {amount: D(1.5), type: "infinityPoints"},
+		reward: {amount: 1.5, type: "infinityPoints"},
 		description: "Infinity in 10 clicks (ALL clicks) or less! Must. Keep. Pushing.",
 		tier: 3,
 	},
@@ -274,330 +270,285 @@ const achievements = {
 
 const upgrades = [
 	{
-		cost: [D(25), "drywall"],
-		reward: [D(1), "drywallPC"]
+		cost: [25, "drywall"],
+		reward: [1, "drywallPC"]
 	},
 	{
-		cost: [D(600), "drywall"],
-		reward: [D(10), "drywallPC"]
+		cost: [600, "drywall"],
+		reward: [10, "drywallPC"]
 	},
 	{
-		cost: [D(165000), "drywall"],
-		reward: [D(850), "drywallPC"]
+		cost: [165000, "drywall"],
+		reward: [850, "drywallPC"]
 	},
 	{
-		cost: [D(50), "drywall"],
-		reward: [D(10), "drywallPS"]
+		cost: [50, "drywall"],
+		reward: [10, "drywallPS"]
 	},
 	{
-		cost: [D(35000), "drywall"],
-		reward: [D(700), "drywallPS"]
+		cost: [35000, "drywall"],
+		reward: [700, "drywallPS"]
 	},
 	{
-		cost: [D(8).times(D(10).pow(6)), "drywall"],
-		reward: [D(80000), "drywallPS"]
+		cost: [8 * (10 ** 6), "drywall"],
+		reward: [80000, "drywallPS"]
 	},
 	{
-		cost: [D(1).times(D(10).pow(9)), "drywall"],
-		reward: [D(75000), "drywallPC"]
+		cost: [1 * (10 ** 9), "drywall"],
+		reward: [75000, "drywallPC"]
 	},
 	{
-		cost: [D(150).times(D(10).pow(15)), "drywall"],
-		reward: [D(20).times(D(10).pow(6)), "drywallPC"]
+		cost: [150 * (10 ** 15), "drywall"],
+		reward: [20 * (10 ** 6), "drywallPC"]
 	},
 	{
-		cost: [D(5).times(D(10).pow(24)), "drywall"],
-		reward: [D(800).times(D(10).pow(6)), "drywallPC"]
+		cost: [5 * (10 ** 24), "drywall"],
+		reward: [800 * (10 ** 6), "drywallPC"]
 	},
 	{
-		cost: [D(3.5).times(D(10).pow(12)), "drywall"],
-		reward: [D(6).times(D(10).pow(6)), "drywallPS"]
+		cost: [3.5 * (10 ** 12), "drywall"],
+		reward: [6 * (10 ** 6), "drywallPS"]
 	},
 	{
-		cost: [D(850).times(D(10).pow(18)), "drywall"],
-		reward: [D(900).times(D(10).pow(6)), "drywallPS"]
+		cost: [850 * (10 ** 18), "drywall"],
+		reward: [900 * (10 ** 6), "drywallPS"]
 	},
 	{
-		cost: [D(2.5).times(D(10).pow(27)), "drywall"],
-		reward: [D(85).times(D(10).pow(9)), "drywallPS"]
+		cost: [2.5 * (10 ** 27), "drywall"],
+		reward: [85 * (10 ** 9), "drywallPS"]
 	},
 	{
-		cost: [D(10).times(D(10).pow(45)), "drywall"],
-		reward: [D(160).times(D(10).pow(9)), "drywallPC"]
+		cost: [10 * (10 ** 45), "drywall"],
+		reward: [160 * (10 ** 9), "drywallPC"]
 	},
 	{
-		cost: [D(10).times(D(10).pow(69)), "drywall"],
-		reward: [D(18).times(D(10).pow(12)), "drywallPC"]
+		cost: [10 * (10 ** 69), "drywall"],
+		reward: [18 * (10 ** 12), "drywallPC"]
 	},
 	{
-		cost: [D(100).times(D(10).pow(108)), "drywall"],
-		reward: [D(55).times(D(10).pow(15)), "drywallPC"]
+		cost: [100 * (10 ** 108), "drywall"],
+		reward: [55 * (10 ** 15), "drywallPC"]
 	},
 	{
-		cost: [D(2.5).times(D(10).pow(54)), "drywall"],
-		reward: [D(15).times(D(10).pow(12)), "drywallPS"]
+		cost: [2.5 * (10 ** 54), "drywall"],
+		reward: [15 * (10 ** 12), "drywallPS"]
 	},
 	{
-		cost: [D(1.5).times(D(10).pow(84)), "drywall"],
-		reward: [D(50).times(D(10).pow(15)), "drywallPS"]
+		cost: [1.5 * (10 ** 84), "drywall"],
+		reward: [50 * (10 ** 15), "drywallPS"]
 	},
 	{
-		cost: [D(2.5).times(D(10).pow(135)), "drywall"],
-		reward: [D(85).times(D(10).pow(18)), "drywallPS"]
-	},
-	{
-		cost: [D(1).times(D(10).pow(400)), "drywall"],
-		reward: [D(1).times(D(10).pow(40)), "drywallPC"]
-	},
-	{
-		cost: [D(8).times(D(10).pow(650)), "drywall"],
-		reward: [D(3).times(D(10).pow(55)), "drywallPC"]
-	},
-	{
-		cost: [D(5).times(D(10).pow(1000)), "drywall"],
-		reward: [D(1).times(D(10).pow(100)), "drywallPC"]
-	},
-	{
-		cost: [D(2.5).times(D(10).pow(540)), "drywall"],
-		reward: [D(3).times(D(10).pow(28)), "drywallPS"]
-	},
-	{
-		cost: [D(1.5).times(D(10).pow(845)), "drywall"],
-		reward: [D(2).times(D(10).pow(35)), "drywallPS"]
-	},
-	{
-		cost: [D(1).times(D(10).pow(1200)), "drywall"],
-		reward: [D(6.5).times(D(10).pow(45)), "drywallPS"]
+		cost: [2.5 * (10 ** 135), "drywall"],
+		reward: [85 * (10 ** 18), "drywallPS"]
 	},
 ];
 
 const skillUpgrades = {
 	"Drywall Efficiency I": {
-		cost: [D(1), "skillPoints"],
-		reward: [D(2), "drywall"],
+		cost: [1, "skillPoints"],
+		reward: [2, "drywall"],
 		connects: false,
 		x: 0,
 		y: 0,
 	},
 	"Drywall Efficiency II": {
-		cost: [D(1.5), "skillPoints"],
-		reward: [D(3), "drywall"],
+		cost: [1.5, "skillPoints"],
+		reward: [3, "drywall"],
 		connects: ["Drywall Efficiency I"],
 		x: 0,
 		y: 200,
 	},
 	"Drywall Efficiency III": {
-		cost: [D(4), "skillPoints"],
-		reward: [D(5), "drywall"],
+		cost: [4, "skillPoints"],
+		reward: [5, "drywall"],
 		connects: ["Drywall Efficiency II"],
 		x: 0,
 		y: 400,
 	},
 	"Drywall Efficiency IV": {
-		cost: [D(15), "skillPoints"],
-		reward: [D(8), "drywall"],
+		cost: [15, "skillPoints"],
+		reward: [8, "drywall"],
 		connects: ["Drywall Efficiency III"],
 		x: -100,
 		y: 600,
 	},
 	"Drywall Efficiency V": {
-		cost: [D(80), "skillPoints"],
-		reward: [D(15), "drywall"],
+		cost: [80, "skillPoints"],
+		reward: [15, "drywall"],
 		connects: ["Drywall Efficiency IV"],
 		x: -200,
 		y: 800,
 	},
 	"Drywall Efficiency VI": {
-		cost: [D(6000), "skillPoints"],
-		reward: [D(50), "drywall"],
+		cost: [6000, "skillPoints"],
+		reward: [50, "drywall"],
 		connects: ["Drywall Efficiency V"],
 		x: -200,
 		y: 1000,
 	},
 	"Arthritis I": {
-		cost: [D(8), "skillPoints"],
-		reward: [D(5), "drywallPC"],
+		cost: [8, "skillPoints"],
+		reward: [5, "drywallPC"],
 		connects: ["Drywall Efficiency III"],
 		x: 100,
 		y: 600,
 	},
 	"Arthritis II": {
-		cost: [D(45), "skillPoints"],
-		reward: [D(15), "drywallPC"],
+		cost: [45, "skillPoints"],
+		reward: [15, "drywallPC"],
 		connects: ["Arthritis I"],
 		x: 200,
 		y: 800,
 	},
 	"Arthritis III": {
-		cost: [D(800), "skillPoints"],
-		reward: [D(100), "drywallPC"],
+		cost: [800, "skillPoints"],
+		reward: [100, "drywallPC"],
 		connects: ["Arthritis II"],
 		x: 400,
 		y: 700,
 	},
 	"Arthritis IV": {
-		cost: [D(350).times(D(10).pow(6)), "skillPoints"],
+		cost: [350 * (10 ** 6), "skillPoints"],
 		reward: "Skill points boosts drywall/click (/100k, ^0.7)",
 		connects: ["Arthritis III"],
 		x: 400,
 		y: 500,
 	},
 	"Arthritis V": {
-		cost: [D(2).times(D(10).pow(9)), "skillPoints"],
+		cost: [2 * (10 ** 9), "skillPoints"],
 		reward: "Improve to /100 and ^0.9",
 		connects: ["Arthritis IV"],
 		x: 600,
 		y: 500,
 	},
-	"Arthritis VI": {
-		cost: [D(5).times(D(10).pow(55)), "skillPoints"],
-		reward: "Improve to no quotient (/1)",
-		connects: ["Arthritis V"],
-		x: 800,
-		y: 400,
-	},
-	"Arthritis VII": {
-		cost: [D(2).times(D(10).pow(57)), "skillPoints"],
-		reward: "Improve to no exponent (^1)",
-		connects: ["Arthritis V"],
-		x: 800,
-		y: 600,
-	},
-	"Arthritis VIII": {
-		cost: [D(1).times(D(10).pow(137)), "skillPoints"],
-		reward: "Improve the exponent to ^1.1",
-		connects: ["Arthritis VI", "Arthritis VII"],
-		x: 1000,
-		y: 500,
-	},
 	"Conversion I": {
-		cost: [D(150), "skillPoints"],
+		cost: [150, "skillPoints"],
 		reward: "Drywall/click boosts drywall/sec (^0.2)",
 		connects: ["Arthritis II"],
 		x: 400,
 		y: 900,
 	},
 	"Conversion II": {
-		cost: [D(400), "skillPoints"],
+		cost: [400, "skillPoints"],
 		reward: "Improve the drywall/sec boost exponent by +0.1",
 		connects: ["Conversion I"],
 		x: 600,
 		y: 900,
 	},
 	"Conversion III": {
-		cost: [D(2000), "skillPoints"],
+		cost: [2000, "skillPoints"],
 		reward: "Improve the drywall/sec boost exponent by +0.1",
 		connects: ["Conversion II"],
 		x: 800,
 		y: 900,
 	},
 	"Conversion IV": {
-		cost: [D(10).times(D(10).pow(9)), "skillPoints"],
+		cost: [10 * (10 ** 9), "skillPoints"],
 		reward: "Improve the drywall/sec boost exponent by +0.1",
 		connects: ["Conversion III"],
 		x: 1000,
 		y: 900,
 	},
 	"Conversion V": {
-		cost: [D(500).times(D(10).pow(12)), "skillPoints"],
+		cost: [500 * (10 ** 12), "skillPoints"],
 		reward: "Improve the drywall/sec boost exponent by +0.1",
 		connects: ["Conversion IV"],
 		x: 1200,
 		y: 800,
 	},
-	"Conversion VI": {
-		cost: [D(1).times(D(10).pow(40)), "skillPoints"],
-		reward: "Improve the drywall/sec boost exponent by +0.05",
-		connects: ["Conversion V"],
-		x: 1400,
-		y: 800,
-	},
 	"Full Circle I": {
-		cost: [D(10).times(D(10).pow(15)), "skillPoints"],
+		cost: [10 * (10 ** 15), "skillPoints"],
 		reward: "10% of drywall/sec turns into drywall/click",
 		connects: ["Conversion IV"],
 		x: 1200,
 		y: 1000,
 	},
 	"Exponential I": {
-		cost: [D(90000), "skillPoints"],
-		reward: [D(1.05), "drywall", true],
+		cost: [90000, "skillPoints"],
+		reward: [1.05, "drywall", true],
 		connects: ["Drywall Efficiency VI"],
 		x: -200,
 		y: 1200,
 	},
 	"Exponential II": {
-		cost: [D(300000), "skillPoints"],
-		reward: [D(1.01), "drywall", true],
+		cost: [300000, "skillPoints"],
+		reward: [1.01, "drywall", true],
 		connects: ["Exponential I"],
 		x: -200,
 		y: 1400,
 	},
 	"Exponential III": {
-		cost: [D(400000), "skillPoints"],
-		reward: [D(1.02), "drywall", true],
+		cost: [400000, "skillPoints"],
+		reward: [1.02, "drywall", true],
 		connects: ["Exponential II"],
 		x: -200,
 		y: 1600,
 	},
 	"Exponential IV": {
-		cost: [D(600000), "skillPoints"],
-		reward: [D(1.02), "drywall", true],
+		cost: [600000, "skillPoints"],
+		reward: [1.02, "drywall", true],
 		connects: ["Exponential III"],
 		x: -200,
 		y: 1800,
 	},
 	"Exponential V": {
-		cost: [D(900000), "skillPoints"],
-		reward: [D(1.03), "drywall", true],
+		cost: [900000, "skillPoints"],
+		reward: [1.03, "drywall", true],
 		connects: ["Exponential IV"],
 		x: 0,
 		y: 1800,
 	},
 	"Exponential VI": {
-		cost: [D(2).times(D(10).pow(12)), "skillPoints"],
-		reward: [D(1.03), "drywall", true],
+		cost: [2 * (10 ** 12), "skillPoints"],
+		reward: [1.03, "drywall", true],
 		connects: ["Exponential V"],
 		x: 200,
 		y: 1900,
 	},
 	"Exponential VII": {
-		cost: [D(250).times(D(10).pow(18)), "skillPoints"],
-		reward: [D(1.03), "drywall", true],
+		cost: [250 * (10 ** 18), "skillPoints"],
+		reward: [1.03, "drywall", true],
 		connects: ["Exponential VI"],
 		x: 400,
 		y: 2000,
 	},
+	// "Exponential VIII": {
+	// 	cost: [1 * (10 ** 100), "skillPoints"],
+	// 	reward: [2, "drywall", true],
+	// 	connects: ["Exponential VII"],
+	// 	x: 600,
+	// 	y: 2000,
+	// },
 	"Self-boost I": {
-		cost: [D(100).times(D(10).pow(21)), "skillPoints"],
-		reward: "Drywall exponentiated by itself (^0.0001, max 1.15)",
+		cost: [100 * (10 ** 21), "skillPoints"],
+		reward: "Drywall exponentiated by itself (^0.0001)",
 		connects: ["Exponential VI"],
 		x: 200,
 		y: 1700,
 	},
 	"Skill Enhancement I": {
-		cost: [D(2), "skillPoints"],
-		reward: [D(1.5), "skillPoints"],
+		cost: [2, "skillPoints"],
+		reward: [1.5, "skillPoints"],
 		connects: ["Drywall Efficiency I"],
 		x: -200,
 		y: 0,
 	},
 	"Skill Enhancement II": {
-		cost: [D(30000), "skillPoints"],
-		reward: [D(2), "skillPoints"],
+		cost: [30000, "skillPoints"],
+		reward: [2, "skillPoints"],
 		connects: ["Skill Enhancement I"],
 		x: -400,
 		y: 0,
 	},
 	"Time-saver I": {
-		cost: [D(0), "skillPoints"],
+		cost: [0, "skillPoints"],
 		reward: "Rebirth no longer resets. (settings)",
 		connects: ["Drywall Efficiency I"],
 		x: 200,
 		y: 0,
 	},
 	"Time-saver II": {
-		cost: [D(50).times(D(10).pow(9)), "skillPoints"],
+		cost: [50 * (10 ** 9), "skillPoints"],
 		reward: "Auto-rebirth.",
 		connects: ["Time-saver I"],
 		x: 400,
@@ -607,154 +558,142 @@ const skillUpgrades = {
 
 const infinityTreeUpgrades = {
 	"Automation I": {
-		cost: [D(1), "infinityPoints"],
+		cost: [1, "infinityPoints"],
 		reward: "x2 skill points, generate skill points at a rate of 1%/sec, keep auto and no-cost rebirth.",
 		x: -400, y: 0,
 		connects: false,
 	},
 	"Automation II": {
-		cost: [D(150), "infinityPoints"],
-		reward: "Gain +19 skill tree autobuyers.",
+		cost: [100, "infinityPoints"],
+		reward: "Generate skill points at a rate of 10%/sec.",
 		x: -550, y: 220,
 		connects: ["Automation I"],
 	},
 	"Automation III": {
-		cost: [D(600), "infinityPoints"],
-		reward: "Gain +10 skill tree autobuyers.",
+		cost: [400, "infinityPoints"],
+		reward: "Automate the entire skill tree.",
 		x: -250, y: 220,
 		connects: ["Automation I"],
 	},
 	"Automation IV": {
-		cost: [D(2500), "infinityPoints"],
+		cost: [2500, "infinityPoints"],
 		reward: "Unlock auto-infinity.",
 		x: -400, y: 440,
 		connects: ["Automation II", "Automation III"],
 	},
 	"Automation V": {
-		cost: [D(10).pow(4), "infinityPoints"],
+		cost: [10 ** 6, "infinityPoints"],
 		reward: "Generate skill points at a rate of 100%/sec.",
-		x: -400, y: 1100,
+		x: -400, y: 1320,
 		connects: ["Automation IV"],
 	},
 	"Break Infinity": {
-		cost: [D(4).times(D(10).pow(9)), "infinityPoints"],
+		cost: [4 * (10 ** 9), "infinityPoints"],
 		reward: "Break infinity.",
 		x: -400, y: 1980,
 		connects: ["Automation V"],
 	},
-	"Automation VI": {
-		cost: [D(10).pow(27), "infinityPoints"],
-		reward: "Gain +4 skill tree autobuyers.",
-		x: -400, y: 2420,
-		connects: ["Automation V"],
-	},
 	"Everything Boost I": {
-		cost: [D(1), "infinityPoints"],
+		cost: [1, "infinityPoints"],
 		reward: "x3 all previous stats.",
 		x: 400, y: 0,
 		connects: false,
 	},
 	"Everything Boost II": {
-		cost: [D(1), "infinityPoints"],
+		cost: [1, "infinityPoints"],
 		reward: "x25 drywall and x2 infinity points.",
 		x: 550, y: 220,
 		connects: ["Everything Boost I"],
 	},
 	"Everything Boost III": {
-		cost: [D(2), "infinityPoints"],
+		cost: [2, "infinityPoints"],
 		reward: "x2 all previous stats and x2 infinity points.",
 		x: 250, y: 220,
 		connects: ["Everything Boost I"],
 	},
 	"IP Boost I": {
-		cost: [D(3), "infinityPoints"],
+		cost: [3, "infinityPoints"],
 		reward: "x2 infinity points and x3 infinity power.",
 		x: 400, y: 440,
 		connects: ["Everything Boost II", "Everything Boost III"],
 	},
 	"IP Boost II": {
-		cost: [D(100000), "infinityPower"],
+		cost: [100000, "infinityPower"],
 		reward: "x2 infinity points and ^1.05 infinity power.",
 		x: 400, y: 660,
 		connects: ["IP Boost I"],
 	},
 	"IP Boost III": {
-		cost: [D(10000000), "infinityPower"],
+		cost: [10000000, "infinityPower"],
 		reward: "x2 infinity points and ^1.02 infinity power.",
 		x: 250, y: 880,
 		connects: ["IP Boost II"],
 	},
 	"IP Boost IV": {
-		cost: [D(10).pow(9), "infinityPower"],
+		cost: [10 ** 9, "infinityPower"],
 		reward: "x3 infinity points and ^1.02 infinity power.",
 		x: 550, y: 880,
 		connects: ["IP Boost II"],
 	},
 	"IP Boost V": {
-		cost: [D(10).pow(12), "infinityPower"],
+		cost: [10 ** 12, "infinityPower"],
 		reward: "x2 infinity points, ^1.1 infinity power.",
 		x: 400, y: 1100,
 		connects: ["IP Boost III", "IP Boost IV"],
 	},
 	"IP Self-Boost I": {
-		cost: [D(1000), "infinityPoints"],
+		cost: [1000, "infinityPoints"],
 		reward: "Infinity Power boosted by itself.",
 		x: 250, y: 1320,
 		connects: ["IP Boost V"],
 	},
 	"IP Infinity Boost I": {
-		cost: [D(10).pow(18), "infinityPower"],
+		cost: [10 ** 18, "infinityPower"],
 		reward: "Infinity Points boosted by infinities.",
 		x: 550, y: 1320,
 		connects: ["IP Boost V"],
 	},
 	"Gamer I": {
-		cost: [D(10).pow(25), "infinityPower"],
+		cost: [10 ** 25, "infinityPower"],
 		reward: "Unlock minigames.",
 		x: 400, y: 1540,
 		connects: ["IP Self-Boost I", "IP Infinity Boost I"],
 	},
 	"Gamer II": {
-		cost: [D(10).pow(6), "infinityPoints"],
+		cost: [10 ** 6, "infinityPoints"],
 		reward: "Double minigame rewards.",
 		x: 250, y: 1760,
 		connects: ["Gamer I"],
 	},
 	"Gamer III": {
-		cost: [D(10).pow(30), "infinityPower"],
+		cost: [10 ** 30, "infinityPower"],
 		reward: "Double minigame rewards.",
 		x: 550, y: 1760,
 		connects: ["Gamer I"],
 	},
 	"Gamer IV": {
-		cost: [D(10).pow(36), "infinityPower"],
+		cost: [10 ** 36, "infinityPower"],
 		reward: "Improve gaming exponent (^0.6 --> ^1).",
 		x: 400, y: 1980,
 		connects: ["Gamer II", "Gamer III"],
 	},
 	"Gamer V": {
-		cost: [D(10).pow(48), "infinityPower"],
+		cost: [10 ** 48, "infinityPower"],
 		reward: "1.5x minigame rewards.",
 		x: 250, y: 2200,
 		connects: ["Gamer IV"],
 	},
 	"Gamer VI": {
-		cost: [D(10).pow(54), "infinityPower"],
+		cost: [10 ** 51, "infinityPower"],
 		reward: "Double minigame rewards.",
 		x: 550, y: 2200,
 		connects: ["Gamer IV"],
 	},
-	"IP Self-Boost II": {
-		cost: [D(10).pow(70), "infinityPower"],
-		reward: "Improve IP Self-Boost I exponent from 0.2 -> 0.3.",
-		x: 250, y: 2420,
-		connects: ["Gamer V"],
-	},
-	"IP Infinity Boost II": {
-		cost: [D(10).pow(100), "infinityPower"],
-		reward: "Improve IP Infinity Boost I exponent from 0.5 -> 0.8.",
-		x: 550, y: 2420,
-		connects: ["Gamer VI"],
+	"Gamer VII": {
+		cost: [10 ** 63, "infinityPower"],
+		reward: "Improve gaming exponent (^1.0 --> ^1.4).",
+		x: 400, y: 2420,
+		connects: ["Gamer V", "Gamer VI"],
 	},
 }
 
@@ -768,28 +707,19 @@ const infinityUpgradeNames = [
 	"Infinities I"
 ];
 const infinityUpgradeCosts = {
-	"Infinity Power I": [[D(1), D(1), D(3), D(5), D(8), D(15), D(40), D(100), D(450), D(2000), D(6500), D(35000), D(150000), D(2).times(D(10).pow(6)), D(10).pow(7), D(5).times(D(10).pow(7)), D(1.5).times(D(10).pow(8)), D(4).times(D(10).pow(8)), D(10).pow(9), D(10).pow(10), D(2).times(D(10).pow(10)), D(5).times(D(10).pow(10)), D(10).pow(11), D(3).times(D(10).pow(11)), D(10).pow(12), D(3).times(D(10).pow(12)), D(8).times(D(10).pow(12)), D(5).times(D(10).pow(13)), D(2).times(D(10).pow(14)), D(5).times(D(10).pow(14))], "infinityPoints"],
-	"Infinity Power II": [[D(1000), D(10).pow(6), D(10).pow(9), D(10).pow(12), D(10).pow(15), D(10).pow(18), D(10).pow(21), D(10).pow(24), D(10).pow(27), D(10).pow(30), D(10).pow(33), D(10).pow(36), D(10).pow(39), D(10).pow(42), D(10).pow(45), D(10).pow(48), D(10).pow(51), D(10).pow(54), D(10).pow(57), D(10).pow(60)], "infinityPower"],
-	"Drywall I": [[D(0.25), D(6), D(25), D(2.5).times(D(10).pow(3)), D(4).times(D(10).pow(9)), D(5).times(D(10).pow(15)), D(8).times(D(10).pow(32)), D(2).times(D(10).pow(38)), D(5).times(D(10).pow(43))], "infinityPower"],
-	"Drywall/sec I": [[D(1), D(20), D(1.5).times(D(10).pow(2)), D(4).times(D(10).pow(8)), D(8).times(D(10).pow(14)), D(2.5).times(D(10).pow(30)), D(5).times(D(10).pow(33)), D(1).times(D(10).pow(39)), D(8).times(D(10).pow(43))], "infinityPower"],
-	"Skill Points I": [[D(5), D(4).times(D(10).pow(2)), D(5).times(D(10).pow(4)), D(8).times(D(10).pow(14)), D(4).times(D(10).pow(21)), D(1).times(D(10).pow(35)), D(2.5).times(D(10).pow(40)), D(4).times(D(10).pow(44))], "infinityPower"],
-	"Infinities I": [[D(10).pow(7)], "infinityPower"],
+	"Infinity Power I": [[1, 1, 3, 5, 8, 15, 40, 100, 450, 2000, 6500, 35000, 150000, 2 * (10 ** 6), 10 ** 7, 5 * (10 ** 7), 1.5 * (10 ** 8), 4 * (10 ** 8), 10 ** 9], "infinityPoints"],
+	"Infinity Power II": [[1000, 10 ** 6, 10 ** 9, 10 ** 12, 10 ** 15, 10 ** 18, 10 ** 21, 10 ** 24, 10 ** 27, 10 ** 30, 10 ** 33, 10 ** 36, 10 ** 39, 10 ** 42, 10 ** 45, 10 ** 48, 10 ** 51, 10 ** 54, 10 ** 57, 10 ** 60], "infinityPower"],
+	"Drywall I": [[0.25, 6, 25, 2.5 * (10 ** 3), 4 * (10 ** 9), 5 * (10 ** 15), 8 * (10 ** 32), 2 * (10 ** 38), 5 * (10 ** 43)], "infinityPower"],
+	"Drywall/sec I": [[1, 20, 1.5 * (10 ** 2), 4 * (10 ** 8), 8 * (10 ** 14), 2.5 * (10 ** 30), 5 * (10 ** 33), 1 * (10 ** 39), 8 * (10 ** 43)], "infinityPower"],
+	"Skill Points I": [[5, 4 * (10 ** 2), 5 * (10 ** 4), 8 * (10 ** 14), 4 * (10 ** 21), 1 * (10 ** 35), 2.5 * (10 ** 40), 4 * (10 ** 44)], "infinityPower"],
+	"Infinities I": [[10 ** 7, 10 ** 13, 10 ** 19, 10 ** 25, 10 ** 31, 10 ** 37, 10 ** 43, 10 ** 49, 10 ** 55, 10 ** 61, 10 ** 67], "infinityPower"],
 };
 
-for (let i = 0; i < 250; i += 1) {
-	infinityUpgradeCosts["Infinity Power I"][0].push(infinityUpgradeCosts["Infinity Power I"][0][infinityUpgradeCosts["Infinity Power I"][0].length - 1].times(10));
-	infinityUpgradeCosts["Infinity Power II"][0].push(infinityUpgradeCosts["Infinity Power II"][0][infinityUpgradeCosts["Infinity Power II"][0].length - 1].times(100));
-	infinityUpgradeCosts["Drywall I"][0].push(infinityUpgradeCosts["Drywall I"][0][infinityUpgradeCosts["Drywall I"][0].length - 1].times(3));
-	infinityUpgradeCosts["Drywall/sec I"][0].push(infinityUpgradeCosts["Drywall/sec I"][0][infinityUpgradeCosts["Drywall/sec I"][0].length - 1].times(4));
-	infinityUpgradeCosts["Skill Points I"][0].push(infinityUpgradeCosts["Skill Points I"][0][infinityUpgradeCosts["Skill Points I"][0].length - 1].times(10));
-	infinityUpgradeCosts["Infinities I"][0].push(infinityUpgradeCosts["Infinities I"][0][infinityUpgradeCosts["Infinities I"][0].length - 1].times(1000000));
-}
-
 const settingNames = [
-	"darkMode", "scientificNotation", "minimalParticles", "autoRebirth", "autoSkillTree", "autoInfinity", "resetStats"
+	"darkMode", "scientificNotation", "minimalParticles", "autoRebirth", "autoInfinity", "resetStats"
 ];
 
-const displayNames = {
+const displayName = {
 	drywall: " drywall",
 	drywallPC: " drywall/click",
 	drywallPS: " drywall/sec",
@@ -832,20 +762,19 @@ let deltatime;
 
 const playerTemplate = {
 	mylbkey: randomString(12),
-	drywall: D(0),
-	drywallPS: D(0),
-	drywallPC: D(1),
-	rebirths: D(0),
-	skillPoints: D(0),
+	drywall: 0,
+	drywallPS: 0,
+	drywallPC: 1,
+	rebirths: 0,
+	skillPoints: 0,
 	skillUpgrades: [],
-	infinities: D(0),
-	infinityPoints: D(0),
-	infinityPower: D(0),
+	infinities: 0,
+	infinityPoints: 0,
+	infinityPower: 0,
 	infinityUpgrades: Object.fromEntries(infinityUpgradeNames.map(name => [name, 0])),
 	infinityTreeUpgrades: [],
 	globalToken: null,
 	skillBoosts: {},
-	areasUnlocked: [],
 	boosts: {},
 	passive: {},
 	settings: {
@@ -853,8 +782,7 @@ const playerTemplate = {
 		scientificNotation: false,
 		minimalParticles: false,
 		autoRebirth: false,
-		autoSkillTree: true,
-		autoInfinity: false,
+		autoInfinity: false
 	},
 	minigames: {
 		geometryDash: {
@@ -867,70 +795,51 @@ const playerTemplate = {
 	},
 	achievements: [],
 	stats: {
-		playtime: D(0),
-		clicks: D(0)
+		playtime: 0,
+		clicks: 0
 	},
 	username: null
 };
 
-let player;
-function mergeAndFix(template, saved) {
-	if (typeof template !== "object" || template === null) return template;
+function mergeDeep(template, saved) {
+	if (!saved || typeof saved !== "object") return template;
 
-	if (Array.isArray(template)) {
-		if (!Array.isArray(saved)) saved = [];
+	const result = Array.isArray(template) ? [...template] : { ...template };
 
-		// Determine type hint from template[0] (could be Decimal, object, primitive)
-		const typeHint = template[0];
-
-		return saved.map(item => {
-			if (typeHint instanceof Decimal) return D(item);
-			if (typeof typeHint === "object" && typeHint !== null) return mergeAndFix(typeHint, item);
-			return item;
-		});
-	}
-
-	const result = {};
-
-	for (const key of Object.keys(template)) {
-		const tempVal = template[key];
-		const savedVal = saved && saved[key] !== undefined ? saved[key] : undefined;
-
-		if (savedVal === undefined) {
-			result[key] = tempVal;
-		} else if (tempVal instanceof Decimal) {
-			result[key] = D(savedVal);
-		} else if (typeof tempVal === "object" && tempVal !== null) {
-			result[key] = mergeAndFix(tempVal, savedVal);
+	for (const key in template) {
+		if (saved[key] === undefined) {
+			// Missing → fallback to template
+			result[key] = template[key];
+		} else if (typeof template[key] === "object" && template[key] !== null && !Array.isArray(template[key])) {
+			// Deep-merge nested objects
+			result[key] = mergeDeep(template[key], saved[key]);
 		} else {
-			result[key] = savedVal;
+			// Primitive or array → saved wins
+			result[key] = saved[key];
 		}
 	}
 
 	return result;
 }
 
-function resetPlayer(clear = false) {
-	let raw = {};
+let player;
+function resetPlayer(clear) {
+	let raw;
 	if (!clear) {
-		try {
-			const stored = localStorage.getItem("DRYWALL");
-			if (stored) raw = JSON.parse(stored);
-		} catch (e) {
-			console.error("Save file corrupted, resetting.", e);
-			raw = {};
-		}
+		raw = JSON.parse(localStorage.getItem("DRYWALL"));
 	}
+	const mergedPlayer = mergeDeep(playerTemplate, raw);
 
-	player = mergeAndFix(playerTemplate, raw);
-	player.username = raw.username || player.mylbkey;
+	// Username fallback
+	mergedPlayer.username = (raw && raw.username) || mergedPlayer.mylbkey;
 
-	if (player.username === player.mylbkey && elts.usernamePopup) {
+	if (mergedPlayer.username === mergedPlayer.mylbkey) {
 		elts.usernamePopup.style.display = "block";
 	}
-}
 
-resetPlayer(false);
+	player = mergedPlayer;
+}
+resetPlayer();
 
 // Setup
 let lastSave = 0;
@@ -969,7 +878,7 @@ function displayMessage(msg) {
 	elts.globalMessageBox.classList.add("showGlobal");
 	setTimeout(function() {
 		elts.globalMessageBox.classList.remove("showGlobal");
-	}, 5000)
+	}, 8000)
 }
 
 // Send a message
@@ -980,10 +889,10 @@ function sendMessage(msg) {
 	  timeZoneName: 'short'
 	}).format(date).split(", ")[1];
 	if (player.globalToken) {
-		ws.send(JSON.stringify({message: msg, token: player.globalToken, timestamp: formatTime(Date.now()) + " " + shortFormat}));
-	} else {
-		return "Send failed: no token"
-	}
+  		ws.send(JSON.stringify({message: msg, token: player.globalToken, timestamp: formatTime(Date.now()) + " " + shortFormat}));
+  	} else {
+  		return "Send failed: no token"
+  	}
 }
 
 loadLeaderboard();
@@ -992,7 +901,7 @@ checkBoosts();
 // add text to regular upgrades
 for (let i = 0; i < upgrades.length; i += 1) {
 	elts.upgrades.push(document.getElementById("upgrade" + (i + 1)));
-	elts.upgrades[i].innerHTML = abbrevNum(upgrades[i].cost[0]) + " " + displayNames[upgrades[i].cost[1]] + " → +" + abbrevNum(upgrades[i].reward[0]) + displayNames[upgrades[i].reward[1]];
+	elts.upgrades[i].innerHTML = abbrevNum(upgrades[i].cost[0]) + " " + displayName[upgrades[i].cost[1]] + " → +" + abbrevNum(upgrades[i].reward[0]) + displayName[upgrades[i].reward[1]];
 }
 
 // add text to skill tree upgrades
@@ -1000,18 +909,19 @@ for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 	let upgrade = document.createElement("button");
 	let upg = skillUpgrades[Object.keys(skillUpgrades)[i]];
 	if (typeof skillUpgrades[Object.keys(skillUpgrades)[i]].reward == "string") {
-		upgrade.innerHTML = upg.reward + "<br><br>" + abbrevNum(upg.cost[0]) + displayNames[upg.cost[1]];
+		upgrade.innerHTML = upg.reward + "<br><br>" + abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
 	} else {
 		if (upg.reward.length == 2) {
-			upgrade.innerHTML = "x" + abbrevNum(upg.reward[0]) + displayNames[upg.reward[1]] + "<br><br>" + abbrevNum(upg.cost[0]) + displayNames[upg.cost[1]];
+			upgrade.innerHTML = "x" + abbrevNum(upg.reward[0]) + displayName[upg.reward[1]] + "<br><br>" + abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
 		} else {
-			upgrade.innerHTML = "^" + abbrevNum(upg.reward[0]) + displayNames[upg.reward[1]] + "<br><br>" + abbrevNum(upg.cost[0]) + displayNames[upg.cost[1]];
+			upgrade.innerHTML = "^" + abbrevNum(upg.reward[0]) + displayName[upg.reward[1]] + "<br><br>" + abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
 		}
 	}
 	upgrade.classList.add("skillUpgrade");
 	upgrade.style.position = "absolute";
-	upgrade.style.left = "calc(50vw + " + (skillUpgrades[Object.keys(skillUpgrades)[i]].x - 75) + "px)";
-	upgrade.style.top = (skillUpgrades[Object.keys(skillUpgrades)[i]].y + 650 - 75) + "px";
+	upgrade.style.left = "calc(50vw + " + (skillUpgrades[Object.keys(skillUpgrades)[i]].x) + "px)";
+	upgrade.style.top = (skillUpgrades[Object.keys(skillUpgrades)[i]].y + 650) + "px";
+
 	elts.skillTreeArea.appendChild(upgrade);
 	elts.skillUpgrades[Object.keys(skillUpgrades)[i]] = upgrade;
 }
@@ -1022,8 +932,10 @@ for (let i = 0; i < Object.keys(infinityTreeUpgrades).length; i += 1) {
 	let nameElt = document.createElement("h3");
 	let descriptionElt = document.createElement("p");
 	let costElt = document.createElement("h4");
+
 	let name = Object.keys(infinityTreeUpgrades)[i];
 	let upg = infinityTreeUpgrades[name];
+
 	nameElt.innerHTML = name;
 	if (typeof infinityTreeUpgrades[Object.keys(infinityTreeUpgrades)[i]].reward == "string") {
 		descriptionElt.innerHTML = upg.reward;
@@ -1031,12 +943,14 @@ for (let i = 0; i < Object.keys(infinityTreeUpgrades).length; i += 1) {
 	if (player.infinityTreeUpgrades.includes(name)) {
 		costElt.innerHTML = "Bought!";
 	} else {
-		costElt.innerHTML = abbrevNum(upg.cost[0]) + displayNames[upg.cost[1]];
+		costElt.innerHTML = abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
 	}
+
 	upgrade.classList.add("infinityUpgrade");
 	upgrade.style.position = "absolute";
-	upgrade.style.left = "calc(50% + " + (infinityTreeUpgrades[Object.keys(infinityTreeUpgrades)[i]].x - 125) + "px)";
-	upgrade.style.top = (infinityTreeUpgrades[Object.keys(infinityTreeUpgrades)[i]].y - 90) + "px";
+	upgrade.style.left = "calc(50% + " + (infinityTreeUpgrades[Object.keys(infinityTreeUpgrades)[i]].x) + "px)";
+	upgrade.style.top = infinityTreeUpgrades[Object.keys(infinityTreeUpgrades)[i]].y + "px";
+
 	upgrade.appendChild(nameElt);
 	upgrade.appendChild(descriptionElt);
 	upgrade.appendChild(costElt);
@@ -1052,19 +966,17 @@ window.addEventListener("keydown", (e) => {
 })
 
 document.getElementById("geometryDashButton").addEventListener("click", () => {
-	document.getElementById("gdCanvas").style.display = "block";
-	document.getElementById("fbCanvas").style.display = "none";
+  document.getElementById("gdCanvas").style.display = "block";
+  document.getElementById("fbCanvas").style.display = "none";
 });
-
 document.getElementById("flappyBirdButton").addEventListener("click", () => {
-	document.getElementById("fbCanvas").style.display = "block";
-	document.getElementById("gdCanvas").style.display = "none";
+  document.getElementById("fbCanvas").style.display = "block";
+  document.getElementById("gdCanvas").style.display = "none";
 });
 
 // msg box
 elts.globalMessageBox.onclick = function() {
-	console.log(true);
-	elts.globalMessageBox.classList.remove("showGlobal");
+	elts.globalMessageBox.classList.remove(showGlobal);
 }
 
 // title screen
@@ -1108,12 +1020,12 @@ elts.rebirthButton3.onclick = function() {
 
 // skill reset button
 elts.skillResetButton.onclick = function() {
-	if (player.drywall.gte(D(10).pow(18))) {
-		player.skillPoints = player.skillPoints.plus(getSkillPoints());
+	if (D(player.drywall).gte(D(10).pow(18))) {
+		player.skillPoints += getSkillPoints();
 		player.drywall = D(0);
-		player.drywallPS = D(0);
-		player.drywallPC = D(1);
-		player.rebirths = D(0);
+		player.drywallPS = 0;
+		player.drywallPC = 1;
+		player.rebirths = 0;
 	}
 }
 
@@ -1121,14 +1033,15 @@ elts.skillResetButton.onclick = function() {
 for (let i = 0; i < upgrades.length; i += 1) {
 	let upg = upgrades[i];
 	let upgElt = elts.upgrades[i];
+
 	upgElt.onclick = function() {
 		if (Date.now() - clickDebounce >= clickDebounceTime) {
 			clickDebounce = Date.now();
-			if (player[upg.cost[1]].gte(upg.cost[0])) {
-				player[upg.cost[1]] = player[upg.cost[1]].minus(upg.cost[0]);
-				player[upg.reward[1]] = player[upg.reward[1]].plus(upg.reward[0].times(player.boosts[upg.reward[1]].multiplier).pow(player.boosts[upg.reward[1]].exponent));
+			if (player[upg.cost[1]] >= upg.cost[0]) {
+				player[upg.cost[1]] -= upg.cost[0];
+				player[upg.reward[1]] += (upg.reward[0] * player.boosts[upg.reward[1]].multiplier) ** player.boosts[upg.reward[1]].exponent;
 				if (player.skillUpgrades.includes("Full Circle I") && upg.reward[1] == "drywallPS") {
-					player.drywallPC = player.drywallPC.plus(upg.reward[0].times(player.boosts[upg.reward[1]].multiplier).pow(player.boosts[upg.reward[1]].exponent).times(0.1));
+					player.drywallPC += ((upg.reward[0] * player.boosts[upg.reward[1]].multiplier) ** player.boosts[upg.reward[1]].exponent) * 0.1;
 				}
 			}
 		}
@@ -1138,6 +1051,7 @@ for (let i = 0; i < upgrades.length; i += 1) {
 for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 	let upg = skillUpgrades[Object.keys(skillUpgrades)[i]];
 	let upgElt = elts.skillUpgrades[Object.keys(skillUpgrades)[i]];
+
 	upgElt.onclick = function() {
 		if (upg.connects) {
 			let connections = 0;
@@ -1150,11 +1064,10 @@ for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
 				return;
 			}
 		}
-		if (player[upg.cost[1]].gte(upg.cost[0])) {
+		if (player[upg.cost[1]] >= upg.cost[0]) {
 			if (!player.skillUpgrades.includes(Object.keys(skillUpgrades)[i])) {
-				player[upg.cost[1]] = player[upg.cost[1]].minus(upg.cost[0]);
+				player[upg.cost[1]] -= upg.cost[0];
 				player.skillUpgrades.push(Object.keys(skillUpgrades)[i]);
-				redrawUpgradeLines();
 			}
 		}
 	}
@@ -1167,20 +1080,18 @@ elts.infinityResetButton.onclick = () => {
 		updateAllText();
 	}
 };
-
 for (let i = 0; i < elts.infinityUpgrades.length; i += 1) {
 	let elt = elts.infinityUpgrades[i];
 	let upgName = infinityUpgradeNames[i];
 	let upgCost = infinityUpgradeCosts[upgName]
 	elt.onclick = function() {
 		let upgLevel = player.infinityUpgrades[upgName];
-		if (player[upgCost[1]].gte(upgCost[0][upgLevel])) {
+		if (player[upgCost[1]] >= upgCost[0][upgLevel]) {
 			player.infinityUpgrades[upgName] += 1;
-			player[upgCost[1]] = player[upgCost[1]].minus(upgCost[0][upgLevel]);
+			player[upgCost[1]] -= upgCost[0][upgLevel];
 		}
 	}
 }
-
 for (let i = 0; i < Object.keys(infinityTreeUpgrades).length; i += 1) {
 	let upgName = Object.keys(infinityTreeUpgrades)[i];
 	let upg = infinityTreeUpgrades[upgName];
@@ -1200,15 +1111,15 @@ for (let i = 0; i < Object.keys(infinityTreeUpgrades).length; i += 1) {
 				return;
 			}
 		}
-		if (player[upgCost[1]].gte(D(upgCost[0])) && !(player.infinityTreeUpgrades.includes(upgName))) {
+		if (player[upgCost[1]] >= upgCost[0] && !(player.infinityTreeUpgrades.includes(upgName))) {
 			player.infinityTreeUpgrades.push(upgName);
-			player[upgCost[1]] = player[upgCost[1]].minus(D(upgCost[0]));
+			player[upgCost[1]] -= upgCost[0];
 			console.log(upgCost[0]);
 			elt.querySelector("h4").textContent = "Bought!";
-			redrawUpgradeLines();
 		}
 	}
 }
+
 
 // settings
 applySettings();
@@ -1247,8 +1158,8 @@ for (let i = 0; i < elts.areas.length; i += 1) {
 	const rect = bg.getBoundingClientRect();
 	bg.onclick = function(e) {
 		if (Date.now() - clickDebounce >= clickDebounceTime) {
-			player.drywall = player.drywall.plus(D(player.drywallPC).times(player.boosts.drywall.multiplier).pow(player.boosts.drywall.exponent));
-			player.stats.clicks = player.stats.clicks.plus(1);
+			player.drywall = player.drywall.plus((player.drywallPC * player.boosts.drywall.multiplier) ** player.boosts.drywall.exponent);
+			player.stats.clicks += 1;
 			clickDebounce = Date.now();
 			if (dustSpawnDebounceTime === false) {
 				for (let j = 0; j < (player.settings.minimalParticles ? 1 : 4); j++) {
@@ -1304,21 +1215,21 @@ for (let i = 0; i < elts.areaSelectors.length; i += 1) {
 
 // Functions
 function formatMillis(ms) {
-	let seconds = Math.floor(ms / 1000);
-	const days = Math.floor(seconds / 86400);
-	seconds %= 86400;
-	const hours = Math.floor(seconds / 3600);
-	seconds %= 3600;
-	const minutes = Math.floor(seconds / 60);
-	seconds %= 60;
+    let seconds = Math.floor(ms / 1000);
+    const days = Math.floor(seconds / 86400);
+    seconds %= 86400;
+    const hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    const minutes = Math.floor(seconds / 60);
+    seconds %= 60;
 
-	const parts = [];
-	if (days) parts.push(`${days}d`);
-	if (hours || days) parts.push(`${hours}h`);
-	if (minutes || hours || days) parts.push(`${minutes}m`);
-	parts.push(`${seconds}s`);
+    const parts = [];
+    if (days) parts.push(`${days}d`);
+    if (hours || days) parts.push(`${hours}h`);
+    if (minutes || hours || days) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
 
-	return parts.join(" ");
+    return parts.join(" ");
 }
 
 function formatTime(unixMs) {
@@ -1350,33 +1261,18 @@ function applySettings() {
 	updateAllText();
 }
 
-function getInfinityPoints() {
-	checkBoosts(true);
-
-	let infinityBar = checkInfinityProgress();
-	let ipMult = 1;
-	if (player.infinityTreeUpgrades.includes("Break Infinity")) ipMult = D(10).pow(Math.max(0, infinityBar.iteration + infinityBar.progress));
-	return player.boosts.infinityPoints.multiplier.times(ipMult).pow(player.boosts.infinityPoints.exponent).times(player.boosts.infinities.multiplier.pow(player.boosts.infinities.exponent));
-}
 
 function infinity() {
 	checkBoosts(true);
-
-	let infProg = checkInfinityProgress();
-
-	let ipMult = 1;
-	if (player.infinityTreeUpgrades.includes("Break Infinity")) ipMult = D(10).pow(Math.max(0, (infProg.iteration - 1) + infProg.progress));
-
-	player.infinities = player.infinities.plus(D(1).times(player.boosts.infinities.multiplier).pow(player.boosts.infinities.exponent));
-	player.infinityPoints = player.infinityPoints.plus(getInfinityPoints());
+	player.infinities += (1 * player.boosts.infinities.multiplier) ** player.boosts.infinities.exponent;
+	player.infinityPoints += ((1 * player.boosts.infinityPoints.multiplier) ** player.boosts.infinityPoints.exponent) * ((1 * player.boosts.infinities.multiplier) ** player.boosts.infinities.exponent);
 
 	player.drywall = D(0);
-	player.drywallPC = D(1);
-	player.drywallPS = D(0);
-	player.rebirths = D(0);
-	player.skillPoints = D(0);
+	player.drywallPC = 1;
+	player.drywallPS = 0;
+	player.rebirths = 0;
+	player.skillPoints = 0;
 	player.skillUpgrades = [];
-	redrawUpgradeLines();
 
 	elts.screenOverlay.classList.add("playFlash");
 	setTimeout(function() {
@@ -1386,127 +1282,75 @@ function infinity() {
 
 function updateAllText() {
 	for (let i = 0; i < upgrades.length; i += 1) {
-		elts.upgrades[i].innerHTML = abbrevNum(upgrades[i].cost[0]) + " " + displayNames[upgrades[i].cost[1]] + " → +" + abbrevNum(upgrades[i].reward[0]) + displayNames[upgrades[i].reward[1]];
+		elts.upgrades[i].innerHTML = abbrevNum(upgrades[i].cost[0]) + " " + displayName[upgrades[i].cost[1]] + " → +" + abbrevNum(upgrades[i].reward[0]) + displayName[upgrades[i].reward[1]];
 	}
-	updateSkillTreeElements();
-	updateInfinityTreeElements();
-}
+	for (let i = 0; i < Object.keys(skillUpgrades).length; i += 1) {
+		let upgrade = elts.skillUpgrades[Object.keys(skillUpgrades)[i]];
+		let upg = skillUpgrades[Object.keys(skillUpgrades)[i]];
 
-function getRebirthCost(amt, rebirths = player.rebirths) {
-	if (typeof rebirths !== "number") {
-		rebirths = rebirths.toNumber();
+		if (typeof skillUpgrades[Object.keys(skillUpgrades)[i]].reward == "string") {
+			upgrade.innerHTML = upg.reward + "<br><br>" + abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
+		} else {
+			if (upg.reward.length == 2) {
+				upgrade.innerHTML = "x" + abbrevNum(upg.reward[0]) + displayName[upg.reward[1]] + "<br><br>" + abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
+			} else {
+				upgrade.innerHTML = "^" + abbrevNum(upg.reward[0]) + displayName[upg.reward[1]] + "<br><br>" + abbrevNum(upg.cost[0]) + displayName[upg.cost[1]];
+			}
+		}
 	}
-	let base = D(1e6)
-	let start = rebirths
-	let end = rebirths + amt
-
-	let total = D(0)
-
-	if (start < 1000) {
-		let a = start
-		let b = Math.min(end, 1000)
-
-		let first = base.mul(D(2).pow(a))
-		let count = b - a
-
-		let sum = first.mul(
-			D(2).pow(count).sub(1)
-		).div(1)
-
-		total = total.add(sum)
-	}
-
-	if (end > 1000) {
-		let a = Math.max(start, 1000)
-		let b = end
-
-		let first = base.mul(D(2).pow(1000)).mul(
-			D(3).pow(a - 1000)
-		)
-
-		let count = b - a
-
-		let sum = first.mul(
-			D(3).pow(count).sub(1)
-		).div(2)
-
-		total = total.add(sum)
-	}
-
-	return total
 }
 
 function rebirth(amt) {
-	let cost = getRebirthCost(amt);
+	let cost = D(2).pow(amt).minus(1)
+		.times(1_000_000)
+		.times(D(2).pow(player.rebirths));
 
-	if (player.drywall.gte(cost)) {
+	if (D(player.drywall).gt(cost)) {
 		if (player.skillUpgrades.includes("Time-saver I")) {
-			player.drywall = player.drywall.minus(cost);
-			player.rebirths = player.rebirths.plus(amt);
+			player.drywall = D(player.drywall).minus(cost);
+			player.rebirths += amt;
 		} else {
 			player.drywall = D(0);
 			player.drywallPS = D(0);
 			player.drywallPC = D(1);
-			player.rebirths = player.rebirths.plus(amt);
+			player.rebirths += amt;
 		}
 	}
 }
 
 function getSkillPoints() {
-	return D(player.drywall).div(D(10).pow(18)).pow(D(0.1)).times(player.boosts.skillPoints.multiplier).toNumber();
+	return D(player.drywall)
+		.div(D(10).pow(18))
+		.pow(0.1)
+		.times(player.boosts.skillPoints.multiplier);
 }
 
 function loadArea(area) {
-	for (var i = 0; i < elts.areas.length; i += 1) {
-		if (i == area) {
-			elts.areas[i].style.display = "block";
-		} else {
-			elts.areas[i].style.display = "none";
-		}
+	for (let i = 0; i < elts.areas.length; i++) {
+		elts.areas[i].style.display = i === area ? "block" : "none";
 	}
 }
 
-function roundToSigFigs(num, sigFigs, padding = false) {
-	num = D(num);
-	if (num.eq(0)) return "0";
-
-	const d = num.exponent + 1;				// digits before decimal
+function roundToSigFigs(num, sigFigs) {
+	if (num === 0) return 0;
+	const d = Math.ceil(Math.log10(Math.abs(num)));
 	const power = sigFigs - d;
-
-	const magnitude = D(10).pow(power);
-	const rounded = num.mul(magnitude).round().div(magnitude);
-
-	const decimals = Math.max(sigFigs - d, 0);
-
-	let str = rounded.toFixed(decimals);
-
-	if (!padding) {
-		// extra zeroes
-		str = str.replace(/(\.\d*?[1-9])0+$/, "$1");
-		// remaining decimal point
-		str = str.replace(/\.0*$|\.?$/, "");
-	}
-
-	return str;
+	const magnitude = Math.pow(10, power);
+	return Math.round(num * magnitude) / magnitude;
 }
 
 function abbrevNum(val) {
-	if (val instanceof Decimal) {
-		if (val.gte(infinityThreshold) && !player.infinityTreeUpgrades.includes("Break Infinity")) {
-			return "Infinity";
-		}
-	} else if (val === Infinity) {
-		console.warn("Real infinity input into abbrevNum. This should not happen.");
-		return "Infinity";
-	}
 	val = D(val);
-	if (val.lt(1000)) return roundToSigFigs(val, 3);
-	if (player.settings.scientificNotation || val.gte(D(10).pow(300))) {
-		return roundToSigFigs(val.mantissa, 3) + "e" + val.exponent;
+
+	if (val.gte(infinityThreshold)) return "Infinity";
+	if (val.lt(1000)) return roundToSigFigs(val.toNumber(), 3);
+
+	if (player.settings.scientificNotation) {
+		let exp = val.exponent
+		return roundToSigFigs(val.div(D(10).pow(exp)).toNumber(), 3) + "e" + exp;
 	} else {
 		let exp = Math.floor(val.exponent / 3);
-		if (!(exp >= 0)) exp = 0;
-		return roundToSigFigs(val.div(D(10).pow(exp * 3)), 3) + suffixes[exp];
+		return roundToSigFigs(val.div(D(10).pow(exp * 3)).toNumber(), 3) + suffixes[exp];
 	}
 }
 
@@ -1514,34 +1358,38 @@ function tick() {
 	let now = Date.now();
 	deltatime = now - lastUpdate;
 	lastUpdate = now;
-
 	update(deltatime);
 	render(deltatime);
 }
 
-
 // Boosts
 function checkInfinityUpgrades(dontCall) {
-	// math stuff
-	let gameExp = D(0.6);
-	let gameQuotient = D(10);
-	let ipOneExp = 0.2;
-	let ipTwoExp = 0.5;
-	if (player.infinityTreeUpgrades.includes("IP Self-Boost II")) {
-		ipOneExp = 0.3;
-	}
-	if (player.infinityTreeUpgrades.includes("IP Infinity Boost II")) {
-		ipTwoExp = 0.8;
-	}
+	let gameQuotient = 10;
 
-	player.boosts.infinityPower.multiplier = D(player.infinities).div(100);
-	player.boosts.infinityPower.multiplier = player.boosts.infinityPower.multiplier.times(D(10).pow(player.infinityUpgrades["Infinity Power I"]));
-	player.boosts.infinityPower.multiplier = player.boosts.infinityPower.multiplier.times(D(2).pow(player.infinityUpgrades["Infinity Power II"]));
+	player.boosts.infinityPower.multiplier =
+		D(player.infinities).div(100)
+			.times(D(10).pow(player.infinityUpgrades["Infinity Power I"]))
+			.times(D(2).pow(player.infinityUpgrades["Infinity Power II"]));
 
-	player.boosts.drywall.multiplier = player.boosts.drywall.multiplier.times(D(3).pow(player.infinityUpgrades["Drywall I"]));
-	player.boosts.drywallPS.multiplier = player.boosts.drywallPS.multiplier.times(D(2).pow(player.infinityUpgrades["Drywall/sec I"]));
-	player.boosts.skillPoints.multiplier = player.boosts.skillPoints.multiplier.times(D(2).pow(player.infinityUpgrades["Skill Points I"]));
-	player.boosts.infinities.multiplier = player.boosts.infinities.multiplier.times(D(2).pow(player.infinityUpgrades["Infinities I"]));
+	player.boosts.drywall.multiplier =
+		player.boosts.drywall.multiplier.times(
+			D(3).pow(player.infinityUpgrades["Drywall I"])
+		);
+
+	player.boosts.drywallPS.multiplier =
+		player.boosts.drywallPS.multiplier.times(
+			D(2).pow(player.infinityUpgrades["Drywall/sec I"])
+		);
+
+	player.boosts.skillPoints.multiplier =
+		player.boosts.skillPoints.multiplier.times(
+			D(2).pow(player.infinityUpgrades["Skill Points I"])
+		);
+
+	player.boosts.infinities.multiplier =
+		player.boosts.infinities.multiplier.times(
+			D(2).pow(player.infinityUpgrades["Infinities I"])
+		);
 
 	// Boost path
 	if (player.infinityTreeUpgrades.includes("Everything Boost I")) {
@@ -1550,134 +1398,84 @@ function checkInfinityUpgrades(dontCall) {
 		player.boosts.drywallPC.multiplier = player.boosts.drywallPC.multiplier.times(3);
 		player.boosts.skillPoints.multiplier = player.boosts.skillPoints.multiplier.times(3);
 	}
+
 	if (player.infinityTreeUpgrades.includes("Everything Boost II")) {
 		player.boosts.drywall.multiplier = player.boosts.drywall.multiplier.times(25);
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(2);
+		player.boosts.infinityPoints.multiplier =
+			player.boosts.infinityPoints.multiplier.times(2);
 	}
+
 	if (player.infinityTreeUpgrades.includes("Everything Boost III")) {
 		player.boosts.drywall.multiplier = player.boosts.drywall.multiplier.times(2);
 		player.boosts.drywallPS.multiplier = player.boosts.drywallPS.multiplier.times(2);
 		player.boosts.drywallPC.multiplier = player.boosts.drywallPC.multiplier.times(2);
-		player.boosts.skillPoints.multiplier = player.boosts.skillPoints.multiplier.times(2);
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(2);
+		player.boosts.skillPoints.multiplier =
+			player.boosts.skillPoints.multiplier.times(2);
+		player.boosts.infinityPoints.multiplier =
+			player.boosts.infinityPoints.multiplier.times(2);
 	}
+
 	if (player.infinityTreeUpgrades.includes("IP Boost I")) {
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(2);
-		player.boosts.infinityPower.multiplier = player.boosts.infinityPower.multiplier.times(3);
+		player.boosts.infinityPoints.multiplier =
+			player.boosts.infinityPoints.multiplier.times(2);
+		player.boosts.infinityPower.multiplier =
+			player.boosts.infinityPower.multiplier.times(3);
 	}
-	if (player.infinityTreeUpgrades.includes("IP Boost II")) {
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(2);
-		player.boosts.infinityPower.exponent *= 1.05;
-	}
-	if (player.infinityTreeUpgrades.includes("IP Boost III")) {
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(2);
-		player.boosts.infinityPower.exponent *= 1.02;
-	}
-	if (player.infinityTreeUpgrades.includes("IP Boost IV")) {
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(3);
-		player.boosts.infinityPower.exponent *= 1.02;
-	}
-	if (player.infinityTreeUpgrades.includes("IP Boost V")) {
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(2);
-		player.boosts.infinityPower.exponent *= 1.1;
-	}
+
 	if (player.infinityTreeUpgrades.includes("IP Self-Boost I")) {
-		const mult = D(player.infinityPower).div(1000000).pow(ipOneExp).max(1);
-		player.boosts.infinityPower.multiplier = player.boosts.infinityPower.multiplier.times(mult);
-
-		const upgName = "IP Self-Boost I";
-		let upgElt = elts.infinityTreeUpgrades[upgName];
-		if (upgElt) {
-			upgElt = upgElt.querySelector("p");
-			upgElt.textContent = infinityTreeUpgrades[upgName].reward + " (x" + abbrevNum(mult.toNumber()) + ")";
-		}
-	}
-	if (player.infinityTreeUpgrades.includes("IP Infinity Boost I")) {
-		const mult = D(player.infinities).div(2).pow(ipTwoExp).max(1);
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(mult);
-
-		const upgName = "IP Infinity Boost I";
-		let upgElt = elts.infinityTreeUpgrades[upgName];
-		if (upgElt) {
-			upgElt = upgElt.querySelector("p");
-			upgElt.textContent = infinityTreeUpgrades[upgName].reward + " (x" + abbrevNum(mult.toNumber()) + ")";
-		}
+		const mult = Decimal.max(
+			1,
+			D(player.infinityPower).div(1_000_000).pow(0.2)
+		);
+		player.boosts.infinityPower.multiplier =
+			player.boosts.infinityPower.multiplier.times(mult);
 	}
 
+	// Minigames
 	player.boosts.minigames.exponent = 0.6;
-	if (player.infinityTreeUpgrades.includes("Gamer II")) player.boosts.minigames.multiplier = player.boosts.minigames.multiplier.times(2);
-	if (player.infinityTreeUpgrades.includes("Gamer III")) player.boosts.minigames.multiplier = player.boosts.minigames.multiplier.times(2);
-	if (player.infinityTreeUpgrades.includes("Gamer IV")) player.boosts.minigames.exponent = 1;
-	if (player.infinityTreeUpgrades.includes("Gamer V")) player.boosts.minigames.multiplier = player.boosts.minigames.multiplier.times(1.5);
-	if (player.infinityTreeUpgrades.includes("Gamer VI")) player.boosts.minigames.multiplier = player.boosts.minigames.multiplier.times(2);
-	if (player.infinityTreeUpgrades.includes("Gamer VII")) player.boosts.minigames.exponent = 1.4;
 
 	if (player.infinityTreeUpgrades.includes("Gamer I")) {
 		elts.gameDiv.style.display = "block";
 
-		let infBoost = D(player.minigames.geometryDash.stars).div(gameQuotient).pow(player.boosts.minigames.exponent).plus(1).times(player.boosts.minigames.multiplier);
-		let ipBoost = D(player.minigames.flappyBird.best).div(gameQuotient.times(1.5)).pow(player.boosts.minigames.exponent).plus(1).times(player.boosts.minigames.multiplier);
+		let infBoost = D(player.minigames.geometryDash.stars)
+			.div(gameQuotient)
+			.pow(player.boosts.minigames.exponent)
+			.plus(1)
+			.times(player.boosts.minigames.multiplier);
 
-		player.boosts.infinities.multiplier = player.boosts.infinities.multiplier.times(infBoost);
-		player.boosts.infinityPoints.multiplier = player.boosts.infinityPoints.multiplier.times(ipBoost);
+		let ipBoost = D(player.minigames.flappyBird.best)
+			.div(gameQuotient * 2)
+			.pow(player.boosts.minigames.exponent)
+			.plus(1)
+			.times(player.boosts.minigames.multiplier);
 
-		elts.minigameInfinityBonus.textContent = "x" + abbrevNum(infBoost.toNumber()) + " Infinities (from " + player.minigames.geometryDash.stars + " stars)";
-		elts.minigameIPBonus.textContent = "x" + abbrevNum(ipBoost.toNumber()) + " Infinity Points (from " + player.minigames.flappyBird.best + " score)";
+		player.boosts.infinities.multiplier =
+			player.boosts.infinities.multiplier.times(infBoost);
+
+		player.boosts.infinityPoints.multiplier =
+			player.boosts.infinityPoints.multiplier.times(ipBoost);
 	} else {
 		elts.gameDiv.style.display = "none";
 	}
 
-	// Automation path
+	// Automation
 	if (player.infinityTreeUpgrades.includes("Automation I")) {
-		player.boosts.skillPoints.multiplier = player.boosts.skillPoints.multiplier.times(2);
-		if (!player.skillUpgrades.includes("Time-saver I")) {
+		player.boosts.skillPoints.multiplier =
+			player.boosts.skillPoints.multiplier.times(2);
+		if (!player.skillUpgrades.includes("Time-saver I"))
 			player.skillUpgrades.push("Time-saver I");
-			redrawUpgradeLines();
-		}
-		if (!player.skillUpgrades.includes("Time-saver II")) {
+		if (!player.skillUpgrades.includes("Time-saver II"))
 			player.skillUpgrades.push("Time-saver II");
-			redrawUpgradeLines();
-		}
 		player.passive.skillPoints = 0.01;
 	}
-	if (player.infinityTreeUpgrades.includes("Automation II")) {
-		player.passive.skillUpgrades = 19;
-	}
-	if (player.infinityTreeUpgrades.includes("Automation III")) {
-		player.passive.skillUpgrades = 29;
-	}
-	if (player.infinityTreeUpgrades.includes("Automation VI")) {
-		player.passive.skillUpgrades = 33;
-	}
 
-	let sortedSkillKeys = Object.keys(skillUpgrades).sort((a, b) => {
-		let ca = skillUpgrades[a].cost
-		let cb = skillUpgrades[b].cost
-		return D(ca[0]).cmp(cb[0])
-	});
-	let bought = false;
-	if (player.settings.autoSkillTree) {
-		for (let i = 0; i < player.passive.skillUpgrades; i += 1) {
-			let k = sortedSkillKeys[i];
-			let upg = skillUpgrades[k];
-			let cost = upg.cost;
-
-			if (D(player[cost[1]]).gte(cost[0]) && !player.skillUpgrades.includes(k)) {
-				player[cost[1]] = D(player[cost[1]]).minus(cost[0]);
-				player.skillUpgrades.push(k);
-				bought = true;
-			}
-		}
-	}
-	if (bought) {
-		redrawUpgradeLines();
-	}
-
-	if (player.infinityTreeUpgrades.includes("Automation IV") && player.settings.autoInfinity && player.drywall.gte(infinityThreshold) && !dontCall) {
+	if (
+		player.infinityTreeUpgrades.includes("Automation IV") &&
+		player.settings.autoInfinity &&
+		D(player.drywall).eq(Infinity) &&
+		!dontCall
+	) {
 		infinity();
-	}
-	if (player.infinityTreeUpgrades.includes("Automation V")) {
-		player.passive.skillPoints = 1;
 	}
 }
 
@@ -1685,93 +1483,84 @@ function checkAchievementBoosts() {
 	for (let i of player.achievements) {
 		let reward = achievements[i].reward;
 		if (reward) {
-			player.boosts[reward.type].multiplier = player.boosts[reward.type].multiplier.times(reward.amount);
+			player.boosts[reward.type].multiplier =
+				player.boosts[reward.type].multiplier.times(reward.amount);
 		}
 	}
 }
 
 function checkBoosts(dontCall) {
-	// Reset
-	for (var i = 0; i < Object.keys(player).length; i += 1) {
-		player.boosts[Object.keys(player)[i]] = {multiplier: D(1), exponent: 1};
-		player.passive[Object.keys(player)[i]] = 0;
+	for (let k of Object.keys(player)) {
+		player.boosts[k] = { multiplier: D(1), exponent: 1 };
+		player.passive[k] = 0;
 	}
 
 	checkInfinityUpgrades(dontCall);
 
-	player.boosts.skillPoints.multiplier = player.boosts.skillPoints.multiplier.times(
-		D(player.achievements.length).div(100).plus(1)
-	);
+	player.boosts.skillPoints.multiplier =
+		player.boosts.skillPoints.multiplier.times(
+			D(player.achievements.length).div(100).plus(1)
+		);
 
-	// Check upgrades which boost other upgrades
 	let convExp = 0.2;
 	if (player.skillUpgrades.includes("Conversion II")) convExp = 0.3;
 	if (player.skillUpgrades.includes("Conversion III")) convExp = 0.4;
 	if (player.skillUpgrades.includes("Conversion IV")) convExp = 0.5;
 	if (player.skillUpgrades.includes("Conversion V")) convExp = 0.6;
-	if (player.skillUpgrades.includes("Conversion VI")) convExp = 0.65;
-	if (player.skillUpgrades.includes("Conversion VII")) convExp = 0.7;
 
 	let arthritisExp = 0.7;
-	let arthritisDen = D(100000);
+	let arthritisDen = 100000;
 	if (player.skillUpgrades.includes("Arthritis V")) {
 		arthritisExp = 0.9;
-		arthritisDen = D(100);
-	}
-	if (player.skillUpgrades.includes("Arthritis VI")) {
-		arthritisDen = D(1);
-	}
-	if (player.skillUpgrades.includes("Arthritis VII")) {
-		arthritisExp = 1;
-	}
-	if (player.skillUpgrades.includes("Arthritis VIII")) {
-		arthritisExp = 1.1;
+		arthritisDen = 100;
 	}
 
 	let selfBoostExp = 0.0001;
 
-	// Calculate their boosts
-	for (let i = 0; i < player.skillUpgrades.length; i += 1) {
-		let skillUpg = skillUpgrades[player.skillUpgrades[i]];
+	for (let upg of player.skillUpgrades) {
+		let skillUpg = skillUpgrades[upg];
 
-		if (typeof skillUpg.reward == "string") {
-			if (player.skillUpgrades[i] == "Conversion I") {
-				let boost = D(player.drywallPC).pow(convExp);
-				player.boosts.drywallPS.multiplier = player.boosts.drywallPS.multiplier.times(boost);
-			}
-			else if (player.skillUpgrades[i] == "Arthritis IV") {
-				let boost = D(player.skillPoints).div(arthritisDen).pow(arthritisExp);
-				player.boosts.drywallPC.multiplier = player.boosts.drywallPC.multiplier.times(boost);
-			}
-			else if (player.skillUpgrades[i] == "Self-boost I") {
-				let expBoost = D(player.drywall).plus(1).pow(selfBoostExp);
-				player.boosts.drywall.exponent *= Math.min(1.15, expBoost.toNumber());
-			}
+		if (upg === "Conversion I") {
+			player.boosts.drywallPS.multiplier =
+				player.boosts.drywallPS.multiplier.times(
+					D(player.drywallPC).pow(convExp)
+				);
 		}
-		else {
-			if (skillUpg.reward.length == 3) {
+
+		if (upg === "Arthritis IV") {
+			player.boosts.drywallPC.multiplier =
+				player.boosts.drywallPC.multiplier.times(
+					D(player.skillPoints).div(arthritisDen).pow(arthritisExp)
+				);
+		}
+
+		if (upg === "Self-boost I") {
+			player.boosts.drywall.exponent *=
+				D(player.drywall).plus(1).pow(selfBoostExp).toNumber();
+		}
+
+		if (Array.isArray(skillUpg.reward)) {
+			if (skillUpg.reward.length === 3) {
 				player.boosts[skillUpg.reward[1]].exponent *= skillUpg.reward[0];
-			}
-			else {
-				player.boosts[skillUpg.reward[1]].multiplier = player.boosts[skillUpg.reward[1]].multiplier.times(skillUpg.reward[0]);
+			} else {
+				player.boosts[skillUpg.reward[1]].multiplier =
+					player.boosts[skillUpg.reward[1]].multiplier.times(skillUpg.reward[0]);
 			}
 		}
 	}
 
-	let rebirthBoost = D(1.5).pow(player.rebirths);
-	player.boosts.drywall.multiplier = player.boosts.drywall.multiplier.times(rebirthBoost);
+	player.boosts.drywall.multiplier =
+		player.boosts.drywall.multiplier.times(
+			D(1.5).pow(player.rebirths)
+		);
 }
 
 
 function saveData(key, data) {
 	const now = Date.now();
 	if (now - lastSave > 1000) { // 1 second limit
-		try {
-			localStorage.setItem(key, JSON.stringify(data));
-			lastSave = now;
-		} catch (e) {
-			console.warn("Unable to save data (storage might be full):", e);
-		}
+		localStorage.setItem(key, JSON.stringify(data));
+		lastSave = now;
 	}
 }
 
@@ -1871,7 +1660,6 @@ setTimeout(function() {
 		const a = achievements[key];
 
 		box.addEventListener("mouseover", function() {
-			elts.achievementHover.style.display = "block";
 			const rect = box.getBoundingClientRect();
 			let top = (rect.top + grid.bestSize);
 			if (top > window.innerHeight - 200) {
@@ -1887,7 +1675,7 @@ setTimeout(function() {
 				elts.achievementHoverDescription.innerHTML = a.description;
 
 				if (a.reward) {
-					elts.achievementHoverReward.innerHTML = "x" + a.reward.amount + displayNames[a.reward.type];
+					elts.achievementHoverReward.innerHTML = "x" + a.reward.amount + displayName[a.reward.type];
 				} else {
 					elts.achievementHoverReward.innerHTML = "";
 				}
@@ -1898,21 +1686,24 @@ setTimeout(function() {
 
 			console.log("hovered", key);
 		});
-		box.addEventListener("mouseleave", function() {
-			elts.achievementHover.style.display = "none";
-		})
 	}
 }, 750);
 
 function updateSkillTreeElements() {
 	// Calculate boost vals
 	let convExp = 0.2;
-	if (player.skillUpgrades.includes("Conversion II")) convExp = 0.3;
-	if (player.skillUpgrades.includes("Conversion III")) convExp = 0.4;
-	if (player.skillUpgrades.includes("Conversion IV")) convExp = 0.5;
-	if (player.skillUpgrades.includes("Conversion V")) convExp = 0.6;
-	if (player.skillUpgrades.includes("Conversion VI")) convExp = 0.65;
-	if (player.skillUpgrades.includes("Conversion VII")) convExp = 0.7;
+	if (player.skillUpgrades.includes("Conversion II")) {
+		convExp = 0.3;
+	}
+	if (player.skillUpgrades.includes("Conversion III")) {
+		convExp = 0.4;
+	}
+	if (player.skillUpgrades.includes("Conversion IV")) {
+		convExp = 0.5;
+	}
+	if (player.skillUpgrades.includes("Conversion V")) {
+		convExp = 0.6;
+	}
 	
 	let arthritisExp = 0.7;
 	let arthritisDen = 100000;
@@ -1920,16 +1711,6 @@ function updateSkillTreeElements() {
 		arthritisExp = 0.9;
 		arthritisDen = 100;
 	}
-	if (player.skillUpgrades.includes("Arthritis VI")) {
-		arthritisDen = D(1);
-	}
-	if (player.skillUpgrades.includes("Arthritis VII")) {
-		arthritisExp = 1;
-	}
-	if (player.skillUpgrades.includes("Arthritis VIII")) {
-		arthritisExp = 1.1;
-	}
-
 	let selfBoostExp = 0.0001;
 
 	// Update upgrade HTMLs
@@ -1949,55 +1730,45 @@ function updateSkillTreeElements() {
 		}
 
 		if (player.skillUpgrades.includes(upgName)) {
-			skillUpgElt.classList.remove("unlocked");
-			skillUpgElt.classList.remove("branch");
-			skillUpgElt.classList.add("bought");
-			skillUpgElt.classList.remove("hidden");
+			skillUpgElt.style.boxShadow = "none";
+			skillUpgElt.style.backgroundColor = ""; 
+			skillUpgElt.style.color = ""; 
+			skillUpgElt.style.cursor = "default";
 			if (typeof skillUpg.reward === "string") {
 				if (upgName === "Conversion I") {
-					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought. (x" + abbrevNum(D(player.drywallPC).pow(convExp)) + ")";
+					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought. (x" + abbrevNum(player.drywallPC ** convExp) + ")";
 				} else if (upgName === "Arthritis IV") {
-					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought. (x" + abbrevNum(D(player.skillPoints).div(arthritisDen).pow(arthritisExp)) + ")";
+					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought. (x" + abbrevNum((player.skillPoints / arthritisDen) ** arthritisExp) + ")";
 				} else if (upgName === "Self-boost I") {
-					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought. (^" + abbrevNum(Math.min(1.15, D(player.drywall).plus(1).pow(selfBoostExp))) + ")";
+					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought. (^" + abbrevNum((player.drywall + 1) ** selfBoostExp) + ")";
 				} else {
 					skillUpgElt.innerHTML = skillUpg.reward + "<br><br>Bought.";
 				}
 			} else {
 				if (skillUpg.reward.length === 3) {
-					skillUpgElt.innerHTML = "^" + abbrevNum(skillUpg.reward[0]) + displayNames[skillUpg.reward[1]] + "<br><br>Bought.";
+					skillUpgElt.innerHTML = "^" + abbrevNum(skillUpg.reward[0]) + displayName[skillUpg.reward[1]] + "<br><br>Bought.";
 				} else {
-					skillUpgElt.innerHTML = "x" + abbrevNum(skillUpg.reward[0]) + displayNames[skillUpg.reward[1]] + "<br><br>Bought.";
+					skillUpgElt.innerHTML = "x" + abbrevNum(skillUpg.reward[0]) + displayName[skillUpg.reward[1]] + "<br><br>Bought.";
 				}
 			}
 		} else {
+			skillUpgElt.style.boxShadow = "0px 0px 16px #dddddd80";
+			skillUpgElt.style.cursor = "pointer";
+			
 			if (skillConnections[upgName].visible || upgName == "Drywall Efficiency I") {
+				skillUpgElt.style.display = "block";
 				if (skillUpgUnlocked) {
-					skillUpgElt.classList.add("unlocked");
-					skillUpgElt.classList.remove("branch");
-					skillUpgElt.classList.remove("bought");
-					skillUpgElt.classList.remove("hidden");
-					if (typeof skillUpgrades[Object.keys(skillUpgrades)[i]].reward == "string") {
-						skillUpgElt.innerHTML = skillUpg.reward + "<br><br>" + abbrevNum(skillUpg.cost[0]) + displayNames[skillUpg.cost[1]];
-					} else {
-						if (skillUpg.reward.length == 2) {
-							skillUpgElt.innerHTML = "x" + abbrevNum(skillUpg.reward[0]) + displayNames[skillUpg.reward[1]] + "<br><br>" + abbrevNum(skillUpg.cost[0]) + displayNames[skillUpg.cost[1]];
-						} else {
-							skillUpgElt.innerHTML = "^" + abbrevNum(skillUpg.reward[0]) + displayNames[skillUpg.reward[1]] + "<br><br>" + abbrevNum(skillUpg.cost[0]) + displayNames[skillUpg.cost[1]];
-						}
-					}
+					skillUpgElt.style.backgroundColor = "#30303050";
+
+					skillUpgElt.style.color = "#f2f2f2";
+	        		skillUpgElt.style.backdropFilter = "blur(8px)"
 				} else {
-					skillUpgElt.classList.remove("unlocked");
-					skillUpgElt.classList.add("branch");
-					skillUpgElt.classList.remove("bought");
-					skillUpgElt.classList.remove("hidden");
-					skillUpgElt.innerHTML = "???<br><br>" + abbrevNum(skillUpg.cost[0]) + displayNames[skillUpg.cost[1]];
+					skillUpgElt.style.backgroundColor = "#30303020";
+					skillUpgElt.style.color = "#f2f2f290";
+					skillUpgElt.style.backdropFilter = "blur(6px)"
 				}
 			} else {
-				skillUpgElt.classList.remove("unlocked");
-				skillUpgElt.classList.remove("branch");
-				skillUpgElt.classList.remove("bought");
-				skillUpgElt.classList.add("hidden");
+				skillUpgElt.style.display = "none";
 			}
 		}
 	}
@@ -2025,35 +1796,36 @@ function updateInfinityTreeElements() {
 			infinityUpgUnlocked = infinityUpg.connects.every(item => player.infinityTreeUpgrades.includes(item));
 		}
 
-		nameElt.textContent = upgName;
-
 		if (player.infinityTreeUpgrades.includes(upgName)) {
-			infinityUpgElt.classList.remove("unlocked");
-			infinityUpgElt.classList.remove("branch");
-			infinityUpgElt.classList.add("bought");
-			infinityUpgElt.classList.remove("hidden");
-			costElt.textContent = "Bought.";
+			infinityUpgElt.style.boxShadow = "none";
+			infinityUpgElt.style.backgroundColor = ""; 
+			infinityUpgElt.style.color = ""; 
+			infinityUpgElt.style.cursor = "default";
+			// if (upgName === "Arthritis IV") {
+			// 	infinityUpg.innerHTML = infinityUpg.reward + "<br><br>Bought. (x" + abbrevNum((player.skillPoints / arthritisDen) ** arthritisExp) + ")";
+			// }
 		} else {
-			costElt.textContent = abbrevNum(infinityUpg.cost[0]) + displayNames[infinityUpg.cost[1]];
+			infinityUpgElt.style.boxShadow = "0px 0px 16px #dddddd30";
+			infinityUpgElt.style.cursor = "pointer";
+			
 			if (connections[upgName].visible || ["Automation I", "Everything Boost I"].includes(upgName)) {
+				infinityUpgElt.style.display = "block";
 				if (infinityUpgUnlocked) {
-					infinityUpgElt.classList.add("unlocked");
-					infinityUpgElt.classList.remove("branch");
-					infinityUpgElt.classList.remove("bought");
-					infinityUpgElt.classList.remove("hidden");
-					descriptionElt.textContent = infinityUpg.reward;
+					infinityUpgElt.style.backgroundColor = "#30303050";
+
+					for (let i of infinityUpgElt.children) {
+						i.style.opacity = 1;
+					}
+	        		infinityUpgElt.style.backdropFilter = "blur(24px)"
 				} else {
-					descriptionElt.textContent = "???";
-					infinityUpgElt.classList.remove("unlocked");
-					infinityUpgElt.classList.add("branch");
-					infinityUpgElt.classList.remove("bought");
-					infinityUpgElt.classList.remove("hidden");
+					infinityUpgElt.style.backgroundColor = "#30303020";
+					for (let i of infinityUpgElt.children) {
+						i.style.opacity = 0.5;
+					}
+					infinityUpgElt.style.backdropFilter = "blur(16px)"
 				}
 			} else {
-				infinityUpgElt.classList.remove("unlocked");
-				infinityUpgElt.classList.remove("branch");
-				infinityUpgElt.classList.remove("bought");
-				infinityUpgElt.classList.add("hidden");
+				infinityUpgElt.style.display = "none";
 			}
 		}
 	}
@@ -2065,10 +1837,10 @@ function logBaseX(val, base) {
 
 function randomString(length) {
   const chars =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < length; i++) {
-	result += chars.charAt(Math.floor(Math.random() * chars.length));
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
 }
@@ -2084,55 +1856,69 @@ async function loadLeaderboard() {
 	}
 
 	const leaderboardTypes = ["drywall", "rebirths", "skill_points", "infinities", "achievements"];
-	
-	// Reset or initialize leaderboards object
-	let leaderboards = {};
 
 	for (const type of leaderboardTypes) {
 		leaderboards[type] = data
 			.filter(entry => entry[type] !== null && entry[type] !== undefined)
 			.map(entry => {
-				const raw = entry[type];
-
-				if (raw === null || raw === undefined || raw === "") return null;
-
+				let value;
+				if (type === "drywall") {
+					// drywall is stored as string → Decimal
+					value = D(entry[type]);
+				} else {
+					value = D(entry[type]);
+				}
 				return {
 					key: entry.key,
 					displayName: entry.displayName,
-					value: D(raw.toString())
+					value
 				};
 			})
-			.filter(x => x !== null)
-			.sort((a, b) => b.value.cmp(a.value)) 
+			.sort((a, b) => b.value.cmp(a.value))
 			.slice(0, 10);
 	}
 
 	return leaderboards;
 }
 
+async function submitScore(name, score) {
+	// score can be Number or Decimal
+	const storedScore = D(score).toString();
+
+	let { error } = await supabaseLib
+		.from("leaderboard")
+		.insert([{ name, score: storedScore }]);
+
+	if (error) {
+		console.error("Error submitting score:", error.message);
+	} else {
+		loadLeaderboard(); // refresh
+	}
+}
+
 async function saveDataToLeaderboard() {
-	let playerName = player.mylbkey;
+	let playerKey = player.mylbkey;
 
-	// Basic validation
-	if (!playerName || player.drywall === undefined || player.username === "ICodeBugs (indev)") return;
+	if (
+		!playerKey ||
+		player.drywall === undefined ||
+		player.username === "ICodeBugs (indev)"
+	) return;
 
-	// 1. Convert Break Infinity Decimals to String for storage
-	// We do not need to check for Infinity limits manually; D(x).toString() handles it.
-	let leaderboardPayload = {
-		key: player.mylbkey,
-		drywall: D(player.drywall).toString(),         // Stores "1.23e450"
-		rebirths: D(player.rebirths).toString(),
-		skill_points: D(player.skillPoints).toString(),
-		infinities: D(player.infinities).toString(),
-		achievements: player.achievements.length,      // Standard number is fine here
+	let payload = {
+		key: playerKey,
+		drywall: D(player.drywall).toString(), // Decimal-safe
+		rebirths: Math.floor(player.rebirths),
+		skill_points: Math.floor(player.skillPoints),
+		infinities: Math.floor(player.infinities),
+		achievements: player.achievements.length,
 		flagged: false,
-		displayName: player.username || player.mylbkey,
+		displayName: player.username || playerKey
 	};
 
-	let { error } = await supabaseLib.from("leaderboard").upsert(
-		leaderboardPayload,
-		{ onConflict: "key" }
-	);
+	let { error } = await supabaseLib
+		.from("leaderboard")
+		.upsert(payload, { onConflict: "key" });
 
 	if (error) {
 		console.error("Error saving score:", error.message);
@@ -2240,33 +2026,24 @@ function drawLinesFromUpgrade(upgrade) {
 	}
 }
 
-let drawnFromInfinities = [];
 function drawLinesFromInfinityUpgrade(upgrade) {
-	if (upgrade == "Automation I") {
-		drawnFromInfinities = [];
-	}
+	let upgs = getConnections(infinityTreeUpgrades, player.infinityTreeUpgrades);
+	let thisUpgrade = upgs[upgrade];
+	if (!thisUpgrade) return;
 
-	if (!drawnFromInfinities.includes(upgrade)) {
-		let upgs = getConnections(infinityTreeUpgrades, player.infinityTreeUpgrades);
-		let thisUpgrade = upgs[upgrade];
-		if (!thisUpgrade) return;
+	for (let i of thisUpgrade.connectsTo) {
+		let connection = upgs[i];
+		if (!connection || !connection.visible) continue;
 
-		drawnFromInfinities.push(upgrade);
+		ctx2.beginPath();
+		ctx2.strokeStyle = "#dddddda0";
+		ctx2.lineWidth = 4;
+		
+		ctx2.moveTo(thisUpgrade.x + 1500 / 2, thisUpgrade.y);
+		ctx2.lineTo(connection.x + 1500 / 2, connection.y);
+		ctx2.stroke();
 
-		for (let i of thisUpgrade.connectsTo) {
-			let connection = upgs[i];
-			if (!connection || !connection.visible) continue;
-
-			ctx2.beginPath();
-			ctx2.strokeStyle = "#dddddda0";
-			ctx2.lineWidth = 4;
-			
-			ctx2.moveTo(thisUpgrade.x + 1500 / 2, thisUpgrade.y);
-			ctx2.lineTo(connection.x + 1500 / 2, connection.y);
-			ctx2.stroke();
-
-			drawLinesFromInfinityUpgrade(i);
-		}
+		drawLinesFromInfinityUpgrade(i);
 	}
 }
 
@@ -2284,7 +2061,7 @@ function checkAllAchievements(toBeShown) {
 			for (let i of achievement.requirement.type) {
 				playerAmt = playerAmt[i];
 			}
-			if (D(playerAmt).gte(achievement.requirement.amount)) {
+			if (playerAmt >= achievement.requirement.amount) {
 				list.push(name);
 				if (toBeShown) {
 					awardAchievement(name);
@@ -2337,7 +2114,7 @@ function showAchievement(name) {
 	}
 
 	if (a.reward) {
-		elts.achievementReward.innerHTML = "x" + a.reward.amount + displayNames[a.reward.type];
+		elts.achievementReward.innerHTML = "x" + a.reward.amount + displayName[a.reward.type];
 	} else {
 		elts.achievementReward.innerHTML = "";
 	}
@@ -2351,7 +2128,7 @@ function showAchievement(name) {
 				showAchievement(achievementQueue[0]);
 			}
 		}, 500)
-	}, 4000);
+	}, 5000);
 }
 
 function updateMinigameStats() {
@@ -2361,32 +2138,23 @@ function updateMinigameStats() {
 	}
 }
 
-function checkInfinityProgress() {
-	const intervalSize = 100;
-	let iteration = Math.ceil(Math.max(0, player.drywall.exponent - 400) / intervalSize);
-	let req = 400 + (intervalSize * iteration);
-	let oldReq = iteration === 0 ? 308 : 400 + (intervalSize * (iteration - 1));
-	let prog = (D(player.drywall).log10() - oldReq) / (req - oldReq);
-	return {iteration: iteration, progress: prog};
-}
-
 function update(dt) {
 	updateMinigameStats();
 	checkBoosts();
-
-	player.drywall = player.drywall.plus(D(player.drywallPS).times(player.boosts.drywall.multiplier).pow(player.boosts.drywall.exponent).times(dt).div(1000));
-	
+	if (player.drywall !== Infinity) {
+		player.drywall = player.drywall.plus((D(player.drywallPS).times(player.boosts.drywall.multiplier)).pow(D(player.boosts.drywall.exponent)).times(D(dt / 1000)));
+	}
 	if (player.skillUpgrades.includes("Time-saver II") && player.settings.autoRebirth) {
 		rebirth(1);
 		rebirth(10);
 	}
 
 	checkAllAchievements(true);
-	player.infinityPower = D(player.infinityPower).plus(D(player.boosts.infinityPower.multiplier).pow(player.boosts.infinityPower.exponent).times(dt).div(1000));
-	if (D(player.passive.skillPoints) !== D(0)) {
-		player.skillPoints = D(player.skillPoints).plus(D(getSkillPoints()).times(player.passive.skillPoints).times(dt).div(1000));
+	player.infinityPower += ((player.boosts.infinityPower.multiplier) ** player.boosts.infinityPower.exponent) * dt / 1000;
+	if (player.passive.skillPoints !== 0) {
+		player.skillPoints += getSkillPoints() * player.passive.skillPoints * dt / 1000;
 	}
-	player.stats.playtime = player.stats.playtime.plus(dt);
+	player.stats.playtime += dt;
 
 	if (Date.now() - lastLeaderboardUpdate >= 60000) {
 		saveDataToLeaderboard();
@@ -2395,8 +2163,8 @@ function update(dt) {
 
 	if (player.settings.resetStats) {
 		player.drywall = D(0);
-		player.drywallPC = D(1);
-		player.drywallPS = D(0);
+		player.drywallPC = 1;
+		player.drywallPS = 0;
 	}
 
 	saveData("DRYWALL", player);
@@ -2423,30 +2191,12 @@ window.addEventListener("resize", function() {
 })
 redrawUpgradeLines();
 
-function checkAreaUnlocks() {
-	if (player.drywall.gte(D(10).pow(6))) {
-		if (!player.areasUnlocked.includes("High-rise")) player.areasUnlocked.push("High-rise");
-	}
-	if (player.drywall.gte(D(10).pow(45))) {
-		if (!player.areasUnlocked.includes("Luxury")) player.areasUnlocked.push("Luxury");
-	}
-	if (player.infinityTreeUpgrades.includes("Break Infinity")) {
-		if (!player.areasUnlocked.includes("Bungalow")) player.areasUnlocked.push("Bungalow");
-	}
-	if (player.drywall.gte(D(10).pow(15))) {
-		if (!player.areasUnlocked.includes("Skill Tree")) player.areasUnlocked.push("Skill Tree");
-	}
-	if (player.drywall.gte(D(10).pow(300))) {
-		if (!player.areasUnlocked.includes("Infinity")) player.areasUnlocked.push("Infinity");
-	}
-}
-
 function render(dt) {
 	// stats
 	elts.drywallStat.textContent = "Drywall: " + getStatText("drywall", true);
 	elts.drywallPCStat.textContent = "Drywall/click: " + getStatText("drywallPC", true);
 	elts.drywallPSStat.textContent = "Drywall/sec: " + getStatText("drywallPS", true)
-	elts.rebirthsStat.textContent = abbrevNum(D(player.rebirths)) + " rebirths";
+	elts.rebirthsStat.textContent = abbrevNum(player.rebirths) + " rebirths";
 	elts.skillPointsStat.textContent = "Skill Points: " + getStatText("skillPoints", true)
 	elts.infinityPointsStat.textContent = "Infinity Points: " + getStatText("infinityPoints", true)
 	elts.infinityPowerStat.textContent = "Infinity Power: " + getStatText("infinityPower", true)
@@ -2454,80 +2204,36 @@ function render(dt) {
 	elts.clicksStat.textContent = "Clicks: " + abbrevNum(player.stats.clicks);
 	elts.playtimeStat.textContent = "Playtime: " + formatMillis(player.stats.playtime);
 
-	// break infinity bar
-	let infinityBar = checkInfinityProgress();
-	
-	elts.breakInfinityLabel.textContent = roundToSigFigs(infinityBar.progress * 100, 3, true) + "% to x10 infinity points";
-	elts.breakInfinityProgressBar.style.width = infinityBar.progress * 100 + "%";
-	elts.breakInfinityBar.style.display = player.drywall.gte(infinityThreshold) && player.infinityTreeUpgrades.includes("Break Infinity") ? "block" : "none";
-
-	if (player.drywall.gte(infinityThreshold)) {
-		elts.ipReward.textContent = "+" + abbrevNum(getInfinityPoints()) + " IP";
-	} else {
-		elts.ipReward.textContent = "Infinity drywall needed";
-	}
-
 	// infinity upgrades
 	for (let i = 0; i < elts.infinityUpgrades.length; i += 1) {
 		let upg = elts.infinityUpgrades[i];
 		let upgCost = infinityUpgradeCosts[infinityUpgradeNames[i]];
 
 		if (player.infinityUpgrades[infinityUpgradeNames[i]] < upgCost[0].length) {
-			upg.children[1].textContent = abbrevNum(upgCost[0][player.infinityUpgrades[infinityUpgradeNames[i]]]) + displayNames[upgCost[1]];
+			upg.children[1].textContent = abbrevNum(upgCost[0][player.infinityUpgrades[infinityUpgradeNames[i]]]) + displayName[upgCost[1]];
 		} else {
 			upg.children[1].textContent = "Max level!"
 		}
 	}
 
-	checkAreaUnlocks();
-	if (player.areasUnlocked.includes("High-rise")) {
-		if (elts.areaSelectors[3].style.display == "none") {
-			elts.areaSelectors[3].classList.add("flashAreaSelector");
-		}
-		elts.areaSelectors[3].style.display = "inline-block";
-	} else {
-		elts.areaSelectors[3].style.display = "none";
-	}
-	if (player.areasUnlocked.includes("Luxury")) {
-		if (elts.areaSelectors[4].style.display == "none") {
-			elts.areaSelectors[4].classList.add("flashAreaSelector");
-		}
-		elts.areaSelectors[4].style.display = "inline-block";
-	} else {
-		elts.areaSelectors[4].style.display = "none";
-	}
-	if (player.areasUnlocked.includes("Bungalow")) {
-		if (elts.areaSelectors[5].style.display == "none") {
-			elts.areaSelectors[5].classList.add("flashAreaSelector");
-		}
+	if (player.drywall >= 1 * (10 ** 15) || player.skillPoints > 0 || player.infinities > 0) {
 		elts.areaSelectors[5].style.display = "inline-block";
 	} else {
 		elts.areaSelectors[5].style.display = "none";
 	}
-	if (player.areasUnlocked.includes("Skill Tree")) {
-		if (elts.areaSelectors[6].style.display == "none") {
-			elts.areaSelectors[6].classList.add("flashAreaSelector");
-		}
+	if (player.drywall >= 10 ** 300 || player.infinities > 0) {
 		elts.areaSelectors[6].style.display = "inline-block";
 	} else {
 		elts.areaSelectors[6].style.display = "none";
 	}
-	if (player.areasUnlocked.includes("Infinity")) {
-		if (elts.areaSelectors[7].style.display == "none") {
-			elts.areaSelectors[7].classList.add("flashAreaSelector");
-		}
-		elts.areaSelectors[7].style.display = "inline-block";
-	} else {
-		elts.areaSelectors[7].style.display = "none";
-	}
 
 	// rebirth buttons
-	elts.rebirthButton1.textContent = "Rebirth for " + abbrevNum(getRebirthCost(1));
-	elts.rebirthButton2.textContent = "Rebirth TWICE for " + abbrevNum(getRebirthCost(2));
-	elts.rebirthButton3.textContent = "Rebirth FOUR TIMES for " + abbrevNum(getRebirthCost(4));
+	elts.rebirthButton1.textContent = "Rebirth for " + abbrevNum((2 ** player.rebirths) * 1000000);
+	elts.rebirthButton2.textContent = "Rebirth TWICE for " + abbrevNum((2 ** player.rebirths) * 1000000 * 3);
+	elts.rebirthButton3.textContent = "Rebirth FOUR TIMES for " + abbrevNum((2 ** player.rebirths) * 1000000 * 15);
 	
 	// skill reset button
-	if (D(player.drywall).gte(D(10).pow(18))) {
+	if (player.drywall > 10 ** 18) {
 		elts.skillResetButton.textContent = "Reset for +" + abbrevNum(getSkillPoints()) + " skill points";
 	} else {
 		elts.skillResetButton.textContent = "Reach 1qn to reset";
@@ -2543,11 +2249,6 @@ function render(dt) {
 		elts.autoInfinitySetting.parentElement.parentElement.style.display = "";
 	} else {
 		elts.autoInfinitySetting.parentElement.parentElement.style.display = "none";
-	}
-	if (player.infinityTreeUpgrades.includes("Automation II") || player.infinityTreeUpgrades.includes("Automation III")) {
-		elts.autoSkillTreeSetting.parentElement.parentElement.style.display = "";
-	} else {
-		elts.autoSkillTreeSetting.parentElement.parentElement.style.display = "none";
 	}
 
 	// leaderboards
