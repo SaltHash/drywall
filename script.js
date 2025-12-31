@@ -1,5 +1,22 @@
+// Const for wrappers
+const infinityThreshold = new Decimal(2).pow(1024);
+
 // Wrappers
-const D = x => x instanceof Decimal ? x : new Decimal(x);
+const D = x => {
+	if (x instanceof Decimal) return x;
+
+	if (typeof x !== "number" && typeof x !== "string") {
+		return new Decimal(0);
+	}
+
+	if (x === Infinity || x === "Infinity") return infinityThreshold;
+	if (x === -Infinity || x === "-Infinity") return new Decimal(0);
+
+	const n = Number(x);
+	if (!Number.isFinite(n)) return new Decimal(0);
+
+	return new Decimal(n);
+};
 
 // Elements
 let elts = {
@@ -37,8 +54,6 @@ for (let i = 0; i < areas.length; i += 1) {
 // Settings
 const dustSpawnDebounceTime = false;
 const clickDebounceTime = 65;
-
-const infinityThreshold = D(2).pow(1024);
 
 const achievements = {
 	// drywall achievements
@@ -2086,10 +2101,10 @@ async function loadLeaderboard() {
 	const leaderboardTypes = ["drywall", "rebirths", "skill_points", "infinities", "achievements"];
 	
 	// Reset or initialize leaderboards object
-	let leaderboards = {};
+	let preLeaderboards = {};
 
 	for (const type of leaderboardTypes) {
-		leaderboards[type] = data
+		preLeaderboards[type] = data
 			.filter(entry => entry[type] !== null && entry[type] !== undefined)
 			.map(entry => {
 				const raw = entry[type];
@@ -2107,7 +2122,8 @@ async function loadLeaderboard() {
 			.slice(0, 10);
 	}
 
-	return leaderboards;
+	leaderboards = preLeaderboards;
+	return preLeaderboards;
 }
 
 async function saveDataToLeaderboard() {
@@ -2138,7 +2154,6 @@ async function saveDataToLeaderboard() {
 		console.error("Error saving score:", error.message);
 	} else {
 		console.log("Score saved!");
-		loadLeaderboard();
 	}
 }
 
