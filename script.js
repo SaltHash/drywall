@@ -1221,6 +1221,10 @@ for (let i = 0; i < Object.keys(infinityTreeUpgrades).length; i += 1) {
 			console.log(upgCost[0]);
 			elt.querySelector("h4").textContent = "Bought!";
 			redrawUpgradeLines();
+
+			if (upgName == "Break Infinity") {
+				updateAllText();
+			}
 		}
 	}
 }
@@ -2135,28 +2139,17 @@ async function loadLeaderboard() {
 }
 
 async function saveDataToLeaderboard() {
-	let playerName = player.mylbkey;
+	if (!player.mylbkey || player.drywall === undefined || player.username === "ICodeBugs (indev)") return;
 
-	// Basic validation
-	if (!playerName || player.drywall === undefined || player.username === "ICodeBugs (indev)") return;
-
-	// 1. Convert Break Infinity Decimals to String for storage
-	// We do not need to check for Infinity limits manually; D(x).toString() handles it.
-	let leaderboardPayload = {
-		key: player.mylbkey,
-		drywall: D(player.drywall).toString(),         // Stores "1.23e450"
-		rebirths: D(player.rebirths).toString(),
-		skill_points: D(player.skillPoints).toString(),
-		infinities: D(player.infinities).toString(),
-		achievements: player.achievements.length,      // Standard number is fine here
-		flagged: false,
-		display_name: player.username || player.mylbkey,
-	};
-
-	let { error } = await supabaseLib.from("leaderboard").upsert(
-		leaderboardPayload,
-		{ onConflict: "key" }
-	);
+	let { error } = await supabaseLib.rpc("submit_leaderboard", {
+		p_key: player.mylbkey,
+		p_display_name: player.username || player.mylbkey,
+		p_drywall: D(player.drywall).toString(),
+		p_rebirths: D(player.rebirths).toString(),
+		p_skill_points: D(player.skillPoints).toString(),
+		p_infinities: D(player.infinities).toString(),
+		p_achievements: player.achievements.length
+	});
 
 	if (error) {
 		console.error("Error saving score:", error.message);
