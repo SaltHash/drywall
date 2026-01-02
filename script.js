@@ -2101,9 +2101,8 @@ function randomString(length) {
 }
 
 async function loadLeaderboard() {
-	const { data, error } = await supabaseLib
-		.from("leaderboard")
-		.select("key, display_name, drywall, rebirths, skill_points, infinities, achievements");
+	const { data, error } = await supabaseLib.rpc("load_leaderboard");
+	console.log(data)
 
 	if (error) {
 		console.error("Error loading leaderboard:", error.message);
@@ -2111,26 +2110,31 @@ async function loadLeaderboard() {
 	}
 
 	const leaderboardTypes = ["drywall", "rebirths", "skill_points", "infinities", "achievements"];
-	
-	// Reset or initialize leaderboards object
 	let preLeaderboards = {};
 
 	for (const type of leaderboardTypes) {
 		preLeaderboards[type] = data
-			.filter(entry => entry[type] !== null && entry[type] !== undefined)
 			.map(entry => {
 				const raw = entry[type];
-
 				if (raw === null || raw === undefined || raw === "") return null;
 
+				let val;
+				try {
+					val = D(raw);
+				} catch {
+					return null;
+				}
+
+				// Achievements is just numeric
+				if (D(val).exponent > 1000000000) return null;
+
 				return {
-					key: entry.key,
-					displayName: entry.displayName,
-					value: D(raw.toString())
+					display_name: entry.display_name,
+					value: val
 				};
 			})
 			.filter(x => x !== null)
-			.sort((a, b) => b.value.cmp(a.value)) 
+			.sort((a, b) => b.value.cmp(a.value))
 			.slice(0, 10);
 	}
 
@@ -2166,7 +2170,7 @@ function getLeaderboardText(boardType) {
 		let lb = leaderboards[boardType];
 		if (lb) {
 			for (var i of Object.keys(lb)) {
-				text += lb[i].displayName + " - " + abbrevNum(lb[i].value) + "<br>";
+				text += lb[i].display_name + " - " + abbrevNum(lb[i].value) + "<br>";
 			}
 		} else {
 			console.warn("Leaderboard '" + boardType + "' not found (somethings broken)");
