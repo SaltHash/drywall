@@ -847,6 +847,7 @@ let deltatime;
 
 const playerTemplate = {
 	mylbkey: randomString(12),
+	editKey: null,
 	drywall: D(0),
 	drywallPS: D(0),
 	drywallPC: D(1),
@@ -887,6 +888,44 @@ const playerTemplate = {
 	},
 	username: null
 };
+
+function generateSecureEditKey(length = 32) {
+	const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	const bytes = new Uint8Array(length);
+	window.crypto.getRandomValues(bytes);
+	let out = "";
+	for (let i = 0; i < length; i += 1) {
+		out += chars[bytes[i] % chars.length];
+	}
+	return out;
+}
+
+function ensureEditKey() {
+	if (!player.editKey || typeof player.editKey !== "string" || player.editKey.length < 16) {
+		player.editKey = generateSecureEditKey(36);
+	}
+}
+
+function updateEditKeyFields() {
+	if (elts.editKeyPopupInput) elts.editKeyPopupInput.value = player.editKey || "";
+	if (elts.editKeySetting) elts.editKeySetting.value = player.editKey || "";
+}
+
+function setEditKeyVisibility(inputElt, buttonElt) {
+	if (!inputElt || !buttonElt) return;
+	const isHidden = inputElt.type === "password";
+	inputElt.type = isHidden ? "text" : "password";
+	buttonElt.textContent = isHidden ? "Hide" : "Show";
+}
+
+async function copyEditKey() {
+	if (!player.editKey) return;
+	try {
+		await navigator.clipboard.writeText(player.editKey);
+	} catch (error) {
+		console.warn("Could not copy edit key to clipboard.", error);
+	}
+}
 
 let player;
 function mergeAndFix(template, saved) {
@@ -938,7 +977,9 @@ function resetPlayer(clear = false) {
 	}
 
 	player = mergeAndFix(playerTemplate, raw);
+	ensureEditKey();
 	player.username = raw.username || player.mylbkey;
+	updateEditKeyFields();
 
 	if (player.username === player.mylbkey && elts.usernamePopup) {
 		elts.usernamePopup.style.display = "block";
@@ -1104,6 +1145,7 @@ elts.changelogButton.onclick = function() {
 elts.saveUsernameButton.onclick = function() {
 	let inp = elts.usernamePopupInput.value;
 	if (inp != "") player.username = elts.usernamePopupInput.value;
+	elts.usernameSetting.value = player.username;
 	elts.usernamePopup.style.display = "none";
 }
 elts.cancelUsernameButton.onclick = function() {
@@ -1234,6 +1276,15 @@ applySettings();
 usernameSetting.onchange = function() {
 	player.username = usernameSetting.value;
 }
+elts.showEditKeyPopupButton.onclick = function() {
+	setEditKeyVisibility(elts.editKeyPopupInput, elts.showEditKeyPopupButton);
+}
+elts.showEditKeySettingButton.onclick = function() {
+	setEditKeyVisibility(elts.editKeySetting, elts.showEditKeySettingButton);
+}
+elts.copyEditKeyPopupButton.onclick = copyEditKey;
+elts.copyEditKeySettingButton.onclick = copyEditKey;
+
 elts.settingsButton.onclick = function() {
 	elts.settings.style.display = "block";
 }
@@ -1254,6 +1305,7 @@ for (let i = 0; i < settingNames.length; i += 1) {
 	}
 }
 elts.usernameSetting.value = player.username || player.mylbkey;
+updateEditKeyFields();
 
 
 // Clicking for drywall + dust
@@ -2147,6 +2199,7 @@ async function saveDataToLeaderboard() {
 
 	let { error } = await supabaseLib.rpc("submit_leaderboard", {
 		p_key: player.mylbkey,
+		p_edit_key: player.editKey,
 		p_display_name: player.username || player.mylbkey,
 		p_drywall: D(player.drywall).toString(),
 		p_rebirths: D(player.rebirths).toString(),
