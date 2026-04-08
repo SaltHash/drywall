@@ -50,12 +50,16 @@ function resetPlayer(clear = false) {
 
   player = mergeAndFix(playerTemplate, raw);
   player.username = raw.username || player.mylbkey;
+
+  let noKeyYet = false;
+  if (raw.editKey) noKeyYet = true;
+
   player.editKey =
     typeof raw.editKey === "string" && raw.editKey.length >= 24
       ? raw.editKey
       : generateEditKey();
 
-  if (player.username === player.mylbkey && elts.usernamePopup) {
+  if ((player.username === player.mylbkey || noKeyYet) && elts.usernamePopup) {
     elts.usernamePopupEditKey.value = player.editKey;
     elts.usernamePopup.style.display = "block";
   }
@@ -405,7 +409,11 @@ wireSecretField(
   elts.togglePopupEditKeyButton,
   elts.copyPopupEditKeyButton,
 );
-wireSecretField(elts.editKeySetting, elts.toggleEditKeyButton, elts.copyEditKeyButton);
+wireSecretField(
+  elts.editKeySetting,
+  elts.toggleEditKeyButton,
+  elts.copyEditKeyButton,
+);
 
 // Clicking for drywall + dust
 let dustSpawnDebounce = Date.now();
@@ -1881,10 +1889,15 @@ function updateMinigameLoopState() {
   const inInfinityArea = elts.infinityArea.style.display === "block";
   const gdCanvas = document.getElementById("gdCanvas");
   const fbCanvas = document.getElementById("fbCanvas");
-  const gdShown = inInfinityArea && gdCanvas && gdCanvas.style.display !== "none";
-  const fbShown = inInfinityArea && fbCanvas && fbCanvas.style.display !== "none";
+  const gdShown =
+    inInfinityArea && gdCanvas && gdCanvas.style.display !== "none";
+  const fbShown =
+    inInfinityArea && fbCanvas && fbCanvas.style.display !== "none";
 
-  if (typeof window.loop === "function" && typeof window.noLoop === "function") {
+  if (
+    typeof window.loop === "function" &&
+    typeof window.noLoop === "function"
+  ) {
     if (gdShown) window.loop();
     else window.noLoop();
   }

@@ -35,16 +35,24 @@
     </div>
 
     <div id="usernamePopup">
-      <h2>Select a username:</span>
-      <p>Select a username. This username will be used as your display name on leaderboards, among other gameplay aspects.</p>
-      <input id="usernamePopupInput" type="text" placeholder="Username..." maxlength=20></h2>
-      <p>Your edit key is required to securely update this leaderboard profile later. Save it now.</p>
-      <div class="secretFieldRow">
-        <input id="usernamePopupEditKey" type="password" readonly>
-        <button id="togglePopupEditKeyButton" class="secretToggleButton" type="button">Show</button>
-        <button id="copyPopupEditKeyButton" class="secretToggleButton" type="button">Copy</button>
+      <h2>Choose a username</h2>
+
+      <div class="fieldGroup">
+        <label for="usernamePopupInput">Username</label>
+        <p class="subtitle" style="margin-bottom: 6px">Your display is shown next to your score on leaderboards. You can change this later in settings.</p>
+        <input id="usernamePopupInput" type="text" placeholder="Username..." maxlength="20">
       </div>
-      <h4>This can be changed later in settings.</h4>
+
+      <div class="fieldGroup">
+        <label for="usernamePopupEditKey">Edit key</label>
+        <p class="subtitle" style="margin-bottom: 6px">Save this key in case of data loss. You can also find it later in settings.</p>
+        <div class="secretFieldRow">
+          <input id="usernamePopupEditKey" type="password" readonly>
+          <button id="togglePopupEditKeyButton" class="secretToggleButton" type="button">Show</button>
+          <button id="copyPopupEditKeyButton" class="secretToggleButton" type="button">Copy</button>
+        </div>
+      </div>
+
       <div id="optionsGrid">
         <button id="cancelUsernameButton">Cancel</button>
         <button id="saveUsernameButton">Save</button>
