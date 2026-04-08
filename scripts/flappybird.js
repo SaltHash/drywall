@@ -37,6 +37,7 @@ const flappyBird = (p) => {
   }
 
   p.draw = function() {
+    if (!isActiveCanvas()) return;
     // Draw scrolling background
     p.image(bg, bgX, 0, 1000, 800);
     p.image(bg, bgX + 1000, 0, 1000, 800);
@@ -132,6 +133,8 @@ const flappyBird = (p) => {
   }
 
   p.mousePressed = function() {
+    if (!isActiveCanvas()) return;
+    if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
     if (FBGAMESTATE === 'start') {
       FBGAMESTATE = 'playing';
     } else if (FBGAMESTATE === 'playing') {
@@ -143,6 +146,7 @@ const flappyBird = (p) => {
   }
 
   p.keyPressed = function() {
+    if (!isActiveCanvas()) return;
     if (p.key === ' ' || p.key == "ArrowUp") {
       p.mousePressed();
     }
@@ -187,6 +191,17 @@ const flappyBird = (p) => {
     pipeGap = 160;
     scrollSpeed = 3;
     FBGAMESTATE = 'start';
+  }
+
+  function isActiveCanvas() {
+    const canvas = document.getElementById("fbCanvas");
+    const infinityArea = document.getElementById("infinityArea");
+    return (
+      !!canvas &&
+      !!infinityArea &&
+      infinityArea.style.display === "block" &&
+      canvas.style.display !== "none"
+    );
   }
 }
 let flappyBirdInstance = new p5(flappyBird);

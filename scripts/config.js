@@ -11,6 +11,22 @@ function randomString(length) {
   return result;
 }
 
+function generateEditKey(length = 48) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const bytes = new Uint8Array(length);
+  if (window.crypto?.getRandomValues) {
+    window.crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  let result = "";
+  for (let i = 0; i < length; i += 1) {
+    result += chars[bytes[i] % chars.length];
+  }
+  return result;
+}
+
 // Settings
 const dustSpawnDebounceTime = false;
 const clickDebounceTime = 65;
@@ -1087,6 +1103,7 @@ let deltatime;
 
 const playerTemplate = {
   mylbkey: randomString(12),
+  editKey: generateEditKey(),
   drywall: D(0),
   drywallPS: D(0),
   drywallPC: D(1),

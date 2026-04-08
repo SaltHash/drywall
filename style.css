@@ -107,8 +107,7 @@ button {
     position: fixed;
     left: calc(50vw - 250px);
     top: calc(50vh + 125px);
-    background-color: #40404060;
-    backdrop-filter: blur(24px);
+    background-color: #34373d;
     border-radius: 20px;
     border: 2px solid #00000020;
     transition: height 0.5s ease-in-out;
@@ -154,8 +153,7 @@ button {
     width: 400px;
     height: 150px;
     font-size: 64pt;
-    background-color: #00000070;
-    backdrop-filter: blur(24px);
+    background-color: #1d2026;
     border: 2px solid #00000020;
     border-radius: 20px;
     transition:
@@ -163,7 +161,7 @@ button {
         transform 0.3s ease-out;
 }
 #playButton:hover {
-    background: #00000078;
+    background: #23262d;
     transform: scale(1.02);
 }
 .fadeOut {
@@ -224,9 +222,8 @@ button {
     left: 25%;
     top: 10px;
     width: 50%;
-    background-color: #202020a0;
-    border: 2px solid #00000040;
-    backdrop-filter: blur(32px);
+    background-color: #24272e;
+    border: 2px solid #2a2d35;
     z-index: 1003;
     padding: 16px 24px;
     box-sizing: border-box;
@@ -292,9 +289,8 @@ button {
     height: 200px;
     right: 10px;
     bottom: 10px;
-    background-color: #00000060;
+    background-color: #22252c;
     border: 2px solid #40404040;
-    backdrop-filter: blur(16px);
     border-radius: 20px;
     transform: translateX(520px);
     z-index: 100001;
@@ -371,7 +367,6 @@ button {
     min-height: 50px;
     border-radius: 20px;
     background-color: #303030;
-    backdrop-filter: blur(24px);
     border: 4px solid #282828;
     z-index: 1004;
     text-align: center;
@@ -401,6 +396,27 @@ button {
     border-radius: 8px;
     background-color: #444;
     border: 2px solid #555;
+}
+#usernamePopupEditKey,
+#editKeySetting {
+    width: 320px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background-color: #1f2228;
+    border: 2px solid #4a5160;
+    color: #f2f4f8;
+    font-size: 16pt;
+}
+.secretFieldRow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+.secretToggleButton {
+    width: 70px !important;
+    background-color: #3a4252;
+    color: #f3f5fa;
 }
 #usernamePopupInput:focus {
     outline: 1px solid #999;
@@ -432,9 +448,8 @@ button {
     top: 50%;
     width: 60%;
     height: 80%;
-    background-color: #202020aa;
-    backdrop-filter: blur(24px);
-    border: 2px solid #00000060;
+    background-color: #252830;
+    border: 2px solid #22252c;
     border-radius: 20px;
     z-index: 1001;
     padding: 10px;
@@ -482,7 +497,7 @@ button {
 #closeSettingsButton {
     position: fixed;
     cursor: pointer;
-    background-color: #90909040;
+    background-color: #555a66;
     width: 150px;
     height: 50px;
     bottom: 10px;
@@ -491,6 +506,11 @@ button {
     font-size: 24pt;
     border-radius: 10px;
     transform: translate(-50%, 0);
+}
+#editKeySettingDiv {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Areas Styling */
@@ -657,10 +677,9 @@ button {
 #leaderboard {
     width: max(30%, 400px);
     height: 80%;
-    background-color: #20202060;
+    background-color: #2a2d35;
     border: 1px solid #40404080;
     border-radius: 16px;
-    backdrop-filter: blur(12px);
     text-align: center;
     padding: 16px;
     box-sizing: border-box;
@@ -694,9 +713,8 @@ button {
 
 #achievementsContainer {
     display: grid;
-    background-color: #00000060;
-    backdrop-filter: blur(32px);
-    border: 2px solid #20202060;
+    background-color: #22252c;
+    border: 2px solid #2a2d35;
     padding: 24px;
     width: 60%;
     height: calc(100% - 400px);
@@ -720,8 +738,7 @@ button {
 }
 #achievementHover {
     background-color: #303030a0;
-    backdrop-filter: blur(24px);
-    border: 2px solid #20202060;
+    border: 2px solid #2a2d35;
     width: 300px;
     height: 200px;
     position: fixed;
@@ -762,7 +779,6 @@ button {
     width: 200px;
     border-radius: 20px;
     background-color: #202020b0;
-    backdrop-filter: blur(8px);
     border: 1px solid #404040c0;
     padding-inline: 12px;
     padding-bottom: 12px;
@@ -881,14 +897,13 @@ input:checked + .slider:before {
 #settingsButton {
     border: 1px solid #606060a0;
     background-color: #40404080;
-    backdrop-filter: blur(8px);
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 20pt;
     transition: background-color 0.15s ease-in-out;
 }
 #settingsButton:hover {
-    background-color: #40404060;
+    background-color: #34373d;
 }
 #settingsButton:active {
     background-color: #40404040;
@@ -914,7 +929,6 @@ input:checked + .slider:before {
     width: 100%;
     padding: 8px;
     /*background-color: #30303080;
-	backdrop-filter: blur(8px);
 	border: 1px solid #606060a0;*/
     border-radius: 10px;
     left: 0;
@@ -922,7 +936,7 @@ input:checked + .slider:before {
     font-size: 28pt;
     line-height: 0.85;
     pointer-events: none;
-    filter: drop-shadow(2px 2px 2px #00000060);
+    filter: drop-shadow(2px 2px 2px #22252c);
 }
 
 #stats * {
@@ -960,11 +974,10 @@ input:checked + .slider:before {
     cursor: pointer;
 
     border-radius: 20px;
-    backdrop-filter: blur(16px);
 }
 
 #area1 .upgrade {
-    background-color: #463f9180;
+    background-color: #4d469e;
     border: 1px solid #6059b1a0;
     transition: background-color 0.15s ease-in-out;
 }
@@ -972,11 +985,11 @@ input:checked + .slider:before {
     background-color: #463f9170;
 }
 #area1 .upgrade:active {
-    background-color: #463f9180;
+    background-color: #4d469e;
 }
 
 #area2 .upgrade {
-    background-color: #56c08a80;
+    background-color: #3ea170;
     border: 1px solid #60d499a0;
     transition: background-color 0.15s ease-in-out;
 }
@@ -984,11 +997,11 @@ input:checked + .slider:before {
     background-color: #56c08a60;
 }
 #area2 .upgrade:active {
-    background-color: #56c08a80;
+    background-color: #3ea170;
 }
 
 #area3 .upgrade {
-    background-color: #ee6e7d80;
+    background-color: #cc6170;
     border: 1px solid #f28794a0;
     transition: background-color 0.15s ease-in-out;
 }
@@ -996,11 +1009,11 @@ input:checked + .slider:before {
     background-color: #ee6e7d60;
 }
 #area3 .upgrade:active {
-    background-color: #ee6e7d80;
+    background-color: #cc6170;
 }
 
 #area4 .upgrade {
-    background-color: #f7ce5d80;
+    background-color: #cba94e;
     border: 1px solid #f7ce5da0;
     transition: background-color 0.15s ease-in-out;
 }
@@ -1008,7 +1021,7 @@ input:checked + .slider:before {
     background-color: #f7ce5d60;
 }
 #area4 .upgrade:active {
-    background-color: #f7ce5d80;
+    background-color: #cba94e;
 }
 
 @keyframes bounceUp {
@@ -1035,7 +1048,7 @@ input:checked + .slider:before {
 }
 .upgrade {
     transition: transform 0.5s ease-in-out;
-    box-shadow: 2px 4px 4px #00000030;
+    box-shadow: 2px 4px 4px #23262d;
     pointer-events: all;
 }
 .upgrade:hover {
@@ -1054,21 +1067,20 @@ input:checked + .slider:before {
     font-size: 32pt;
     left: calc(50vw - 200px);
     top: 200px;
-    background-color: #15151560;
+    background-color: #23262d;
     border: 1px solid #70707080;
     border-radius: 30px;
-    backdrop-filter: blur(32px);
     transition:
         background-color 0.2s ease-out,
         transform 0.2s ease-out;
-    box-shadow: 0px 0px 8px #00000040;
+    box-shadow: 0px 0px 8px #2a2d35;
 }
 #skillResetButton:hover {
-    background-color: #15151570;
+    background-color: #2a2d35;
     transform: scale(1.02);
 }
 #skillResetButton:active {
-    background-color: #15151560;
+    background-color: #23262d;
     transform: scale(1);
 }
 
@@ -1076,9 +1088,8 @@ input:checked + .slider:before {
     width: 150px;
     height: 150px;
     border-radius: 15px;
-    background-color: #30303050;
+    background-color: #30343d;
     border: 1px solid #80808080;
-    backdrop-filter: blur(16px);
     padding-inline: 4px;
     font-size: 16pt;
     cursor: default;
@@ -1092,25 +1103,22 @@ input:checked + .slider:before {
         transform 0.2s ease-in-out,
         color 1s ease-in-out;
     color: #e0e0e0;
-    backdrop-filter: blur(24px);
 }
 .skillUpgrade.unlocked {
     cursor: pointer;
     box-shadow: 0px 0px 16px #dddddd80;
-    background-color: #30303050;
-    backdrop-filter: blur(18px);
+    background-color: #30343d;
     transition:
         background-color 0.2s ease-in-out,
         transform 0.2s ease-in-out;
 }
 .skillUpgrade.unlocked:hover {
-    background-color: #30303070;
+    background-color: #3a3f49;
     transform: scale(1.05);
 }
 .skillUpgrade.branch {
     color: #eaeaea90;
-    background-color: #30303020;
-    backdrop-filter: blur(12px);
+    background-color: #282c34;
 }
 
 /* Infinity Stuff */
@@ -1147,8 +1155,7 @@ input:checked + .slider:before {
     width: 50vw;
     height: 40px;
     border-radius: 20px;
-    background-color: #202020a0;
-    backdrop-filter: blur(24px);
+    background-color: #24272e;
     z-index: 1;
 }
 #breakInfinityLabel {
@@ -1187,10 +1194,9 @@ input:checked + .slider:before {
     left: 50vw;
     top: 200px;
     transform: translate(-50%, 0%);
-    background-color: #15151560;
+    background-color: #23262d;
     border: 1px solid #70707080;
     border-radius: 30px;
-    backdrop-filter: blur(12px);
     transition:
         background-color 0.1s ease-in-out,
         transform 0.15s ease-in-out;
@@ -1215,13 +1221,13 @@ input:checked + .slider:before {
     text-align: center;
 }
 #infinityResetButton:hover {
-    background-color: #15151570;
+    background-color: #2a2d35;
     animation:
         infinityHover 1s ease-out forwards,
         bounceUpInfinity 0.5s ease-in-out forwards;
 }
 #infinityResetButton:active {
-    background-color: #15151560;
+    background-color: #23262d;
     animation:
         infinityHover 1s ease-out forwards,
         bounceDownInfinity 0.3s ease-in-out forwards;
@@ -1262,9 +1268,8 @@ input:checked + .slider:before {
     width: 250px;
     height: 180px;
     border-radius: 15px;
-    background-color: #30303050;
+    background-color: #30343d;
     border: 1px solid #80808080;
-    backdrop-filter: blur(24px);
     padding-inline: 8px;
     font-size: 16pt;
     cursor: default;
@@ -1284,26 +1289,23 @@ input:checked + .slider:before {
         transform 0.2s ease-in-out,
         color 1s ease-in-out;
     color: #e0e0e0;
-    backdrop-filter: blur(32px);
     transform: scale(0.95);
 }
 .infinityUpgrade.unlocked {
     cursor: pointer;
     box-shadow: 0px 0px 16px #dddddd40;
-    background-color: #30303050;
-    backdrop-filter: blur(24px);
+    background-color: #30343d;
     transition:
         background-color 0.2s ease-in-out,
         transform 0.2s ease-in-out;
 }
 .infinityUpgrade.unlocked:hover {
-    background-color: #30303070;
+    background-color: #3a3f49;
     transform: scale(1.05);
 }
 .infinityUpgrade.branch {
     color: #eaeaea90;
-    background-color: #30303020;
-    backdrop-filter: blur(12px);
+    background-color: #282c34;
 }
 .infinityUpgrade.branch * {
     opacity: 0.5;
@@ -1377,7 +1379,6 @@ input:checked + .slider:before {
     width: 100%;
     height: 100%;
     background-color: #00000020;
-    backdrop-filter: blur(16px);
     border: none;
     border-radius: 8px;
     overflow: hidden;
@@ -1398,9 +1399,8 @@ input:checked + .slider:before {
 }
 .minigameButton {
     display: block;
-    background-color: #00000040;
-    backdrop-filter: blur(16px);
-    border: 2px solid #20202060;
+    background-color: #2a2d35;
+    border: 2px solid #2a2d35;
     border-radius: 8px;
     padding: 4px;
     width: 400px;
@@ -1409,10 +1409,10 @@ input:checked + .slider:before {
     transition: background-color 0.2s ease-in-out;
 }
 .minigameButton:hover {
-    background-color: #00000030;
+    background-color: #23262d;
 }
 .minigameButton:active {
-    background-color: #00000040;
+    background-color: #2a2d35;
 }
 
 /* Infinity Generators */
@@ -1455,17 +1455,16 @@ input:checked + .slider:before {
     border-radius: 20px;
     padding: 24px;
     box-sizing: border-box;
-    background-color: #30303090;
+    background-color: #353a45;
     border: 1px solid #80808080;
-    backdrop-filter: blur(8px);
     transition: background-color 0.15s ease-in-out;
 }
 #generatorUpgrades button:hover {
-    background-color: #30303060;
+    background-color: #2d3139;
     animation: bounceUp 0.3s ease-out forwards;
 }
 #generatorUpgrades button:active {
-    background-color: #30303090;
+    background-color: #353a45;
     animation: bounceDown 0.3s ease-out forwards;
 }
 #generatorUpgrades button .description {
@@ -1492,17 +1491,16 @@ input:checked + .slider:before {
     border-radius: 20px;
     padding: 16px;
     box-sizing: border-box;
-    background-color: #30303090;
+    background-color: #353a45;
     border: 1px solid #80808080;
-    backdrop-filter: blur(8px);
     transition: background-color 0.15s ease-in-out;
 }
 #infinityPowerUpgrades button:hover {
-    background-color: #30303060;
+    background-color: #2d3139;
     animation: bounceUp 0.3s ease-out forwards;
 }
 #infinityPowerUpgrades button:active {
-    background-color: #30303090;
+    background-color: #353a45;
     animation: bounceDown 0.3s ease-out forwards;
 }
 #infinityPowerUpgrades button .description {
@@ -1535,10 +1533,9 @@ input:checked + .slider:before {
     font-size: 24pt;
 
     cursor: pointer;
-    background-color: #4960a680;
+    background-color: #4b62a6;
     border: 1px solid #5671c0a0;
     border-radius: 15px;
-    backdrop-filter: blur(16px);
     transition: background-color 0.15s ease-in-out;
     pointer-events: all;
 }
@@ -1546,7 +1543,7 @@ input:checked + .slider:before {
     background-color: #4d66b280;
 }
 #rebirthButton1:active {
-    background-color: #4960a680;
+    background-color: #4b62a6;
 }
 
 #rebirthButton2 {
@@ -1555,10 +1552,9 @@ input:checked + .slider:before {
     font-size: 24pt;
 
     cursor: pointer;
-    background-color: #75d45f80;
+    background-color: #69bf56;
     border: 1px solid #72d95ba0;
     border-radius: 15px;
-    backdrop-filter: blur(16px);
     transition: background-color 0.15s ease-in-out;
     pointer-events: all;
 }
@@ -1566,7 +1562,7 @@ input:checked + .slider:before {
     background-color: #75d45f88;
 }
 #rebirthButton2:active {
-    background-color: #75d45f80;
+    background-color: #69bf56;
 }
 
 #rebirthButton3 {
@@ -1575,10 +1571,9 @@ input:checked + .slider:before {
     font-size: 24pt;
 
     cursor: pointer;
-    background-color: #b0608080;
+    background-color: #a35e78;
     border: 1px solid #b06080a0;
     border-radius: 15px;
-    backdrop-filter: blur(16px);
     transition: background-color 0.15s ease-in-out;
     pointer-events: all;
 }
@@ -1586,5 +1581,5 @@ input:checked + .slider:before {
     background-color: #b0608088;
 }
 #rebirthButton3:active {
-    background-color: #b0608080;
+    background-color: #a35e78;
 }
