@@ -50,15 +50,20 @@ function resetPlayer(clear = false) {
 
   player = mergeAndFix(playerTemplate, raw);
   player.username = raw.username || player.mylbkey;
+  player.editKey =
+    typeof raw.editKey === "string" && raw.editKey.length >= 24
+      ? raw.editKey
+      : generateEditKey();
 
   if (player.username === player.mylbkey && elts.usernamePopup) {
+    elts.usernamePopupEditKey.value = player.editKey;
     elts.usernamePopup.style.display = "block";
   }
 }
 
 let lastSave = 0;
 let lastUpdate = Date.now();
-let myInterval = setInterval(tick, 1 / 10);
+let animationFrameHandle = null;
 
 resetPlayer(false);
 
@@ -163,11 +168,13 @@ window.addEventListener("keydown", (e) => {
 document.getElementById("geometryDashButton").addEventListener("click", () => {
   document.getElementById("gdCanvas").style.display = "block";
   document.getElementById("fbCanvas").style.display = "none";
+  updateMinigameLoopState();
 });
 
 document.getElementById("flappyBirdButton").addEventListener("click", () => {
   document.getElementById("fbCanvas").style.display = "block";
   document.getElementById("gdCanvas").style.display = "none";
+  updateMinigameLoopState();
 });
 
 // msg box
@@ -198,7 +205,11 @@ elts.changelogButton.onclick = function () {
 elts.saveUsernameButton.onclick = function () {
   let inp = elts.usernamePopupInput.value;
   if (inp != "") player.username = elts.usernamePopupInput.value;
+  player.editKey = elts.usernamePopupEditKey.value || player.editKey;
+  elts.usernameSetting.value = player.username;
+  elts.editKeySetting.value = player.editKey;
   elts.usernamePopup.style.display = "none";
+  saveData("DRYWALL", player);
 };
 elts.cancelUsernameButton.onclick = function () {
   elts.usernamePopup.style.display = "none";
@@ -367,6 +378,34 @@ for (let i = 0; i < settingNames.length; i += 1) {
   };
 }
 elts.usernameSetting.value = player.username || player.mylbkey;
+elts.editKeySetting.value = player.editKey;
+elts.usernamePopupEditKey.value = player.editKey;
+
+function wireSecretField(input, toggleButton, copyButton) {
+  toggleButton.onclick = function () {
+    const reveal = input.type === "password";
+    input.type = reveal ? "text" : "password";
+    toggleButton.textContent = reveal ? "Hide" : "Show";
+  };
+  copyButton.onclick = async function () {
+    try {
+      await navigator.clipboard.writeText(input.value);
+      copyButton.textContent = "Copied";
+      setTimeout(() => {
+        copyButton.textContent = "Copy";
+      }, 1000);
+    } catch (err) {
+      console.warn("Clipboard write failed:", err);
+    }
+  };
+}
+
+wireSecretField(
+  elts.usernamePopupEditKey,
+  elts.togglePopupEditKeyButton,
+  elts.copyPopupEditKeyButton,
+);
+wireSecretField(elts.editKeySetting, elts.toggleEditKeyButton, elts.copyEditKeyButton);
 
 // Clicking for drywall + dust
 let dustSpawnDebounce = Date.now();
@@ -623,6 +662,7 @@ function loadArea(area) {
     updateAchievementGrid();
     updateAchievementImages();
   }
+  updateMinigameLoopState();
 }
 
 function roundToSigFigs(num, sigFigs, padding = false) {
@@ -672,7 +712,6 @@ function abbrevNum(val) {
   }
 }
 
-let deltaTime = 10;
 function tick() {
   let now = Date.now();
   deltatime = now - lastUpdate;
@@ -680,7 +719,9 @@ function tick() {
 
   update(deltatime);
   render(deltatime);
+  animationFrameHandle = requestAnimationFrame(tick);
 }
+animationFrameHandle = requestAnimationFrame(tick);
 
 // Boosts
 function checkInfinityUpgrades(dontCall) {
@@ -1106,10 +1147,11 @@ let grid;
 grid = updateAchievementGrid(true);
 
 setInterval(function () {
-  grid = updateAchievementGrid(false);
-}, 1000);
-
-setInterval(updateAchievementImages, 2000);
+  if (elts.achievementsArea.style.display === "block") {
+    grid = updateAchievementGrid(false);
+    updateAchievementImages();
+  }
+}, 2000);
 
 const container = document.getElementById("achievementsContainer");
 const children = container.children;
@@ -1592,7 +1634,9 @@ function checkInfinityProgress() {
 }
 
 function update(dt) {
-  updateMinigameStats();
+  if (elts.infinityArea.style.display === "block") {
+    updateMinigameStats();
+  }
   checkBoosts();
 
   player.drywall = player.drywall.plus(
@@ -1825,6 +1869,29 @@ function render(dt) {
   elts.leaderboard.querySelector("p").innerHTML = getLeaderboardText("drywall");
 
   // draw upgrade trees
-  updateSkillTreeElements();
-  updateInfinityTreeElements();
+  if (elts.skillTreeArea.style.display === "block") {
+    updateSkillTreeElements();
+  }
+  if (elts.infinityArea.style.display === "block") {
+    updateInfinityTreeElements();
+  }
 }
+
+function updateMinigameLoopState() {
+  const inInfinityArea = elts.infinityArea.style.display === "block";
+  const gdCanvas = document.getElementById("gdCanvas");
+  const fbCanvas = document.getElementById("fbCanvas");
+  const gdShown = inInfinityArea && gdCanvas && gdCanvas.style.display !== "none";
+  const fbShown = inInfinityArea && fbCanvas && fbCanvas.style.display !== "none";
+
+  if (typeof window.loop === "function" && typeof window.noLoop === "function") {
+    if (gdShown) window.loop();
+    else window.noLoop();
+  }
+
+  if (window.flappyBirdInstance) {
+    if (fbShown) window.flappyBirdInstance.loop();
+    else window.flappyBirdInstance.noLoop();
+  }
+}
+updateMinigameLoopState();

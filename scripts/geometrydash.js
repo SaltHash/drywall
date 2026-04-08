@@ -231,6 +231,8 @@ function hover(x, y, w, h, align) {
 
 // events
 function mousePressed() {
+  if (!isGDActive()) return;
+  if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return;
   if (gameState == "menu") {
     let halfCols = levelSelectCols / 2 - 0.5;
     let halfRows = levelSelectRows / 2 - 0.5;
@@ -275,6 +277,7 @@ function mousePressed() {
 }
 
 function keyTyped() {
+  if (!isGDActive()) return;
   if (key == "f") {
     fullscreen(!fullscreen());
   }
@@ -1041,6 +1044,7 @@ function finishAnimation(smoothness) {
 
 // draw loop
 function draw() {
+  if (!isGDActive()) return;
   textFont(font);
 
   if (gameState == "menu") {
@@ -1208,4 +1212,15 @@ function draw() {
   if (frameCount % 120 == 0 && level) {
     storeItem("level", level);
   }
+}
+
+function isGDActive() {
+  const canvas = document.getElementById("gdCanvas");
+  const infinityArea = document.getElementById("infinityArea");
+  return (
+    !!canvas &&
+    !!infinityArea &&
+    infinityArea.style.display === "block" &&
+    canvas.style.display !== "none"
+  );
 }
