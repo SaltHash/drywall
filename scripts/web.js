@@ -82,6 +82,7 @@ async function saveDataToLeaderboard() {
     p_id: player.mylbkey,
     p_edit_key: player.editKey,
     p_scores: scores,
+    p_display_name: player.username,
   });
 
   if (error) {
