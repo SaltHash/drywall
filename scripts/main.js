@@ -1105,11 +1105,11 @@ function updateAchievementImages() {
 let grid;
 grid = updateAchievementGrid(true);
 
-// setInterval(function () {
-//   grid = updateAchievementGrid(false);
-// }, 1000);
+setInterval(function () {
+  grid = updateAchievementGrid(false);
+}, 1000);
 
-// setInterval(updateAchievementImages, 2000);
+setInterval(updateAchievementImages, 2000);
 
 const container = document.getElementById("achievementsContainer");
 const children = container.children;
