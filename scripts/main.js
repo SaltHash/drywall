@@ -52,7 +52,7 @@ function resetPlayer(clear = false) {
   player.username = raw.username || player.mylbkey;
 
   let noKeyYet = false;
-  if (raw.editKey) noKeyYet = true;
+  if (!raw.editKey) noKeyYet = true;
 
   player.editKey =
     typeof raw.editKey === "string" && raw.editKey.length >= 24
@@ -1676,11 +1676,6 @@ function update(dt) {
     );
   }
   player.stats.playtime = player.stats.playtime.plus(dt);
-
-  if (Date.now() - lastLeaderboardUpdate >= 60000) {
-    saveDataToLeaderboard();
-    lastLeaderboardUpdate = Date.now();
-  }
 
   if (player.settings.resetStats) {
     player.drywall = D(0);

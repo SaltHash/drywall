@@ -115,3 +115,5 @@ function getLeaderboardText(boardType) {
 
   return text;
 }
+
+setInterval(saveDataToLeaderboard, 60000);

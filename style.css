@@ -7,50 +7,42 @@
 /* Theme tokens */
 :root {
     --font-ui:
-        ByteBounce,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif,
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
+        ByteBounce, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
         "Segoe UI Symbol";
 
     --color-black: #000000;
     --color-white: #ffffff;
-    --color-text-primary: #f2f4f8;
-    --color-text-secondary: #c2c7d3;
-    --color-text-muted: #a5acba;
-    --color-text-dark: #202328;
-    --color-panel: #1a1d24;
-    --color-panel-alt: #232730;
-    --color-panel-raised: #2a2f39;
-    --color-panel-input: #282d37;
-    --color-border: #353c49;
-    --color-border-strong: #4a5465;
-    --color-hover-neutral: #313745;
-    --color-pressed-neutral: #252a34;
+    --color-text-primary: #f2f3f5;
+    --color-text-secondary: #c6c8cf;
+    --color-text-muted: #a8adb6;
+    --color-text-dark: #232323;
+    --color-panel: #1d1d1d;
+    --color-panel-alt: #262626;
+    --color-panel-raised: #2e2e2e;
+    --color-panel-input: #2c2c2c;
+    --color-border: #3c3c3c;
+    --color-border-strong: #545454;
+    --color-hover-neutral: #373737;
+    --color-pressed-neutral: #2c2c2c;
 
     --color-success-bg: #3b6d11;
     --color-success-text: #cde7a7;
-    --color-button-neutral-bg: #2b303a;
-    --color-button-neutral-hover: #363d4b;
-    --color-button-neutral-pressed: #252a32;
-    --color-button-neutral-border: #414a5a;
+    --color-button-neutral-bg: #303030;
+    --color-button-neutral-hover: #383838;
+    --color-button-neutral-pressed: #282828;
+    --color-button-neutral-border: #4c4c4c;
 
-    --color-bright-purple: #4d469e;
-    --color-bright-purple-hover: #5d56b0;
+    --color-bright-purple: #5a4fa3;
+    --color-bright-purple-hover: #6a60b5;
     --color-bright-green: #3ea170;
     --color-bright-green-hover: #51b982;
     --color-bright-red: #cc6170;
     --color-bright-red-hover: #dc7584;
     --color-bright-gold: #cba94e;
     --color-bright-gold-hover: #debd63;
-    --color-bright-blue: #4b62a6;
-    --color-bright-blue-hover: #5f78be;
+    --color-bright-blue: #5a6b9a;
+    --color-bright-blue-hover: #6c7fb3;
     --color-bright-lime: #69bf56;
     --color-bright-lime-hover: #7bd267;
     --color-bright-rose: #a35e78;
@@ -66,7 +58,7 @@
     --border-strong: 2px solid var(--color-border);
     --shadow-sm: 0 2px 6px #191c22;
     --shadow-md: 0 4px 12px #191c22;
-    --shadow-glow: 0 0 16px #d9dbe2;
+    --shadow-glow: 0 0 16px #99999980;
 
     --transition-fast: 0.15s ease-in-out;
     --transition-mid: 0.2s ease-in-out;
@@ -162,7 +154,10 @@ button {
     font-size: 36pt;
     color: #333333;
     font-weight: 700;
-    text-shadow: -1px -1px 0 #dddddd, 1px -1px 0 #dddddd, -1px 1px 0 #dddddd,
+    text-shadow:
+        -1px -1px 0 #dddddd,
+        1px -1px 0 #dddddd,
+        -1px 1px 0 #dddddd,
         1px 1px 0 #dddddd;
     text-align: center;
     position: absolute;
@@ -187,7 +182,10 @@ button {
     font-size: 128pt;
     color: #202020;
     text-align: center;
-    text-shadow: -4px -4px 0 #eeeeee, 4px -4px 0 #eeeeee, -4px 4px 0 #eeeeee,
+    text-shadow:
+        -4px -4px 0 #eeeeee,
+        4px -4px 0 #eeeeee,
+        -4px 4px 0 #eeeeee,
         4px 4px 0 #eeeeee;
 }
 
@@ -196,7 +194,10 @@ button {
     font-size: 48pt;
     color: #404040;
     text-align: center;
-    text-shadow: -2px -2px 0 #eeeeee, 2px -2px 0 #eeeeee, -2px 2px 0 #eeeeee,
+    text-shadow:
+        -2px -2px 0 #eeeeee,
+        2px -2px 0 #eeeeee,
+        -2px 2px 0 #eeeeee,
         2px 2px 0 #eeeeee;
 }
 
@@ -256,7 +257,9 @@ button {
     height: 150px;
     border-radius: var(--radius-xl);
     font-size: 64pt;
-    transition: background-color var(--transition-slow), transform var(--transition-slow);
+    transition:
+        background-color var(--transition-slow),
+        transform var(--transition-slow);
 }
 
 #playButton:hover {
@@ -646,6 +649,7 @@ button {
     background-image: url(assets/area1bg.jpg);
     background-size: 100%;
     filter: brightness(0.25);
+    opacity: 0.5;
 }
 
 .darkBG {
@@ -698,8 +702,10 @@ button {
 }
 
 /* Achievements area */
-#achievementsArea * {
-    color: #101010;
+#achievementsArea > h2,
+#achievementsArea > p {
+    color: #111;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
 }
 
 #achievementsArea > h2 {
@@ -875,7 +881,7 @@ input:checked + .slider:before {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 48pt;
-    color: #444444;
+    color: #00000060;
     pointer-events: none;
 }
 
@@ -897,7 +903,10 @@ input:checked + .slider:before {
 
 #stats * {
     color: var(--color-text-dark);
-    text-shadow: -1px -1px 0 #dddddd, 1px -1px 0 #dddddd, -1px 1px 0 #dddddd,
+    text-shadow:
+        -1px -1px 0 #dddddd,
+        1px -1px 0 #dddddd,
+        -1px 1px 0 #dddddd,
         1px 1px 0 #dddddd;
 }
 
@@ -926,7 +935,9 @@ input:checked + .slider:before {
     font-size: 24pt;
     box-shadow: var(--shadow-sm);
     pointer-events: all;
-    transition: transform 0.5s ease-in-out, background-color var(--transition-fast);
+    transition:
+        transform 0.5s ease-in-out,
+        background-color var(--transition-fast);
 }
 
 #area1 .upgrade {
@@ -988,7 +999,9 @@ input:checked + .slider:before {
     left: calc(50vw - 200px);
     top: 200px;
     font-size: 32pt;
-    transition: background-color var(--transition-mid), transform var(--transition-mid);
+    transition:
+        background-color var(--transition-mid),
+        transform var(--transition-mid);
 }
 
 #skillResetButton:hover {
@@ -1021,7 +1034,9 @@ input:checked + .slider:before {
     background-color: #30343d;
     cursor: pointer;
     box-shadow: var(--shadow-glow);
-    transition: background-color var(--transition-mid), transform var(--transition-mid);
+    transition:
+        background-color var(--transition-mid),
+        transform var(--transition-mid);
 }
 
 .skillUpgrade.unlocked:hover,
@@ -1033,7 +1048,9 @@ input:checked + .slider:before {
 .skillUpgrade.bought,
 .infinityUpgrade.bought {
     color: #e0e0e0;
-    transition: background-color var(--transition-mid), transform var(--transition-mid),
+    transition:
+        background-color var(--transition-mid),
+        transform var(--transition-mid),
         color 1s ease-in-out;
 }
 
@@ -1047,7 +1064,9 @@ input:checked + .slider:before {
     width: 250px;
     height: 180px;
     padding-inline: 8px;
-    transition: background-color var(--transition-fast), color 0.5s ease-in-out;
+    transition:
+        background-color var(--transition-fast),
+        color 0.5s ease-in-out;
 }
 
 .infinityUpgrade * {
@@ -1097,7 +1116,10 @@ input:checked + .slider:before {
     text-align: center;
     font-size: 64pt;
     color: #111111;
-    text-shadow: -1px -1px 0 #dddddd, 1px -1px 0 #dddddd, -1px 1px 0 #dddddd,
+    text-shadow:
+        -1px -1px 0 #dddddd,
+        1px -1px 0 #dddddd,
+        -1px 1px 0 #dddddd,
         1px 1px 0 #dddddd;
 }
 
@@ -1155,12 +1177,17 @@ input:checked + .slider:before {
     top: 200px;
     transform: translate(-50%, 0);
     font-size: 64pt;
-    transition: background-color 0.1s ease-in-out, transform 0.15s ease-in-out;
+    transition:
+        background-color 0.1s ease-in-out,
+        transform 0.15s ease-in-out;
 }
 
 #infinityResetButton .innerText {
     color: var(--color-black);
-    text-shadow: -2px -2px 0 #ff0088, 2px -2px 0 #aa00ff, -2px 2px 0 #aa00ff,
+    text-shadow:
+        -2px -2px 0 #ff0088,
+        2px -2px 0 #aa00ff,
+        -2px 2px 0 #aa00ff,
         2px 2px 0 #ff0088;
 }
 
@@ -1177,12 +1204,15 @@ input:checked + .slider:before {
 
 #infinityResetButton:hover {
     background-color: var(--color-hover-neutral);
-    animation: infinityHover 1s ease-out forwards, bounceUpInfinity 0.5s ease-in-out forwards;
+    animation:
+        infinityHover 1s ease-out forwards,
+        bounceUpInfinity 0.5s ease-in-out forwards;
 }
 
 #infinityResetButton:active {
     background-color: var(--color-panel-alt);
-    animation: infinityHover 1s ease-out forwards,
+    animation:
+        infinityHover 1s ease-out forwards,
         bounceDownInfinity 0.3s ease-in-out forwards;
 }
 
