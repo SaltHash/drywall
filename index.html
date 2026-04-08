@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
+    <!-- add favicon -->
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
   </head>
   <body>
@@ -24,8 +27,9 @@
           Changelog
         </button>
         <div id="changelogContent">
-          <h4>v0.5.4: Hotfix</h4>
-          <p>- Redid some stuff with leaderboards again</p>
+          <h4>v0.6.0: Slot Machines</h4>
+          <p>- Gamble your life savings to progress further</p>
+          <p>- Risk like all your progress if you want</p>
         </div>
       </div>
     </div>
@@ -127,24 +131,12 @@
     </div>
 
     <div id="leaderboardArea">
-      <div class="centerWrapper">
-        <div class="centerRow">
-          <div class="leaderboard" id="leaderboard1Div">
-            <h3>Drywall</h3>
-            <p>Loading...</p>
-          </div>
-
-          <div class="leaderboard" id="leaderboard2Div">
-            <h3>Infinities</h3>
-            <p>Loading...</p>
-          </div>
-
-          <div class="leaderboard" id="leaderboard3Div">
-            <h3>Achievements</h3>
-            <p>Loading...</p>
-          </div>
+        <div id="leaderboardContainer">
+            <div id="leaderboard" id="leaderboard1Div">
+                <h3>Drywall</h3>
+                <p>Loading...</p>
+            </div>
         </div>
-      </div>
     </div>
 
 
@@ -355,10 +347,18 @@
       </div>
     </div>
 
+    <!-- cdns-->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
-    <script src="geometrydash.js"></script>
-    <script src="flappybird.js"></script>
-    <script src="script.js"></script>
+
+    <!-- minigames -->
+    <script src="/scripts/geometrydash.js"></script>
+    <script src="/scripts/flappybird.js"></script>
+
+    <!-- the scripts -->
+    <script src="/scripts/init.js"></script>
+    <script src="/scripts/config.js"></script>
+    <script src="/scripts/web.js"></script>
+    <script src="/scripts/main.js"></script>
   </body>
 </html>
