@@ -130,6 +130,9 @@ export async function reconcileSave({ force = false } = {}) {
     gameState.player.leaderboardOptIn = false;
   }
 
+  // Surface the caller's role from the server so the UI can gate dev features.
+  gameState.player.permissions = remote.permissions || null;
+
   const remoteTime = Number(remote.saveUpdatedAt) || 0;
   const localTime = Number(player.updatedAt) || 0;
 
@@ -219,6 +222,9 @@ export async function linkAccount(secret) {
   if (remote.displayName && remote.displayName !== remote.id) {
     gameState.player.username = remote.displayName;
   }
+
+  // Surface the caller's role from the server so the UI can gate dev features.
+  gameState.player.permissions = remote.permissions || null;
 
   // Adopt the cloud timestamp so the next local save becomes strictly newer.
   gameState.player.updatedAt = Number(remote.saveUpdatedAt) || Date.now();

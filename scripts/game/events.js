@@ -48,7 +48,9 @@ export function setupEventListeners() {
 
   // --- Keyboard: prevent scrolling with Space / ArrowUp ---
   window.addEventListener("keydown", (e) => {
-    if (e.key == " " || e.key == "ArrowUp") {
+    const target = e.target;
+    const isInput = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+    if (!isInput && (e.key == " " || e.key == "ArrowUp")) {
       e.preventDefault();
     }
   });
@@ -382,6 +384,13 @@ export function setupEventListeners() {
     hideSecretKey();
     elts.settings.style.display = "none";
   };
+
+  document.addEventListener("click", function (e) {
+    if (elts.settings.style.display === "block" && !elts.settings.contains(e.target) && !elts.settingsButton.contains(e.target)) {
+      hideSecretKey();
+      elts.settings.style.display = "none";
+    }
+  });
 
   // --- Moderation notice ---
   if (elts.removedPopupDismiss) {

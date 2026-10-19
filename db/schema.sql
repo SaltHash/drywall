@@ -46,6 +46,13 @@ create table if not exists public.players (
 alter table public.players
   add column if not exists leaderboard_opt_in boolean not null default false;
 
+-- Role-based access for the dev panel. null = regular player,
+-- 'moderator' = moderation tools, 'owner' = everything incl. stat edits
+-- and role management. Players can never edit this column: the client
+-- does not send it and the sync endpoint does not write it.
+alter table public.players
+  add column if not exists permissions text;
+
 -- Backfill moderation columns for databases created before they existed.
 alter table public.players
   add column if not exists leaderboard_banned boolean not null default false;

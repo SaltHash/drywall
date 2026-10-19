@@ -7,6 +7,7 @@
  * security boundary.
  */
 
+import { saveData } from "./save.js";
 import { gameState } from "../core/state.js";
 import { isDevAccount } from "../config/dev.js";
 import { loadLeaderboard } from "../services/leaderboard.js";
@@ -18,6 +19,7 @@ import {
   devRestorePlayer,
   devResetPlayer,
   devAddStats,
+  devSetRole,
 } from "../services/dev.js";
 
 const DELTA_FIELDS = [
@@ -72,6 +74,7 @@ function buildPanel(panel) {
       <h2>Dev Panel</h2>
       <button id="devPanelClose" class="inlineButton">Close</button>
     </div>
+    <div id="devActingAs" class="devActingAs">Acting as: —</div>
     <p id="devStatus" class="devStatus"></p>
 
     <h3>Global message</h3>
@@ -96,12 +99,6 @@ function buildPanel(panel) {
 
     <h3>Selected player</h3>
     <div id="devPlayerInfo" class="devPlayerInfo">No player selected.</div>
-    <div class="devRow">
-      <button id="devRemoveButton" class="inlineButton dangerButton">Remove from leaderboard</button>
-      <button id="devRestoreButton" class="inlineButton">Restore</button>
-      <button id="devResetButton" class="inlineButton dangerButton">Reset save</button>
-    </div>
-
     <h3>Add stats (applied once)</h3>
     <div id="devStatsGrid" class="devStatsGrid"></div>
     <button id="devApplyStats" class="inlineButton wideButton">Queue stat deltas</button>
@@ -110,6 +107,20 @@ function buildPanel(panel) {
     <div class="devRow">
       <button id="devRefreshBoard" class="inlineButton">Refresh leaderboard</button>
       <button id="devCopyId" class="inlineButton">Copy selected id</button>
+    </div>
+
+    <h3>Roles <span id="devRoleHint" class="devRoleHint"></span></h3>
+    <div id="devRoleSection" class="devRoleSection" style="display: none">
+      <div class="devRow">
+        <button id="devSetMod" class="inlineButton">Make moderator</button>
+        <button id="devRevokeRole" class="inlineButton">Revoke role</button>
+      </div>
+    </div>
+
+    <div class="devRow">
+      <button id="devRestoreButton" class="inlineButton">Restore</button>
+      <button id="devResetButton" class="inlineButton dangerButton">Reset save</button>
+      <button id="devRemoveButton" class="inlineButton dangerButton">Remove from leaderboard</button>
     </div>
   `;
 
@@ -141,7 +152,35 @@ export async function initDevPanel() {
 
   gameState.devMode = true;
   buildPanel(panel);
+  panel.style.display = "none";
   button.style.display = "block";
+
+  // --- Resolve the caller's role from the server ---
+  // Bootstrap dev is always owner; everyone else gets their DB permissions.
+  let role = "owner";
+  try {
+    const self = await devLookupPlayer(devSecret(), gameState.player?.mylbkey);
+    role = self?.players?.[0]?.permissions || "owner";
+  } catch {
+    role = "owner";
+  }
+  const isOwner = role === "owner";
+  const isModerator = role === "moderator" || isOwner;
+  const actingLabel = panel.querySelector("#devActingAs");
+  if (actingLabel) actingLabel.textContent = `Acting as: ${gameState.player?.displayName || "(no name)"} (${role})`;
+
+  // Moderators cannot see the expanded detail view or change stats.
+  if (!isOwner) {
+    panel.querySelector("#devStatsGrid").parentElement.style.display = "none";
+    panel.querySelector("#devApplyStats").style.display = "none";
+  }
+  // Role management is owner-only.
+  if (!isOwner) {
+    panel.querySelector("#devRoleSection").style.display = "none";
+  } else {
+    panel.querySelector("#devRoleSection").style.display = "block";
+    panel.querySelector("#devRoleHint").textContent = "(owner only)";
+  }
 
   const status = panel.querySelector("#devStatus");
   const setStatus = (text, isError = false) => {
@@ -188,6 +227,8 @@ export async function initDevPanel() {
         item.onclick = () => {
           selected = player;
           renderSelected();
+          syncModButtons();
+          if (isOwner) syncRoleButtons();
           setStatus(`Selected ${player.id}.`);
         };
         results.appendChild(item);
@@ -206,6 +247,18 @@ export async function initDevPanel() {
     return true;
   };
 
+  /** Briefly highlights a detail row after its value is copied. */
+  function flashCopy(row) {
+    const pre = row.querySelector(".devDetailVal");
+    const old = pre.textContent;
+    pre.textContent = "copied!";
+    pre.classList.add("devCopied");
+    setTimeout(() => {
+      pre.textContent = old;
+      pre.classList.remove("devCopied");
+    }, 900);
+  }
+
   /** Shows a full detail overlay for one player: id, secret hash, every
    *  major stat and flag from both the save and the database row. */
   function showPlayerDetail(player) {
@@ -221,6 +274,9 @@ export async function initDevPanel() {
         <div class="devDetailBody"></div>
       </div>`;
     overlay.querySelector(".devDetailClose").onclick = close;
+    overlay.onclick = (e) => {
+      if (e.target === overlay) close();
+    };
     document.body.appendChild(overlay);
 
     const body = overlay.querySelector(".devDetailBody");
@@ -297,7 +353,40 @@ export async function initDevPanel() {
       for (const [key, value] of section.rows) {
         const row = document.createElement("div");
         row.className = "devDetailRow";
-        row.innerHTML = `<span class="devDetailKey">${key}</span><pre class="devDetailVal">${fmt(value)}</pre>`;
+        const valStr = fmt(value);
+        row.innerHTML = `<span class="devDetailKey">${key}</span><pre class="devDetailVal" title="Click to copy">${valStr}</pre><button class="devCopyVal inlineButton" title="Copy value" aria-label="Copy ${key}">⧉</button>`;
+        const pre = row.querySelector(".devDetailVal");
+        if (typeof value === "boolean") {
+          pre.onclick = () => {
+            const newVal = !value;
+            pre.textContent = fmt(newVal);
+            // Best-effort update of the underlying data object
+            if (key in player) player[key] = newVal;
+            // For save keys, try to map; this is approximate
+            if (save && key in save) save[key] = newVal;
+            // Force update of the local variable reference for subsequent interactions
+            value = newVal;
+          };
+        } else {
+          pre.onclick = async () => {
+            if (!(await confirmDialog(`Edit "${key}"? Warning: this may not persist.`))) return;
+            const input = prompt(`New value for ${key}:`, valStr);
+            if (input === null) return;
+            pre.textContent = input;
+            if (key in player) player[key] = input;
+            if (save && key in save) save[key] = input;
+            value = input;
+          };
+        }
+        row.querySelector(".devCopyVal").onclick = async (e) => {
+          e.stopPropagation();
+          try {
+            await navigator.clipboard.writeText(valStr);
+            flashCopy(row);
+          } catch {
+            setStatus("Clipboard blocked.", true);
+          }
+        };
         body.appendChild(row);
       }
     }
@@ -316,8 +405,16 @@ export async function initDevPanel() {
       for (const player of players) {
         const item = document.createElement("button");
         item.className = "devResultItem inlineButton";
-        item.textContent = `${player.displayName || "(no name)"} — ${player.id}`;
+        item.innerHTML = `<span class="devListMain">${player.displayName || "(no name)"} — ${player.id}</span><span class="devListArrow">→</span>`;
         item.onclick = () => showPlayerDetail(player);
+        item.querySelector(".devListArrow").onclick = (e) => {
+          e.stopPropagation();
+          selected = player;
+          renderSelected();
+          syncModButtons();
+          if (isOwner) syncRoleButtons();
+          setStatus(`Selected ${player.id}.`);
+        };
         results.appendChild(item);
       }
       setStatus(`${players.length} player(s).`);
@@ -334,8 +431,18 @@ export async function initDevPanel() {
     panel.style.display = "none";
   };
 
+  document.addEventListener("click", (e) => {
+    if (panel.style.display === "block" && !panel.contains(e.target) && !button.contains(e.target) && !e.target.closest(".devDetailOverlay")) {
+      panel.style.display = "none";
+    }
+  });
+
   const messageText = panel.querySelector("#devMessageText");
   panel.querySelector("#devMessageSend").onclick = async () => {
+    if (!isOwner) {
+      setStatus("Only owners can send global messages.", true);
+      return;
+    }
     const text = messageText.value.trim();
     if (!text) {
       setStatus("Write a message first.", true);
@@ -361,17 +468,45 @@ export async function initDevPanel() {
     if (e.key === "Enter") runLookup();
   });
 
+  // --- Toggle-able moderation buttons (ban↔unban, reset↔clear-reset) ---
+  const removeBtn = panel.querySelector("#devRemoveButton");
+  const restoreBtn = panel.querySelector("#devRestoreButton");
+  const resetBtn = panel.querySelector("#devResetButton");
+
+  function syncModButtons() {
+    if (!selected) return;
+    const banned = selected.leaderboardBanned === true;
+    const resetting = selected.forceReset === true;
+    removeBtn.textContent = banned ? "Unban from leaderboard" : "Remove from leaderboard";
+    restoreBtn.textContent = banned ? "Restore" : "Already visible";
+    restoreBtn.disabled = !banned;
+    resetBtn.textContent = resetting ? "Clear reset flag" : "Reset save";
+  }
+
   panel.querySelector("#devRemoveButton").onclick = async () => {
     if (!requireSelected()) return;
-    if (!(await confirmDialog(`Remove ${selected.id} from the leaderboard? They keep playing but can never rejoin.`))) {
+    const banned = selected.leaderboardBanned === true;
+    const action = banned ? "unban" : "remove";
+    if (!(await confirmDialog(
+      banned
+        ? `Restore ${selected.id} to the leaderboard?`
+        : `Remove ${selected.id} from the leaderboard? They keep playing but can never rejoin.`
+    ))) {
       return;
     }
     try {
-      await devRemovePlayer(devSecret(), selected.id);
-      selected.leaderboardBanned = true;
-      selected.leaderboardOptIn = false;
+      if (banned) {
+        await devRestorePlayer(devSecret(), selected.id);
+        selected.leaderboardBanned = false;
+        setStatus("Player restored.");
+      } else {
+        await devRemovePlayer(devSecret(), selected.id);
+        selected.leaderboardBanned = true;
+        selected.leaderboardOptIn = false;
+        setStatus("Player removed.");
+      }
       renderSelected();
-      setStatus("Player removed.");
+      syncModButtons();
     } catch (err) {
       setStatus(err.message, true);
     }
@@ -379,10 +514,15 @@ export async function initDevPanel() {
 
   panel.querySelector("#devRestoreButton").onclick = async () => {
     if (!requireSelected()) return;
+    if (selected.leaderboardBanned !== true) {
+      setStatus("Player is not banned.", true);
+      return;
+    }
     try {
       await devRestorePlayer(devSecret(), selected.id);
       selected.leaderboardBanned = false;
       renderSelected();
+      syncModButtons();
       setStatus("Player restored.");
     } catch (err) {
       setStatus(err.message, true);
@@ -391,14 +531,21 @@ export async function initDevPanel() {
 
   panel.querySelector("#devResetButton").onclick = async () => {
     if (!requireSelected()) return;
-    if (!(await confirmDialog(`Reset ${selected.id}'s save to default? This overrides their local save on next login.`))) {
+    const resetting = selected.forceReset === true;
+    if (!(await confirmDialog(
+      resetting
+        ? `Clear ${selected.id}'s pending reset?`
+        : `Reset ${selected.id}'s save to default? This overrides their local save on next login.`
+    ))) {
       return;
     }
     try {
-      await devResetPlayer(devSecret(), selected.id);
-      selected.forceReset = true;
+      // There is no "clear reset" endpoint; the client acks it on next sync.
+      // For now, toggling off just updates the local flag and status.
+      selected.forceReset = !resetting;
       renderSelected();
-      setStatus("Reset queued.");
+      syncModButtons();
+      setStatus(resetting ? "Reset flag cleared (local)." : "Reset queued.");
     } catch (err) {
       setStatus(err.message, true);
     }
@@ -444,4 +591,63 @@ export async function initDevPanel() {
       setStatus("Clipboard blocked.", true);
     }
   };
+
+  // --- Role management (owner only) ---
+  if (isOwner) {
+    const setModBtn = panel.querySelector("#devSetMod");
+    const revokeBtn = panel.querySelector("#devRevokeRole");
+
+    function syncRoleButtons() {
+      if (!selected) return;
+      const current = selected.permissions;
+      setModBtn.textContent = current === "moderator" ? "Demote to player" : "Make moderator";
+      revokeBtn.textContent = current === "owner" ? "Revoke owner" : current === "moderator" ? "Revoke role" : "Revoke role";
+      revokeBtn.disabled = !current || current === "none";
+    }
+
+    setModBtn.onclick = async () => {
+      if (!requireSelected()) return;
+      const current = selected.permissions;
+      const target = current === "moderator" ? "none" : "moderator";
+      if (!(await confirmDialog(
+        target === "none"
+          ? `Demote ${selected.id} from moderator to regular player?`
+          : `Grant ${selected.id} moderator access?`
+      ))) {
+        return;
+      }
+      try {
+        await devSetRole(devSecret(), selected.id, target);
+        selected.permissions = target;
+        renderSelected();
+        syncRoleButtons();
+        setStatus(target === "none" ? "Role revoked." : "Moderator granted.");
+      } catch (err) {
+        setStatus(err.message, true);
+      }
+    };
+
+    revokeBtn.onclick = async () => {
+      if (!requireSelected()) return;
+      const current = selected.permissions;
+      if (!current || current === "none") {
+        setStatus("Player has no role to revoke.", true);
+        return;
+      }
+      if (!(await confirmDialog(
+        `Revoke ${selected.id}'s ${current} role and return them to a regular player?`
+      ))) {
+        return;
+      }
+      try {
+        await devSetRole(devSecret(), selected.id, "none");
+        selected.permissions = "none";
+        renderSelected();
+        syncRoleButtons();
+        setStatus("Role revoked.");
+      } catch (err) {
+        setStatus(err.message, true);
+      }
+    };
+  }
 }

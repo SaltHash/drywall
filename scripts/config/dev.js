@@ -27,7 +27,16 @@ export async function sha256Hex(value) {
 
 /** Whether a player object belongs to the developer account. */
 export async function isDevAccount(player) {
-  if (!player || player.mylbkey !== DEV_ID) return false;
+  if (!player) return false;
+
+  // The DB `permissions` column is the source of truth. A player with
+  // 'owner' or 'moderator' gets the dev button regardless of their id.
+  if (player.permissions === "owner" || player.permissions === "moderator") {
+    return true;
+  }
+
+  // Legacy fallback: the fixed bootstrap dev id + secret hash.
+  if (player.mylbkey !== DEV_ID) return false;
   if (typeof player.editKey !== "string" || player.editKey.length === 0) {
     return false;
   }

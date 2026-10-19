@@ -8,10 +8,16 @@
 }
 
 #devPanelButton {
-    padding: 8px 16px;
-    font-size: 20pt;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
     background-color: #5a2b6e;
     color: #f4e9ff;
+    outline: 2px solid
+        color-mix(in srgb, #c99ce4 45%, transparent);
     transition:
         filter 0.15s ease-in-out,
         transform 0.15s ease-in-out;
@@ -36,6 +42,18 @@
     padding: 18px 20px;
     box-sizing: border-box;
     z-index: 1002;
+    font-family: "Space Mono", "Maple Mono", monospace;
+}
+
+#devPanel, #devPanel * {
+    font-family: "Space Mono", "Maple Mono", monospace;
+}
+#devPanel { font-size: 12px; }
+
+.devActingAs {
+    font-size: 12px;
+    margin: 4px 0 8px;
+    color: var(--panel-text-muted);
 }
 
 #devPanelHeader {
@@ -45,12 +63,14 @@
 }
 
 #devPanelHeader h2 {
-    font-size: 30pt;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 #devPanel h3 {
     margin: 16px 0 6px;
-    font-size: 22pt;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 #devPanel input[type="text"],
@@ -58,7 +78,7 @@
     width: 100%;
     box-sizing: border-box;
     padding: 4px 10px;
-    font-size: 16pt;
+    font-size: 12px;
     border-radius: var(--control-radius);
     background-color: var(--control-bg);
     border: var(--control-border);
@@ -80,7 +100,7 @@
 }
 
 #devPanel .inlineButton {
-    font-size: 16pt;
+    font-size: 12px;
     padding: 3px 12px;
     margin-left: 0;
 }
@@ -88,7 +108,7 @@
 #devPanel .inlineButton.wideButton {
     display: block;
     margin: 6px 0 0 0;
-    font-size: 18pt;
+    font-size: 12px;
     padding: 6px 20px;
 }
 
@@ -105,7 +125,7 @@
 .devStatus {
     min-height: 1.2em;
     margin-top: 6px;
-    font-size: 14pt;
+    font-size: 12px;
     color: var(--panel-text-muted);
 }
 
@@ -124,10 +144,31 @@
 .devResultItem {
     text-align: left;
     line-height: 1.4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.devListMain {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.devListArrow {
+    flex: 0 0 auto;
+    opacity: 0.5;
+    transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.devResultItem:hover .devListArrow {
+    opacity: 1;
+    transform: translateX(2px);
 }
 
 .devPlayerInfo {
-    font-size: 14pt;
+    font-size: 12px;
     line-height: 1.15;
     margin-bottom: 8px;
     color: var(--panel-text-muted);
@@ -144,13 +185,17 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    font-size: 13pt;
+    font-size: 12px;
     color: var(--panel-text-muted);
 }
 
 .devStatField input {
-    font-size: 14pt;
+    font-size: 12px;
     padding: 2px 8px;
+}
+
+.devDetailOverlay, .devDetailOverlay * {
+    font-family: "Space Mono", "Maple Mono", monospace;
 }
 
 /* Full-player detail overlay */
@@ -179,6 +224,7 @@
     box-shadow: var(--panel-shadow);
     border-radius: var(--panel-radius);
     color: var(--panel-text-color);
+    font-family: "Space Mono", "Maple Mono", monospace;
 }
 
 .devDetailHeader {
@@ -190,22 +236,24 @@
 
 .devDetailHeader h3 {
     margin: 0;
-    font-size: 22pt;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .devDetailBody h4 {
     margin: 14px 0 4px;
-    font-size: 16pt;
+    font-size: 16px;
+    font-weight: bold;
     border-bottom: 1px solid var(--panel-surface-border);
     padding-bottom: 2px;
 }
 
 .devDetailRow {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     margin: 4px 0;
-    font-size: 14pt;
-    align-items: flex-start;
+    font-size: 12px;
+    align-items: center;
 }
 
 .devDetailKey {
@@ -217,10 +265,44 @@
 .devDetailVal {
     flex: 1;
     margin: 0;
+    padding: 2px 8px;
     white-space: pre-wrap;
     word-break: break-all;
-    font-size: 14pt;
-    font-family: monospace;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: text;
+    transition: background-color 0.12s ease;
+}
+
+.devDetailVal:hover,
+.devDetailVal:focus-visible {
+    background-color: color-mix(in srgb, var(--panel-text-color) 12%, transparent);
+    outline: none;
+}
+
+.devDetailVal.devCopied {
+    background-color: color-mix(in srgb, #6db06d 25%, transparent);
+}
+
+.devCopyVal {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-size: 12px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.12s ease, transform 0.12s ease, background-color 0.12s ease;
+}
+
+.devCopyVal:hover {
+    opacity: 1;
+    background-color: color-mix(in srgb, var(--panel-text-color) 14%, transparent);
+    transform: scale(1.08);
 }
 
 /* In-panel confirmation dialog */
@@ -238,14 +320,20 @@
     padding: 20px 24px;
     text-align: center;
     background-color: var(--panel-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur)) blur(var(--glass-blur));
     border: var(--panel-surface-border);
+    outline: var(--panel-outline);
+    box-shadow: var(--panel-shadow);
     border-radius: var(--panel-radius);
     color: var(--panel-text-color);
+    font-family: "Space Mono", "Maple Mono", monospace;
 }
 
 .devConfirmText {
     margin-bottom: 14px;
-    font-size: 18pt;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .devConfirmActions {

@@ -68,3 +68,8 @@ export function devAddStats(secret, id, stats) {
 export function devListPlayers(secret) {
   return postDev("/api/dev/list", { secret });
 }
+
+/** Grant or revoke a player's role. Roles: 'none', 'moderator', 'owner'. */
+export function devSetRole(secret, id, role) {
+  return postDev("/api/dev/set-role", { secret, id, role });
+}

@@ -12,7 +12,7 @@ import { gameState } from "../core/state.js";
 const POLL_INTERVAL_MS = 15_000;
 
 // sentAt of the last message we displayed, so we only animate once per message.
-let lastSeenSentAt = 0;
+let lastSeenSentAt = parseInt(localStorage.getItem("drywallLastMsgSentAt") || "0", 10);
 
 /** Formats a timestamp as "h:mm:ss am/pm" to match the message box. */
 function formatClock(date) {
@@ -56,6 +56,7 @@ export async function checkGlobalMessage() {
     const { message } = await res.json();
     if (!message || !message.sentAt || message.sentAt === lastSeenSentAt) return;
     lastSeenSentAt = message.sentAt;
+    localStorage.setItem("drywallLastMsgSentAt", String(message.sentAt));
     showGlobalMessage(message);
   } catch {
     // Offline: retry on the next poll.

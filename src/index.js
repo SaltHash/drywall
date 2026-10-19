@@ -80,12 +80,46 @@ async function sha256Hex(value) {
     .join("");
 }
 
-/** Whether the supplied secret belongs to the developer account. */
-async function requireDev(secret) {
+/** Role levels for the dev panel. Higher = more access. */
+const ROLES = { none: 0, moderator: 1, owner: 2 };
+
+/** Whether the supplied secret belongs to the bootstrap developer account. */
+async function isBootstrapDev(secret) {
   if (typeof secret !== "string" || secret.length < MIN_SECRET_LENGTH) {
     return false;
   }
   return (await sha256Hex(secret)) === DEV_SECRET_HASH;
+}
+
+/**
+ * Resolves the caller's role from their secret hash.
+ *
+ * The fixed DEV_SECRET_HASH is always 'owner' (bootstrap — it is the only
+ * credential that can grant the first role). Everyone else gets whatever
+ * `permissions` the database holds for them, defaulting to 'none'.
+ */
+async function callerRole(sql, secret) {
+  if (await isBootstrapDev(secret)) return "owner";
+  if (typeof secret !== "string" || secret.length < MIN_SECRET_LENGTH) {
+    return "none";
+  }
+  const hash = await sha256Hex(secret);
+  const rows = await sql`
+    select permissions from public.players where secret_hash = ${hash} limit 1
+  `;
+  const role = rows[0]?.permissions;
+  return role === "moderator" || role === "owner" ? role : "none";
+}
+
+/** Gate a dev route on the caller's role. Returns true if authorised. */
+async function requireRole(sql, body, minRole) {
+  const role = await callerRole(sql, body?.secret);
+  return (ROLES[role] ?? 0) >= (ROLES[minRole] ?? 99);
+}
+
+/** Legacy owner-only gate, kept for the bootstrap check. */
+async function requireDev(secret) {
+  return isBootstrapDev(secret);
 }
 
 /** Trims a display name and strips control characters. Returns null if invalid. */
@@ -159,7 +193,8 @@ async function connect(sql, request) {
   const hash = await sha256Hex(secret);
   const rows = await sql`
     select id, display_name, stats, save, save_updated_at,
-           leaderboard_banned, force_reset, pending_stats, pending_stats_rev
+           leaderboard_banned, force_reset, pending_stats, pending_stats_rev,
+           permissions
     from public.players
     where secret_hash = ${hash}
     limit 1
@@ -178,6 +213,7 @@ async function connect(sql, request) {
     forceReset: row.force_reset === true,
     pendingStats: row.pending_stats ?? {},
     pendingStatsRev: Number(row.pending_stats_rev) || 0,
+    permissions: row.permissions,
   });
 }
 
@@ -294,10 +330,10 @@ async function getGlobalMessage(env) {
   }
 }
 
-/** POST /api/dev/global-message */
-async function devGlobalMessage(env, request) {
+/** POST /api/dev/global-message (moderator+) */
+async function devGlobalMessage(sql, env, request) {
   const body = await readJson(request);
-  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+  if (!(await requireRole(sql, body, "moderator"))) return json({ error: "forbidden" }, 403);
 
   const stub = globalMessageStub(env);
   if (!stub) return json({ error: "global messaging unavailable" }, 503);
@@ -310,17 +346,17 @@ async function devGlobalMessage(env, request) {
   return new Response(res.body, { status: res.status, headers: JSON_HEADERS });
 }
 
-/** POST /api/dev/lookup - find players by id or display name. */
+/** POST /api/dev/lookup - find players by id or display name (moderator+) */
 async function devLookup(sql, request) {
   const body = await readJson(request);
-  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+  if (!(await requireRole(sql, body, "moderator"))) return json({ error: "forbidden" }, 403);
 
   const query = typeof body.query === "string" ? body.query.trim() : "";
   if (!query) return json({ error: "invalid query" }, 400);
 
   const rows = await sql`
     select id, display_name, leaderboard_opt_in, leaderboard_banned, force_reset,
-           stats, save_updated_at, pending_stats, pending_stats_rev
+           stats, save_updated_at, pending_stats, pending_stats_rev, permissions
     from public.players
     where id = ${query} or display_name = ${query}
     order by updated_at desc
@@ -333,6 +369,7 @@ async function devLookup(sql, request) {
       leaderboardOptIn: row.leaderboard_opt_in === true,
       leaderboardBanned: row.leaderboard_banned === true,
       forceReset: row.force_reset === true,
+      permissions: row.permissions,
       stats: row.stats,
       saveUpdatedAt: Number(row.save_updated_at) || 0,
       pendingStats: row.pending_stats ?? {},
@@ -341,10 +378,10 @@ async function devLookup(sql, request) {
   });
 }
 
-/** POST /api/dev/remove | /api/dev/restore */
+/** POST /api/dev/remove | /api/dev/restore (moderator+) */
 async function devSetRemoved(sql, request, removed) {
   const body = await readJson(request);
-  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+  if (!(await requireRole(sql, body, "moderator"))) return json({ error: "forbidden" }, 403);
 
   const id = typeof body.id === "string" ? body.id : "";
   if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
@@ -366,10 +403,10 @@ async function devSetRemoved(sql, request, removed) {
   return json({ ok: true, id: rows[0].id, leaderboardBanned: removed });
 }
 
-/** POST /api/dev/reset - force the player's local save back to defaults. */
+/** POST /api/dev/reset - force the player's local save back to defaults (moderator+) */
 async function devReset(sql, request) {
   const body = await readJson(request);
-  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+  if (!(await requireRole(sql, body, "moderator"))) return json({ error: "forbidden" }, 403);
 
   const id = typeof body.id === "string" ? body.id : "";
   if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
@@ -384,15 +421,15 @@ async function devReset(sql, request) {
   return json({ ok: true, id: rows[0].id });
 }
 
-/** POST /api/dev/list - every player row, for the dev panel's full roster view. */
+/** POST /api/dev/list - every player row, for the dev panel's full roster view (moderator+) */
 async function devList(sql, request) {
   const body = await readJson(request);
-  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+  if (!(await requireRole(sql, body, "moderator"))) return json({ error: "forbidden" }, 403);
 
   const rows = await sql`
     select id, display_name, secret_hash, stats, save, save_updated_at,
            leaderboard_opt_in, leaderboard_banned, force_reset,
-           pending_stats, pending_stats_rev, created_at, updated_at
+           pending_stats, pending_stats_rev, created_at, updated_at, permissions
     from public.players
     order by updated_at desc
   `;
@@ -407,6 +444,7 @@ async function devList(sql, request) {
       leaderboardOptIn: row.leaderboard_opt_in === true,
       leaderboardBanned: row.leaderboard_banned === true,
       forceReset: row.force_reset === true,
+      permissions: row.permissions,
       pendingStats: row.pending_stats ?? {},
       pendingStatsRev: Number(row.pending_stats_rev) || 0,
       createdAt: Number(row.created_at) || 0,
@@ -415,10 +453,10 @@ async function devList(sql, request) {
   });
 }
 
-/** POST /api/dev/add-stats - queue stat deltas to apply to a player once. */
+/** POST /api/dev/add-stats - queue stat deltas to apply to a player once (owner only) */
 async function devAddStats(sql, request) {
   const body = await readJson(request);
-  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+  if (!(await requireRole(sql, body, "owner"))) return json({ error: "forbidden" }, 403);
 
   const id = typeof body.id === "string" ? body.id : "";
   if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
@@ -455,6 +493,45 @@ async function devAddStats(sql, request) {
   });
 }
 
+/** POST /api/dev/set-role - grant or revoke a player's role (owner only).
+ *
+ * Roles: 'none' (regular player), 'moderator', 'owner'. The caller cannot
+ * assign a role higher than their own, and cannot demote themselves.
+ */
+async function devSetRole(sql, request) {
+  const body = await readJson(request);
+  if (!(await requireRole(sql, body, "owner"))) return json({ error: "forbidden" }, 403);
+
+  const id = typeof body.id === "string" ? body.id : "";
+  if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
+
+  const role = body.role === "moderator" || body.role === "owner" || body.role === "none"
+    ? body.role
+    : null;
+  if (role === null) return json({ error: "invalid role" }, 400);
+
+  // Resolve the caller's own id from their secret, to prevent self-demotion.
+  const callerSecret = typeof body.secret === "string" ? body.secret : "";
+  const callerHash = await sha256Hex(callerSecret);
+  const callerRows = await sql`
+    select id, permissions from public.players where secret_hash = ${callerHash} limit 1
+  `;
+  const callerRole = callerRows[0]?.permissions === "owner" ? "owner" : "none";
+  const callerId = callerRows[0]?.id;
+
+  if (callerRole !== "owner") return json({ error: "forbidden" }, 403);
+  if (callerId === id) return json({ error: "cannot change your own role" }, 403);
+
+  const rows = await sql`
+    update public.players
+    set permissions = ${role}, updated_at = now()
+    where id = ${id}
+    returning id, display_name, permissions
+  `;
+  if (rows.length === 0) return json({ error: "not found" }, 404);
+  return json({ ok: true, id: rows[0].id, permissions: rows[0].permissions });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -464,21 +541,21 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
-    // Global announcements live in a Durable Object, independent of the
-    // player database, so they are handled before the DATABASE_URL check.
-    if (url.pathname === "/api/global-message" && request.method === "GET") {
-      return await getGlobalMessage(env);
-    }
-    if (url.pathname === "/api/dev/global-message" && request.method === "POST") {
-      return await devGlobalMessage(env, request);
-    }
-
     if (!env.DATABASE_URL) {
       console.error("DATABASE_URL secret is not configured");
       return json({ error: "server misconfigured" }, 500);
     }
 
     const sql = neon(env.DATABASE_URL);
+
+    // Global announcements live in a Durable Object, independent of the
+    // player database. The dev route still needs the DB for role checks.
+    if (url.pathname === "/api/global-message" && request.method === "GET") {
+      return await getGlobalMessage(env);
+    }
+    if (url.pathname === "/api/dev/global-message" && request.method === "POST") {
+      return await devGlobalMessage(sql, env, request);
+    }
 
     try {
       if (url.pathname === "/api/leaderboard" && request.method === "GET") {
@@ -507,6 +584,9 @@ export default {
       }
       if (url.pathname === "/api/dev/add-stats" && request.method === "POST") {
         return await devAddStats(sql, request);
+      }
+      if (url.pathname === "/api/dev/set-role" && request.method === "POST") {
+        return await devSetRole(sql, request);
       }
       return json({ error: "not found" }, 404);
     } catch (err) {
