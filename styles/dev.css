@@ -1,0 +1,186 @@
+/* Developer / moderation panel (only shown to the dev account) */
+
+/* Keep the floating Settings + Dev buttons together. */
+#settingsButtonDiv {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+#devPanelButton {
+    padding: 8px 16px;
+    font-size: 20pt;
+    background-color: #5a2b6e;
+    border: 1px solid #8a4aa3;
+    border-radius: var(--control-radius);
+    color: #f4e9ff;
+    transition:
+        filter 0.15s ease-in-out,
+        transform 0.15s ease-in-out;
+}
+
+#devPanelButton:hover {
+    filter: brightness(1.15);
+}
+
+#devPanelButton:active {
+    transform: translateY(1px);
+}
+
+#devPanel {
+    position: fixed;
+    display: none;
+    right: 12px;
+    top: 12px;
+    width: min(540px, 94vw);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 18px 20px;
+    box-sizing: border-box;
+    z-index: 1002;
+}
+
+#devPanelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#devPanelHeader h2 {
+    font-size: 30pt;
+}
+
+#devPanel h3 {
+    margin: 16px 0 6px;
+    font-size: 22pt;
+}
+
+#devPanel input[type="text"],
+#devPanel textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 10px;
+    font-size: 16pt;
+    border-radius: var(--control-radius);
+    background-color: var(--control-bg);
+    border: var(--control-border);
+    color: var(--panel-text-color);
+}
+
+#devPanel textarea {
+    min-height: 70px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.devRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+#devPanel .inlineButton {
+    font-size: 16pt;
+    padding: 3px 12px;
+    margin-left: 0;
+}
+
+#devPanel .inlineButton.wideButton {
+    display: block;
+    margin: 6px 0 0 0;
+    font-size: 18pt;
+    padding: 6px 20px;
+}
+
+.dangerButton {
+    background-color: #7a2b2b;
+    border-color: #a33333;
+    color: #ffecec;
+}
+
+.dangerButton:hover {
+    background-color: #8f3232;
+}
+
+.devStatus {
+    min-height: 1.2em;
+    margin-top: 6px;
+    font-size: 14pt;
+    color: var(--panel-text-muted);
+}
+
+.devStatus.devError {
+    color: #e06c6c;
+}
+
+.devResults {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.devResultItem {
+    text-align: left;
+}
+
+.devPlayerInfo {
+    font-size: 14pt;
+    line-height: 1.15;
+    margin-bottom: 8px;
+    color: var(--panel-text-muted);
+    word-break: break-all;
+}
+
+.devStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.devStatField {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13pt;
+    color: var(--panel-text-muted);
+}
+
+.devStatField input {
+    font-size: 14pt;
+    padding: 2px 8px;
+}
+
+/* In-panel confirmation dialog */
+.devConfirmOverlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background-color: rgba(0, 0, 0, 0.55);
+    z-index: 1100;
+}
+
+.devConfirmBox {
+    width: min(460px, 92vw);
+    padding: 20px 24px;
+    text-align: center;
+    background-color: var(--panel-bg);
+    border: var(--panel-surface-border);
+    border-radius: var(--panel-radius);
+    color: var(--panel-text-color);
+}
+
+.devConfirmText {
+    margin-bottom: 14px;
+    font-size: 18pt;
+}
+
+.devConfirmActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}

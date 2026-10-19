@@ -22,6 +22,8 @@ const env = {
   ASSETS: { fetch: async () => new Response("not found", { status: 404 }) },
 };
 
+const sql = neon(DATABASE_URL);
+
 const id = "smoke-test-player";
 const secret = "smoke-test-secret-key-0123456789abcdef";
 const otherSecret = "a-different-secret-key-0123456789abcdef";
@@ -203,9 +205,136 @@ try {
     "opted-in player without a name filtered from leaderboard",
     !board4.entries.some((e) => e.name === noNameId),
   );
+
+  console.log("dev endpoints reject non-dev secrets");
+  res = await call("/api/dev/lookup", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret, query: id }),
+  });
+  check("dev lookup rejects a normal secret", res.status === 403, `got ${res.status}`);
+  res = await call("/api/dev/remove", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret, id }),
+  });
+  check("dev remove rejects a normal secret", res.status === 403, `got ${res.status}`);
+
+  console.log("global message endpoint (no DO bound in tests)");
+  res = await call("/api/global-message", { method: "GET" });
+  check("global message returns 200", res.status === 200, `got ${res.status}`);
+  const globalMessage = await res.json();
+  check("global message is null without a binding", globalMessage.message === null);
+
+  console.log("moderated player is hidden and cannot rejoin");
+  const bannedId = "smoke-banned-player";
+  const bannedSecret = "banned-secret-key-0123456789abcdefgh";
+  await call("/api/sync", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      id: bannedId,
+      secret: bannedSecret,
+      displayName: "BANNED",
+      save: { ...save, drywall: "9.99e99", leaderboardOptIn: true },
+      saveUpdatedAt: 1000,
+    }),
+  });
+  // The removal API needs the dev secret, so simulate the moderator action.
+  await sql`update public.players
+    set leaderboard_banned = true, leaderboard_opt_in = false
+    where id = ${bannedId}`;
+  // The banned player tries to opt back in and reappear.
+  await call("/api/sync", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      id: bannedId,
+      secret: bannedSecret,
+      displayName: "BANNED AGAIN",
+      save: { ...save, drywall: "9.99e99", leaderboardOptIn: true },
+      saveUpdatedAt: 2000,
+    }),
+  });
+  res = await call("/api/leaderboard", { method: "GET" });
+  const board5 = await res.json();
+  check(
+    "banned player stays off the leaderboard",
+    !board5.entries.some((e) => e.name === "BANNED AGAIN"),
+  );
+  res = await call("/api/connect", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret: bannedSecret }),
+  });
+  const bannedConnect = await res.json();
+  check("connect reports leaderboardBanned", bannedConnect.leaderboardBanned === true);
+
+  console.log("pending stat deltas are delivered then acknowledged");
+  await sql`update public.players
+    set pending_stats = '{"drywall":"1000","clicks":"5"}'::jsonb, pending_stats_rev = 1
+    where id = ${id}`;
+  res = await call("/api/connect", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret }),
+  });
+  const withDelta = await res.json();
+  check("connect returns pendingStats", withDelta.pendingStats?.drywall === "1000");
+  check("connect returns pendingStatsRev", withDelta.pendingStatsRev === 1);
+  await call("/api/sync", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      id,
+      secret,
+      displayName: "SMOKE TEST 2",
+      save: { ...save, drywall: "3e12" },
+      saveUpdatedAt: 10_000,
+      statsAckRev: 1,
+    }),
+  });
+  res = await call("/api/connect", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret }),
+  });
+  const acked = await res.json();
+  check(
+    "ack clears pending stats",
+    Object.keys(acked.pendingStats || {}).length === 0,
+  );
+
+  console.log("moderation reset is delivered then acknowledged");
+  await sql`update public.players set force_reset = true where id = ${id}`;
+  res = await call("/api/connect", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret }),
+  });
+  const resetPending = await res.json();
+  check("connect reports forceReset", resetPending.forceReset === true);
+  await call("/api/sync", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      id,
+      secret,
+      displayName: "SMOKE TEST 2",
+      save: { ...save, drywall: "4e12" },
+      saveUpdatedAt: 11_000,
+      resetAck: true,
+    }),
+  });
+  res = await call("/api/connect", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ secret }),
+  });
+  const resetAcked = await res.json();
+  check("reset ack clears force_reset", resetAcked.forceReset === false);
 } finally {
-  const sql = neon(DATABASE_URL);
-  await sql`delete from public.players where id in (${id}, ${"smoke-opted-out"}, ${"smoke-noname"})`;
+  await sql`delete from public.players where id in (${id}, ${"smoke-opted-out"}, ${"smoke-noname"}, ${"smoke-banned-player"})`;
   console.log("cleanup done");
 }
 

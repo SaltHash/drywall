@@ -125,6 +125,8 @@ export function getLeaderboardLabel(typeKey) {
 
 /**
  * Renders a leaderboard as an HTML string.
+ * Each entry is a row: an outlined rank badge, the name pinned to the left,
+ * and the score pinned to the right.
  * Returns null when leaderboard data has not loaded yet, so the caller can
  * leave the "Loading..." placeholder in place.
  */
@@ -136,8 +138,15 @@ export function getLeaderboardText(typeKey) {
   if (list.length === 0) return "No entries yet.";
 
   return list
-    .map((entry) => `${escapeHtml(entry.name)} - ${FORMATTERS[type.kind](entry.value)}`)
-    .join("<br>");
+    .map(
+      (entry, index) => `
+        <div class="lbRow">
+          <span class="lbRank">${index + 1}</span>
+          <span class="lbName">${escapeHtml(entry.name)}</span>
+          <span class="lbScore">${FORMATTERS[type.kind](entry.value)}</span>
+        </div>`,
+    )
+    .join("");
 }
 
 /** Fills a <select> element with one option per leaderboard type. */

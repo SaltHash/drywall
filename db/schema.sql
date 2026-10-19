@@ -23,6 +23,17 @@ create table if not exists public.players (
   -- Whether this player wants to appear on the public leaderboards. Players
   -- who skipped the username prompt stay `false` until they opt in.
   leaderboard_opt_in boolean  not null default false,
+  -- Moderation: a removed player is permanently hidden from the leaderboard
+  -- and may never opt back in, but keeps playing with a working cloud save.
+  leaderboard_banned boolean  not null default false,
+  -- Moderation: when true the client overwrites its local save with a default
+  -- one on the next connect, regardless of which copy is newer.
+  force_reset      boolean    not null default false,
+  -- Moderation: stat deltas queued by the dev panel. The client applies these
+  -- once (relative to its own save) and then acknowledges them. `rev` is bumped
+  -- every time `pending_stats` changes so a client can tell them apart.
+  pending_stats    jsonb      not null default '{}'::jsonb,
+  pending_stats_rev bigint    not null default 0,
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now(),
   constraint players_id_format           check (id ~ '^[A-Za-z0-9_-]{8,64}$'),
@@ -34,6 +45,19 @@ create table if not exists public.players (
 -- Backfill the column for databases created before opt-in existed.
 alter table public.players
   add column if not exists leaderboard_opt_in boolean not null default false;
+
+-- Backfill moderation columns for databases created before they existed.
+alter table public.players
+  add column if not exists leaderboard_banned boolean not null default false;
+
+alter table public.players
+  add column if not exists force_reset boolean not null default false;
+
+alter table public.players
+  add column if not exists pending_stats jsonb not null default '{}'::jsonb;
+
+alter table public.players
+  add column if not exists pending_stats_rev bigint not null default 0;
 
 -- A secret key may only ever be linked to a single player row.
 create unique index if not exists players_secret_hash_uidx

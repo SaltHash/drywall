@@ -6,7 +6,7 @@
  */
 
 import { D, infinityThreshold } from "../core/decimal.js";
-import { gameState } from "../core/state.js";
+import { gameState, setLastLeaderboardUpdate } from "../core/state.js";
 import { levelStars } from "../config/constants.js";
 import { checkBoosts } from "./boosts.js";
 import { checkAllAchievements } from "./achievements.js";
@@ -51,6 +51,18 @@ export function applySettings() {
         bg.classList.remove("darkBG");
       }
     }
+  }
+
+  // Dim the leaderboard / achievements backgrounds. A single 0-1 custom
+  // property feeds a black gradient layer in styles/panels.css so only the
+  // background image is dimmed, never the text or icons on top of it.
+  const bgDim = Math.min(100, Math.max(0, Number(player.settings.bgDim) || 0));
+  document.documentElement.style.setProperty("--bg-dim", String(bgDim / 100));
+  if (gameState.elts.bgDimSetting) {
+    gameState.elts.bgDimSetting.value = String(bgDim);
+  }
+  if (gameState.elts.bgDimValue) {
+    gameState.elts.bgDimValue.textContent = `${Math.round(bgDim)}%`;
   }
 
   updateAllText();
@@ -106,9 +118,11 @@ export function update(dt) {
 
   // Periodic cloud save upload (the same call also feeds the leaderboard,
   // since the public projection is derived from the uploaded save).
+  // The schedule is anchored to the persisted wall-clock time so a reload
+  // resumes the 60-second cadence instead of restarting it.
   if (Date.now() - gameState.lastLeaderboardUpdate >= 60000) {
+    setLastLeaderboardUpdate();
     pushSaveToCloud();
-    gameState.lastLeaderboardUpdate = Date.now();
   }
 
   // Reset-stats setting

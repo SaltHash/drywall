@@ -7,7 +7,13 @@
     left: 0;
     top: 0;
     background-color: #a38e38;
-    background-image: url(../assets/backgrounds/trophiesbg.jpg);
+    /* The black gradient is the dim layer; --bg-dim (0-1) is set in Settings. */
+    background-image:
+        linear-gradient(
+            rgba(0, 0, 0, var(--bg-dim, 0)),
+            rgba(0, 0, 0, var(--bg-dim, 0))
+        ),
+        url(../assets/backgrounds/trophiesbg.jpg);
     background-size: 100% 100%;
 }
 
@@ -49,12 +55,52 @@
 #leaderboard > h3 {
     font-size: 32pt;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 26px;
 }
 
-#leaderboard > p {
+/* Each entry is a three-column row: outlined rank badge, name (left),
+   score (right). */
+#leaderboardEntries {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
     font-size: 20pt;
     font-weight: 400;
+}
+
+.lbRow {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Simple outlined circle holding the placement number. */
+.lbRank {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    box-sizing: border-box;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    font-size: 18pt;
+    line-height: 1;
+}
+
+.lbName {
+    min-width: 0;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lbScore {
+    text-align: right;
+    white-space: nowrap;
+    color: var(--panel-text-muted);
 }
 
 /* Achievements Area */
@@ -66,7 +112,13 @@
     left: 0;
     top: 0;
     background-color: #a38e38;
-    background-image: url(../assets/backgrounds/achievementsbg.jpg);
+    /* See #leaderboardArea: the gradient dims only the background image. */
+    background-image:
+        linear-gradient(
+            rgba(0, 0, 0, var(--bg-dim, 0)),
+            rgba(0, 0, 0, var(--bg-dim, 0))
+        ),
+        url(../assets/backgrounds/achievementsbg.jpg);
     background-size: 100% 100%;
 }
 
@@ -89,6 +141,27 @@
 #achievementsArea > p {
     font-size: 32pt;
     text-align: center;
+}
+
+/* Translucent white highlight behind the achievements summary text. The
+   elements hug their text and stay centred so the highlight reads as a
+   marker rather than a full-width bar. */
+#achievementsTitle,
+#achievementsBoost {
+    background-color: rgba(255, 255, 255, 0.6);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 16px;
+    border-radius: 8px;
+}
+
+/* Dark theme: the highlight flips to translucent black with white text so it
+   stays readable. Light mode keeps the white highlight and near-black text. */
+:root:not(.lightMode) #achievementsTitle,
+:root:not(.lightMode) #achievementsBoost {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 #achievementsContainer {
@@ -115,9 +188,14 @@
 }
 
 /* Locked (not-yet-unlocked) achievements use a black silhouette image.
-   On the light surface a black shape is too harsh, so tint it to gray. */
+   They stay pure black in light mode and are shown translucent in both
+   themes so they read as inactive against the background. */
+.achievementBox.locked {
+    opacity: 0.6;
+}
+
 :root.lightMode .achievementBox.locked {
-    filter: invert(0.667);
+    opacity: 0.4;
 }
 
 #achievementHover {
@@ -152,6 +230,10 @@
 }
 
 :root:not(.lightMode) #achievementHoverDescription {
+    color: #dddddd;
+}
+
+:root:not(.lightMode) #achievementHoverReward {
     color: #dddddd;
 }
 

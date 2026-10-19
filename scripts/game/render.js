@@ -39,6 +39,12 @@ let renderedLeaderboardVersion = -1;
 // Tracks the leaderboard opt-in UI so it is only touched when it actually flips.
 let renderedLeaderboardOptIn = null;
 
+// Tracks the moderation "removed" state so the button is only touched on change.
+let renderedLeaderboardBanned = null;
+
+// Tracks the cloud-save indicator text so it is only repainted on change.
+let renderedCloudSaveStatus = null;
+
 /**
  * Sets the click-handler text on regular upgrade buttons (upgrade1..upgrade24).
  */
@@ -331,6 +337,47 @@ export function updateInfinityTreeElements() {
 }
 
 /**
+ * Refreshes the Cloud Save indicator in Settings so the player can see that
+ * their progress is being uploaded automatically (and whether it failed).
+ */
+function updateCloudSaveStatus() {
+  const elt = gameState.elts.cloudSaveStatus;
+  if (!elt) return;
+
+  let text;
+  let state;
+  if (gameState.cloudSaveStatus === "saving") {
+    text = "Saving to the cloud...";
+    state = "saving";
+  } else if (gameState.cloudSaveStatus === "error") {
+    text = "Cloud save failed, retrying in a moment";
+    state = "error";
+  } else if (gameState.cloudSaveStatus === "saved") {
+    const seconds = Math.max(
+      0,
+      Math.round((Date.now() - gameState.lastCloudSave) / 1000),
+    );
+    text =
+      seconds <= 1
+        ? "Saved to the leaderboard just now"
+        : "Saved to the leaderboard " + seconds + "s ago";
+    state = "saved";
+  } else {
+    text = "Auto-saves to the leaderboard every 60 seconds.";
+    state = "idle";
+  }
+
+  if (text !== renderedCloudSaveStatus) {
+    renderedCloudSaveStatus = text;
+    elt.textContent = text;
+  }
+
+  elt.classList.toggle("cloudSaveSaving", state === "saving");
+  elt.classList.toggle("cloudSaveError", state === "error");
+  elt.classList.toggle("cloudSaveSaved", state === "saved");
+}
+
+/**
  * Renders all game UI elements: stats, break-infinity bar, area selectors,
  * rebirth buttons, skill-point display, settings visibility, and leaderboards.
  * Called every tick.
@@ -440,15 +487,37 @@ export function render() {
       : "none";
 
   // --- Leaderboard opt-in ---
-  const leaderboardOptIn = player.leaderboardOptIn === true;
-  if (leaderboardOptIn !== renderedLeaderboardOptIn) {
+  const leaderboardBanned = gameState.leaderboardBanned === true;
+  const leaderboardOptIn = !leaderboardBanned && player.leaderboardOptIn === true;
+  if (
+    leaderboardOptIn !== renderedLeaderboardOptIn ||
+    leaderboardBanned !== renderedLeaderboardBanned
+  ) {
     renderedLeaderboardOptIn = leaderboardOptIn;
+    renderedLeaderboardBanned = leaderboardBanned;
+
     if (elts.leaderboardToggleButton) {
-      elts.leaderboardToggleButton.textContent = leaderboardOptIn
-        ? "Opt out of the leaderboard"
-        : "Show me on the leaderboard";
-      elts.leaderboardToggleButton.classList.toggle("optedIn", leaderboardOptIn);
+      if (leaderboardBanned) {
+        elts.leaderboardToggleButton.textContent = "Removed from leaderboard";
+        elts.leaderboardToggleButton.disabled = true;
+        elts.leaderboardToggleButton.classList.remove("optedIn");
+        elts.leaderboardToggleButton.classList.add("removed");
+      } else {
+        elts.leaderboardToggleButton.disabled = false;
+        elts.leaderboardToggleButton.classList.remove("removed");
+        elts.leaderboardToggleButton.textContent = leaderboardOptIn
+          ? "Opt out of the leaderboard"
+          : "Show me on the leaderboard";
+        elts.leaderboardToggleButton.classList.toggle("optedIn", leaderboardOptIn);
+      }
     }
+
+    if (elts.leaderboardOptInHint) {
+      elts.leaderboardOptInHint.textContent = leaderboardBanned
+        ? "A moderator removed this account from the global leaderboards. You can keep playing, but you will not appear and cannot rejoin."
+        : "Turn this on and pick a name to show up on the global leaderboards.";
+    }
+
     // Only reveal the display-name entry once the player is opted in.
     if (elts.usernameSettingDiv) {
       elts.usernameSettingDiv.style.display = leaderboardOptIn ? "" : "none";
@@ -469,10 +538,13 @@ export function render() {
       if (elts.leaderboardTitle) {
         elts.leaderboardTitle.textContent = getLeaderboardLabel(leaderboardType);
       }
-      const content = elts.leaderboard.querySelector("p");
+      const content = elts.leaderboardEntries;
       if (content) content.innerHTML = text;
     }
   }
+
+  // --- Cloud save indicator ---
+  updateCloudSaveStatus();
 
   // --- Tree element states ---
   updateSkillTreeElements();

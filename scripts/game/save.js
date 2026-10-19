@@ -64,6 +64,37 @@ export function setUsernamePopupVisible(visible) {
   if (usernameBackdrop) usernameBackdrop.style.display = visible ? "block" : "none";
 }
 
+// Remembers that the removal notice has been shown, so it only appears once.
+const REMOVAL_NOTICE_KEY = "DRYWALL_REMOVAL_NOTICE_SEEN";
+
+/** Whether the "removed from leaderboard" notice has already been shown. */
+export function removalNoticeSeen() {
+  try {
+    return localStorage.getItem(REMOVAL_NOTICE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Marks the removal notice as shown (best effort). */
+export function markRemovalNoticeSeen() {
+  try {
+    localStorage.setItem(REMOVAL_NOTICE_KEY, "1");
+  } catch {
+    // Ignore storage failures; the notice may show again next session.
+  }
+}
+
+/**
+ * Shows or hides the moderation "you were removed" popup (and its backdrop).
+ * @param {boolean} visible
+ */
+export function setRemovedPopupVisible(visible) {
+  const { removedPopup, removedBackdrop } = gameState.elts;
+  if (removedPopup) removedPopup.style.display = visible ? "block" : "none";
+  if (removedBackdrop) removedBackdrop.style.display = visible ? "block" : "none";
+}
+
 /**
  * Resets / loads the player object from localStorage.
  * @param {boolean} clear - If true, ignore saved data (hard reset)

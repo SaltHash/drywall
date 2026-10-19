@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="styles/popups.css">
     <link rel="stylesheet" href="styles/settings.css">
     <link rel="stylesheet" href="styles/ui.css">
+    <link rel="stylesheet" href="styles/dev.css">
     <link rel="stylesheet" href="styles/gameplay.css">
     <link rel="stylesheet" href="styles/trees.css">
     <link rel="stylesheet" href="styles/panels.css">
@@ -71,6 +72,13 @@
       <h4 id="usernamePopupHint">Skipping keeps you off the leaderboard until you turn it on in Settings.</h4>
     </div>
 
+    <div id="removedBackdrop"></div>
+    <div id="removedPopup" role="dialog" aria-modal="true" aria-labelledby="removedPopupTitle">
+      <h2 id="removedPopupTitle">Removed from leaderboards</h2>
+      <p id="removedPopupText">A moderator has removed this account from the global leaderboards. You can keep playing and your cloud save still works, but your name will no longer appear and you cannot rejoin.</p>
+      <button id="removedPopupDismiss" class="popupButton primary">Understood</button>
+    </div>
+
     <div id="achievementNotification">
       <div id="achievementIconContainer">
         <img id="achievementIcon" src="assets/icons/Puzzle.png"></img>
@@ -114,6 +122,11 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div class="settingRow">
+          <span>Menu background dim:</span>
+          <input id="bgDimSetting" type="range" min="0" max="100" step="1" value="0">
+          <span id="bgDimValue">0%</span>
+        </div>
         <h3 id="automationSettingsHeader">Automation</h3>
         <div class="settingRow">
           <span>Auto-rebirth:</span>
@@ -154,7 +167,7 @@
           <input id="usernameSetting" type="text" maxlength="20" placeholder="Your name">
         </div>
         <h3>Cloud Save</h3>
-        <p id="cloudSaveDisclaimer">Your secret key is the password for your save. Keep it private — anyone with it can use your save.</p>
+        <p id="cloudSaveDisclaimer">Your secret key is the password for your save. Keep it private, anyone with it can use your save.</p>
         <div class="settingRow" id="secretKeyRow">
           <span>Secret key:</span>
           <input id="secretKeySetting" type="password" readonly>
@@ -167,6 +180,7 @@
           <button id="linkDeviceButton" class="inlineButton">Link</button>
         </div>
         <p id="linkDeviceStatus"></p>
+        <p id="cloudSaveStatus">Auto-saves to the leaderboard every 60 seconds.</p>
         <h3>Stats</h3>
         <p id="clicksStat">Loading...</p>
         <p id="playtimeStat">Loading...</p>
@@ -180,7 +194,7 @@
             <select id="leaderboardSelect"></select>
             <div id="leaderboard">
                 <h3 id="leaderboardTitle">Drywall</h3>
-                <p>Loading...</p>
+                <div id="leaderboardEntries">Loading...</div>
             </div>
         </div>
     </div>
@@ -369,7 +383,12 @@
       <button id="settingsButton">
         Settings
       </button>
+      <button id="devPanelButton" style="display: none">
+        Dev
+      </button>
     </div>
+
+    <div id="devPanel"></div>
 
     <div id="stats">
       <span id="drywallStat">Drywall: 0</span>

@@ -182,6 +182,8 @@ button {
    shadow and radius from the tokens above. Layout (size, position,
    padding) is left to each panel's own rule. */
 #usernamePopup,
+#removedPopup,
+#devPanel,
 #leaderboard,
 #settings,
 #areaSelect,

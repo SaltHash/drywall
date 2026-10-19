@@ -77,6 +77,8 @@ export const playerTemplate = {
     darkMode: false,
     scientificNotation: false,
     minimalParticles: false,
+    // Dims the leaderboard and achievements backgrounds (0-100%).
+    bgDim: 0,
     autoRebirth: false,
     autoSkillTree: true,
     autoInfinity: false,

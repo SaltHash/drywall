@@ -25,5 +25,25 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS"
-  }
+  },
+
+  // A single Durable Object instance holds the current global message. This
+  // gives the dev panel one durable, globally-consistent value to broadcast
+  // without persisting announcements in the player database.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "GLOBAL_MESSAGE",
+        "class_name": "GlobalMessage"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "GlobalMessage"
+      ]
+    }
+  ]
 }

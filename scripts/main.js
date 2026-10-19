@@ -21,7 +21,12 @@
 import { gameState } from "./core/state.js";
 import { initDOM } from "./core/init.js";
 import { GAME_VERSION } from "./config/version.js";
-import { resetPlayer } from "./game/save.js";
+import {
+  resetPlayer,
+  removalNoticeSeen,
+  setRemovedPopupVisible,
+  setUsernamePopupVisible,
+} from "./game/save.js";
 import { checkBoosts } from "./game/boosts.js";
 import { setupUpgradeButtons } from "./game/render.js";
 import {
@@ -34,7 +39,9 @@ import {
   loadLeaderboard,
   initLeaderboardSelect,
 } from "./services/leaderboard.js";
-import { reconcileSave, pushSaveToCloud } from "./game/sync.js";
+import { reconcileSave } from "./game/sync.js";
+import { initGlobalMessages } from "./services/global-message.js";
+import { initDevPanel } from "./game/dev-panel.js";
 import { tick } from "./game/loop.js";
 import { initGeometryDash } from "./minigames/geometrydash.js";
 import { initFlappyBird } from "./minigames/flappybird.js";
@@ -53,17 +60,14 @@ resetPlayer(false);
 // ── 3. Cloud reconcile ────────────────────────────────────────────────
 // Runs before the UI is wired up so event handlers see the final save.
 // reconcileSave() mutates gameState.player in place and never throws.
-const reconcile = await reconcileSave().catch((err) => {
+await reconcileSave().catch((err) => {
   console.error("Failed to reconcile cloud save:", err);
-  return { status: "offline" };
 });
 
-// When the local copy is authoritative (a brand-new profile, or a local save
-// that is newer than the cloud), register/upload it right away instead of
-// waiting for the first periodic sync.
-if (reconcile?.status === "new-player" || reconcile?.status === "local-newer") {
-  pushSaveToCloud();
-}
+// Note: there is deliberately no eager "insta-save" here. Uploading a brand-new
+// profile the moment it is created could be abused (spam new accounts to flood
+// the database). New/updated saves are instead uploaded on the 60-second
+// periodic sync in game/loop.js, which is anchored across reloads.
 
 // ── 4. Compute initial boosts ────────────────────────────────────────
 checkBoosts();
@@ -77,6 +81,18 @@ setupInfinityTreeButtons();
 
 // ── 7. Event listeners ──────────────────────────────────────────────
 setupEventListeners();
+
+// ── 7b. Moderation notice ───────────────────────────────────────────
+// A removed player is told once, the first time they log in after removal.
+// The notice is marked seen when they dismiss it (see game/events.js).
+if (gameState.leaderboardBanned && !removalNoticeSeen()) {
+  setUsernamePopupVisible(false);
+  setRemovedPopupVisible(true);
+}
+
+// ── 7c. Global messages + dev panel ─────────────────────────────────
+initGlobalMessages();
+initDevPanel();
 
 // ── 8. Achievement grid ─────────────────────────────────────────────
 initAchievementGrid();

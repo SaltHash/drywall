@@ -46,6 +46,20 @@
     margin-bottom: 10px;
 }
 
+/* Menu background dim slider */
+#bgDimSetting {
+    width: 240px;
+    margin-left: 20px;
+    accent-color: #a38e38;
+    cursor: pointer;
+}
+
+#bgDimValue {
+    margin-left: 12px;
+    min-width: 70px;
+    text-align: left;
+}
+
 #usernameSetting {
     width: 200px;
     padding: 4px 8px;
@@ -84,6 +98,26 @@
     font-size: 18pt;
     text-align: center;
     margin-bottom: 10px;
+}
+
+#cloudSaveStatus {
+    color: var(--panel-text-muted);
+    font-size: 16pt;
+    text-align: center;
+    margin: 0 auto 10px auto;
+    transition: color 0.15s ease-in-out;
+}
+
+#cloudSaveStatus.cloudSaveSaving {
+    color: var(--panel-text-muted);
+}
+
+#cloudSaveStatus.cloudSaveSaved {
+    color: #60cc60;
+}
+
+#cloudSaveStatus.cloudSaveError {
+    color: #e06c6c;
 }
 
 #cloudSaveDisclaimer {

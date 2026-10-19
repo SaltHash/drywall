@@ -45,10 +45,31 @@ npm run deploy                          # wrangler deploy (assets + API)
 | `/api/leaderboard` | GET | none | Public projection: display name + stats only |
 | `/api/connect` | POST | secret key | Returns the full private save for a secret |
 | `/api/sync` | POST | secret key | Creates/updates the caller's row |
+| `/api/global-message` | GET | none | Current global announcement (from a Durable Object) |
+| `/api/dev/global-message` | POST | dev secret | Broadcast a global announcement |
+| `/api/dev/lookup` | POST | dev secret | Find players by id or display name |
+| `/api/dev/remove` | POST | dev secret | Permanently hide a player from the leaderboard |
+| `/api/dev/restore` | POST | dev secret | Undo a removal |
+| `/api/dev/reset` | POST | dev secret | Force a player's save back to defaults |
+| `/api/dev/add-stats` | POST | dev secret | Queue stat deltas to apply to a player once |
 
 Every player is one row. All of their stats live in a single `save` JSON
 document, so new stats never require a schema change. The secret key is
 SHA-256-hashed before storage and the browser never sees `DATABASE_URL`.
+
+### Moderation / dev panel
+
+`/api/dev/*` is gated on a fixed SHA-256 hash of the developer's secret
+(`DEV_SECRET_HASH` in `src/index.js`); the secret itself is not stored anywhere.
+The in-game dev panel (`scripts/game/dev-panel.js`) only renders for that
+account. It can broadcast global messages, remove/restore players from the
+leaderboard, force-reset a save, and queue one-shot stat deltas.
+
+A removed player is barred from the leaderboard in three places: the
+`leaderboard_banned` column (the server never shows them and refuses to let them
+opt back in), a permanent `localStorage` latch in the client, and a one-time
+notice popup. Global messages are served from a Durable Object
+(`src/global-message.js`) rather than the player database.
 
 ## Releasing
 

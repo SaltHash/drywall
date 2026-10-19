@@ -26,7 +26,7 @@ import {
 } from "../config/constants.js";
 import { rebirth, getSkillPoints } from "./economy.js";
 import { infinity } from "./economy.js";
-import { saveData, setUsernamePopupVisible } from "./save.js";
+import { saveData, setUsernamePopupVisible, setRemovedPopupVisible, markRemovalNoticeSeen } from "./save.js";
 import { applySettings } from "./loop.js";
 import { updateAllText, render } from "./render.js";
 import { checkBoosts } from "./boosts.js";
@@ -292,6 +292,9 @@ export function setupEventListeners() {
   };
 
   elts.leaderboardToggleButton.onclick = function () {
+    // A moderated account can never rejoin the leaderboard.
+    if (gameState.leaderboardBanned) return;
+
     const optingIn = !player.leaderboardOptIn;
     // Opting out stays off the board but keeps the name for later; opting in
     // reveals the display-name entry beneath the button.
@@ -380,6 +383,14 @@ export function setupEventListeners() {
     elts.settings.style.display = "none";
   };
 
+  // --- Moderation notice ---
+  if (elts.removedPopupDismiss) {
+    elts.removedPopupDismiss.onclick = function () {
+      setRemovedPopupVisible(false);
+      markRemovalNoticeSeen();
+    };
+  }
+
   const settingNames = ["darkMode", "scientificNotation", "minimalParticles",
     "autoRebirth", "autoSkillTree", "autoInfinity", "resetStats"];
 
@@ -391,6 +402,15 @@ export function setupEventListeners() {
     }
     setting.onchange = function () {
       player.settings[sn] = setting.checked;
+      applySettings();
+      saveData("DRYWALL", player);
+    };
+  }
+
+  // --- Menu background dim slider (0-100%) ---
+  if (elts.bgDimSetting) {
+    elts.bgDimSetting.oninput = function () {
+      player.settings.bgDim = Number(elts.bgDimSetting.value) || 0;
       applySettings();
       saveData("DRYWALL", player);
     };

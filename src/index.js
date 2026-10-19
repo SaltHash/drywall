@@ -6,11 +6,13 @@
  *
  * Routes
  * ------
- *   GET  /api/leaderboard  Public leaderboard projection (name + stats only).
- *   POST /api/connect      Resolve a row from a secret key and return the full
- *                          private save (used to link a device).
- *   POST /api/sync         Create/update the caller's row. Authenticated by the
- *                          same secret key; last write wins by timestamp.
+ *   GET  /api/leaderboard      Public leaderboard projection (name + stats only).
+ *   POST /api/connect          Resolve a row from a secret key and return the
+ *                              full private save (used to link a device).
+ *   POST /api/sync             Create/update the caller's row. Authenticated by
+ *                              the same secret key; last write wins by timestamp.
+ *   GET  /api/global-message   The current global announcement (or null).
+ *   POST /api/dev/*            Moderation tools, gated on the dev secret hash.
  *
  * Security model
  * --------------
@@ -20,9 +22,14 @@
  *   * The full save is only ever returned to a caller that presents the secret.
  *     The public leaderboard exposes only `stats`.
  *   * All access is parameterised, so there is no SQL injection surface.
+ *   * Dev/moderation endpoints check the caller's SHA-256 against a fixed hash;
+ *     the dev secret itself is never stored in the repository.
  */
 
 import { neon } from "@neondatabase/serverless";
+import { GlobalMessage } from "./global-message.js";
+
+export { GlobalMessage };
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 
@@ -31,6 +38,29 @@ const MAX_SECRET_LENGTH = 512;
 const MAX_NAME_LENGTH = 20;
 const MAX_SAVE_CHARS = 200_000;
 const LEADERBOARD_LIMIT = 5000;
+
+/**
+ * Only the account whose secret hashes to this value may use /api/dev/*.
+ * Storing the hash (not the secret) means the repo is safe to publish.
+ */
+const DEV_SECRET_HASH =
+  "99f1d666ff7ddabd2bc956cf168178cf026ed4efd5bc4584b32772408a0e6e64";
+
+/** Player fields the dev panel may add deltas to. */
+const DELTA_STAT_KEYS = [
+  "drywall",
+  "drywallPS",
+  "drywallPC",
+  "rebirths",
+  "skillPoints",
+  "infinities",
+  "infinityPoints",
+  "infinityPower",
+  "playtime",
+  "clicks",
+];
+
+const DELTA_NUMBER_PATTERN = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/;
 
 /** Public player id: URL-safe, 8-64 chars (matches the schema constraint). */
 const ID_PATTERN = /^[A-Za-z0-9_-]{8,64}$/;
@@ -48,6 +78,14 @@ async function sha256Hex(value) {
   return Array.from(new Uint8Array(digest))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+}
+
+/** Whether the supplied secret belongs to the developer account. */
+async function requireDev(secret) {
+  if (typeof secret !== "string" || secret.length < MIN_SECRET_LENGTH) {
+    return false;
+  }
+  return (await sha256Hex(secret)) === DEV_SECRET_HASH;
 }
 
 /** Trims a display name and strips control characters. Returns null if invalid. */
@@ -97,6 +135,7 @@ async function getLeaderboard(sql) {
     select display_name, stats
     from public.players
     where leaderboard_opt_in = true
+      and leaderboard_banned = false
       -- Opting in isn't enough: a player must also have picked a real name,
       -- otherwise they'd show up as their raw id.
       and display_name <> id
@@ -119,7 +158,8 @@ async function connect(sql, request) {
 
   const hash = await sha256Hex(secret);
   const rows = await sql`
-    select id, display_name, stats, save, save_updated_at
+    select id, display_name, stats, save, save_updated_at,
+           leaderboard_banned, force_reset, pending_stats, pending_stats_rev
     from public.players
     where secret_hash = ${hash}
     limit 1
@@ -134,6 +174,10 @@ async function connect(sql, request) {
     stats: row.stats,
     save: row.save,
     saveUpdatedAt: Number(row.save_updated_at),
+    leaderboardBanned: row.leaderboard_banned === true,
+    forceReset: row.force_reset === true,
+    pendingStats: row.pending_stats ?? {},
+    pendingStatsRev: Number(row.pending_stats_rev) || 0,
   });
 }
 
@@ -164,6 +208,8 @@ async function sync(sql, request) {
   const saveUpdatedAt = Math.max(0, Math.floor(Number(body.saveUpdatedAt) || 0));
   const stats = buildStats(save);
   const leaderboardOptIn = save.leaderboardOptIn === true;
+  const resetAck = body.resetAck === true;
+  const statsAckRev = Math.max(0, Math.floor(Number(body.statsAckRev) || 0));
   const hash = await sha256Hex(secret);
 
   let rows;
@@ -178,11 +224,18 @@ async function sync(sql, request) {
         stats              = excluded.stats,
         save               = excluded.save,
         save_updated_at    = excluded.save_updated_at,
-        leaderboard_opt_in = excluded.leaderboard_opt_in,
+        -- A banned player can never re-enable their leaderboard visibility.
+        leaderboard_opt_in = excluded.leaderboard_opt_in and not p.leaderboard_banned,
+        -- Acknowledge a moderation reset, and zero pending stat deltas once the
+        -- client has applied them. Both are best-effort: a stale write applies
+        -- neither because the row is not touched at all.
+        force_reset        = case when ${resetAck} then false else p.force_reset end,
+        pending_stats      = case when ${statsAckRev}::bigint >= p.pending_stats_rev
+                                  then '{}'::jsonb else p.pending_stats end,
         updated_at         = now()
       where p.secret_hash = excluded.secret_hash
         and excluded.save_updated_at >= p.save_updated_at
-      returning id, save_updated_at
+      returning id, save_updated_at, leaderboard_banned
     `;
   } catch (err) {
     if (isUniqueViolation(err)) {
@@ -196,13 +249,14 @@ async function sync(sql, request) {
       ok: true,
       id,
       saveUpdatedAt: Number(rows[0].save_updated_at),
+      leaderboardBanned: rows[0].leaderboard_banned === true,
     });
   }
 
   // Nothing was written. Either the secret is wrong, or the incoming save is
   // stale (older than what the server already holds for this player).
   const owner = await sql`
-    select 1
+    select leaderboard_banned
     from public.players
     where id = ${id} and secret_hash = ${hash}
     limit 1
@@ -217,6 +271,156 @@ async function sync(sql, request) {
     id,
     stale: true,
     saveUpdatedAt: Number(current[0]?.save_updated_at ?? 0),
+    leaderboardBanned: owner[0]?.leaderboard_banned === true,
+  });
+}
+
+/** Resolves the single global-message Durable Object, if it is bound. */
+function globalMessageStub(env) {
+  if (!env.GLOBAL_MESSAGE) return null;
+  return env.GLOBAL_MESSAGE.get(env.GLOBAL_MESSAGE.idFromName("global"));
+}
+
+/** GET /api/global-message (public: any client may read the announcement). */
+async function getGlobalMessage(env) {
+  const stub = globalMessageStub(env);
+  if (!stub) return json({ message: null });
+  try {
+    const res = await stub.fetch("https://global-message/");
+    return new Response(res.body, { status: res.status, headers: JSON_HEADERS });
+  } catch (err) {
+    console.error("Global message unavailable", err);
+    return json({ message: null });
+  }
+}
+
+/** POST /api/dev/global-message */
+async function devGlobalMessage(env, request) {
+  const body = await readJson(request);
+  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+
+  const stub = globalMessageStub(env);
+  if (!stub) return json({ error: "global messaging unavailable" }, 503);
+
+  const res = await stub.fetch("https://global-message/", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text: body?.text, label: body?.label }),
+  });
+  return new Response(res.body, { status: res.status, headers: JSON_HEADERS });
+}
+
+/** POST /api/dev/lookup - find players by id or display name. */
+async function devLookup(sql, request) {
+  const body = await readJson(request);
+  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+
+  const query = typeof body.query === "string" ? body.query.trim() : "";
+  if (!query) return json({ error: "invalid query" }, 400);
+
+  const rows = await sql`
+    select id, display_name, leaderboard_opt_in, leaderboard_banned, force_reset,
+           stats, save_updated_at, pending_stats, pending_stats_rev
+    from public.players
+    where id = ${query} or display_name = ${query}
+    order by updated_at desc
+    limit 25
+  `;
+  return json({
+    players: rows.map((row) => ({
+      id: row.id,
+      displayName: row.display_name,
+      leaderboardOptIn: row.leaderboard_opt_in === true,
+      leaderboardBanned: row.leaderboard_banned === true,
+      forceReset: row.force_reset === true,
+      stats: row.stats,
+      saveUpdatedAt: Number(row.save_updated_at) || 0,
+      pendingStats: row.pending_stats ?? {},
+      pendingStatsRev: Number(row.pending_stats_rev) || 0,
+    })),
+  });
+}
+
+/** POST /api/dev/remove | /api/dev/restore */
+async function devSetRemoved(sql, request, removed) {
+  const body = await readJson(request);
+  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+
+  const id = typeof body.id === "string" ? body.id : "";
+  if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
+
+  const rows = removed
+    ? await sql`
+        update public.players
+        set leaderboard_banned = true, leaderboard_opt_in = false, updated_at = now()
+        where id = ${id}
+        returning id, display_name
+      `
+    : await sql`
+        update public.players
+        set leaderboard_banned = false, updated_at = now()
+        where id = ${id}
+        returning id, display_name
+      `;
+  if (rows.length === 0) return json({ error: "not found" }, 404);
+  return json({ ok: true, id: rows[0].id, leaderboardBanned: removed });
+}
+
+/** POST /api/dev/reset - force the player's local save back to defaults. */
+async function devReset(sql, request) {
+  const body = await readJson(request);
+  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+
+  const id = typeof body.id === "string" ? body.id : "";
+  if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
+
+  const rows = await sql`
+    update public.players
+    set force_reset = true, updated_at = now()
+    where id = ${id}
+    returning id, display_name
+  `;
+  if (rows.length === 0) return json({ error: "not found" }, 404);
+  return json({ ok: true, id: rows[0].id });
+}
+
+/** POST /api/dev/add-stats - queue stat deltas to apply to a player once. */
+async function devAddStats(sql, request) {
+  const body = await readJson(request);
+  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+
+  const id = typeof body.id === "string" ? body.id : "";
+  if (!ID_PATTERN.test(id)) return json({ error: "invalid id" }, 400);
+
+  const input = body.stats && typeof body.stats === "object" ? body.stats : null;
+  if (!input) return json({ error: "invalid stats" }, 400);
+
+  const deltas = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (!DELTA_STAT_KEYS.includes(key)) continue;
+    const asString = String(value).trim();
+    if (!DELTA_NUMBER_PATTERN.test(asString)) continue;
+    if (Number(asString) === 0) continue; // ignore empty/zero fields
+    deltas[key] = asString;
+  }
+  if (Object.keys(deltas).length === 0) {
+    return json({ error: "no valid deltas" }, 400);
+  }
+
+  const rows = await sql`
+    update public.players
+    set pending_stats = ${JSON.stringify(deltas)}::jsonb,
+        pending_stats_rev = pending_stats_rev + 1,
+        updated_at = now()
+    where id = ${id}
+    returning id, pending_stats, pending_stats_rev
+  `;
+  if (rows.length === 0) return json({ error: "not found" }, 404);
+  return json({
+    ok: true,
+    id: rows[0].id,
+    pendingStats: rows[0].pending_stats,
+    pendingStatsRev: Number(rows[0].pending_stats_rev) || 0,
   });
 }
 
@@ -227,6 +431,15 @@ export default {
     if (!url.pathname.startsWith("/api/")) {
       // Static site: index.html, scripts/, styles/, assets/, ...
       return env.ASSETS.fetch(request);
+    }
+
+    // Global announcements live in a Durable Object, independent of the
+    // player database, so they are handled before the DATABASE_URL check.
+    if (url.pathname === "/api/global-message" && request.method === "GET") {
+      return await getGlobalMessage(env);
+    }
+    if (url.pathname === "/api/dev/global-message" && request.method === "POST") {
+      return await devGlobalMessage(env, request);
     }
 
     if (!env.DATABASE_URL) {
@@ -245,6 +458,21 @@ export default {
       }
       if (url.pathname === "/api/sync" && request.method === "POST") {
         return await sync(sql, request);
+      }
+      if (url.pathname === "/api/dev/lookup" && request.method === "POST") {
+        return await devLookup(sql, request);
+      }
+      if (url.pathname === "/api/dev/remove" && request.method === "POST") {
+        return await devSetRemoved(sql, request, true);
+      }
+      if (url.pathname === "/api/dev/restore" && request.method === "POST") {
+        return await devSetRemoved(sql, request, false);
+      }
+      if (url.pathname === "/api/dev/reset" && request.method === "POST") {
+        return await devReset(sql, request);
+      }
+      if (url.pathname === "/api/dev/add-stats" && request.method === "POST") {
+        return await devAddStats(sql, request);
       }
       return json({ error: "not found" }, 404);
     } catch (err) {
