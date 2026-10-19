@@ -17,27 +17,6 @@ Backend built (somewhat) securely with Neon and my beloved Cloudflare workers.
 | `db/migrate.mjs` | Applies the schema |
 | `test/api.smoke.mjs` | End-to-end API smoke test |
 
-## Backend setup
-
-The database connection string lives in `.env` as `DATABASE_URL` (never commit
-it — `.env` is gitignored). Copy `.env.example` to get started.
-
-```bash
-npm install
-npm run db:migrate     # create/refresh the Neon schema
-npm run dev            # wrangler dev on http://localhost:8787 (reads .env)
-npm run db:smoke       # end-to-end API smoke test against the real database
-```
-
-Requires Node 20.6 or newer (for `node --env-file`).
-
-For production, store the connection string as a Worker secret and deploy:
-
-```bash
-npx wrangler secret put DATABASE_URL   # paste the Neon connection string
-npm run deploy                          # wrangler deploy (assets + API)
-```
-
 ## API
 
 | Route | Method | Auth | Description |
@@ -53,28 +32,10 @@ npm run deploy                          # wrangler deploy (assets + API)
 | `/api/dev/reset` | POST | dev secret | Force a player's save back to defaults |
 | `/api/dev/add-stats` | POST | dev secret | Queue stat deltas to apply to a player once |
 
-Every player is one row. All of their stats live in a single `save` JSON
-document, so new stats never require a schema change. The secret key is
-SHA-256-hashed before storage and the browser never sees `DATABASE_URL`.
-
-### Moderation / dev panel
-
-`/api/dev/*` is gated on a fixed SHA-256 hash of the developer's secret
-(`DEV_SECRET_HASH` in `src/index.js`); the secret itself is not stored anywhere.
-The in-game dev panel (`scripts/game/dev-panel.js`) only renders for that
-account. It can broadcast global messages, remove/restore players from the
-leaderboard, force-reset a save, and queue one-shot stat deltas.
-
-A removed player is barred from the leaderboard in three places: the
-`leaderboard_banned` column (the server never shows them and refuses to let them
-opt back in), a permanent `localStorage` latch in the client, and a one-time
-notice popup. Global messages are served from a Durable Object
-(`src/global-message.js`) rather than the player database.
-
 ## Releasing
 
-Bump `GAME_VERSION` in `scripts/config/version.js` — the title screen and the
-event-badge gating both read it — and keep the `version` in `package.json` in
+Bump `GAME_VERSION` in `scripts/config/version.js` because the title screen and the
+event-badge gating both read it, and keep the `version` in `package.json` in
 step. Add a matching entry to the changelogs in `index.html` and above.
 
 Limited-time event badges (Alpha/Beta Tester) stop being awarded automatically
