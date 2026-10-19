@@ -6,15 +6,26 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Drywall Clicker</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+
+    <!-- CSS styles -->
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/title-screen.css">
+    <link rel="stylesheet" href="styles/popups.css">
+    <link rel="stylesheet" href="styles/settings.css">
+    <link rel="stylesheet" href="styles/ui.css">
+    <link rel="stylesheet" href="styles/gameplay.css">
+    <link rel="stylesheet" href="styles/trees.css">
+    <link rel="stylesheet" href="styles/panels.css">
+    <link rel="stylesheet" href="styles/minigames.css">
 
     <!-- add favicon -->
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/ui/favicon.ico" type="image/x-icon">
 
+    <!-- p5.js CDN – provides global `p5` for minigame instance mode -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
   </head>
   <body>
-    <div id="screenOverlay"></div>-
+    <div id="screenOverlay"></div>
 
     <div id="titleScreen">
       <div class="areaBackground"></div>
@@ -347,18 +358,12 @@
       </div>
     </div>
 
-    <!-- cdns-->
+    <!-- CDN globals: p5, supabase, and Decimal (break_infinity.js) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
 
-    <!-- minigames -->
-    <script src="scripts/geometrydash.js"></script>
-    <script src="scripts/flappybird.js"></script>
-
-    <!-- the scripts -->
-    <script src="scripts/init.js"></script>
-    <script src="scripts/config.js"></script>
-    <script src="scripts/web.js"></script>
-    <script src="scripts/main.js"></script>
+    <!-- Game entry point (ES module)
+         Must load AFTER the CDN scripts above so globals are available. -->
+    <script type="module" src="scripts/main.js"></script>
   </body>
 </html>

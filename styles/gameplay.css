@@ -1,0 +1,278 @@
+/* Game Areas */
+#area1 {
+    position: absolute;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background-color: #909090;
+}
+
+#area1 > .areaBackground {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-image: url(../assets/backgrounds/area1bg.jpg);
+    background-size: 100% 100%;
+}
+
+#area2 {
+    position: absolute;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background-color: #909090;
+}
+
+#area2 > .areaBackground {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-image: url(../assets/backgrounds/area2bg.jpg);
+    background-size: 100% 100%;
+}
+
+#area3 {
+    position: absolute;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background-color: #909090;
+}
+
+#area3 > .areaBackground {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-image: url(../assets/backgrounds/area3bg.jpg);
+    background-size: 100% 100%;
+}
+
+#area4 {
+    position: absolute;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background-color: #909090;
+}
+
+#area4 > .areaBackground {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-image: url(../assets/backgrounds/area4bg.jpg);
+    background-size: 100% 100%;
+}
+
+.clickNotification {
+    color: #00000050;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 48pt;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Upgrade tables & buttons */
+.upgradeTable {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 80px;
+    padding-inline: 40px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 100px);
+    pointer-events: none;
+    gap: 10px;
+}
+
+#area4 .upgradeTable {
+    bottom: 30px;
+}
+
+.upgrade {
+    margin: 6px;
+    font-size: 24pt;
+    cursor: pointer;
+    border-radius: 20px;
+    backdrop-filter: blur(16px);
+}
+
+.upgrade {
+    transition: transform 0.5s ease-in-out;
+    box-shadow: 2px 4px 4px #00000030;
+    pointer-events: all;
+}
+
+.upgrade:hover {
+    animation: bounceUp 0.3s ease-in-out forwards;
+}
+
+.upgrade:active {
+    animation: bounceDown 0.3s ease-in-out forwards;
+}
+
+@keyframes bounceUp {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+    100% { transform: translateY(-3px); }
+}
+
+@keyframes bounceDown {
+    0% { transform: translateY(-3px); }
+    50% { transform: translateY(1px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Area-specific upgrade colors */
+#area1 .upgrade {
+    background-color: #463f9180;
+    border: 1px solid #6059b1a0;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#area1 .upgrade:hover {
+    background-color: #463f9170;
+}
+
+#area1 .upgrade:active {
+    background-color: #463f9180;
+}
+
+#area2 .upgrade {
+    background-color: #56c08a80;
+    border: 1px solid #60d499a0;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#area2 .upgrade:hover {
+    background-color: #56c08a60;
+}
+
+#area2 .upgrade:active {
+    background-color: #56c08a80;
+}
+
+#area3 .upgrade {
+    background-color: #ee6e7d80;
+    border: 1px solid #f28794a0;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#area3 .upgrade:hover {
+    background-color: #ee6e7d60;
+}
+
+#area3 .upgrade:active {
+    background-color: #ee6e7d80;
+}
+
+#area4 .upgrade {
+    background-color: #f7ce5d80;
+    border: 1px solid #f7ce5da0;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#area4 .upgrade:hover {
+    background-color: #f7ce5d60;
+}
+
+#area4 .upgrade:active {
+    background-color: #f7ce5d80;
+}
+
+/* Rebirth buttons */
+.rebirthDiv {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    bottom: 0px;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+#rebirthButton1 {
+    width: 50%;
+    height: 100%;
+    font-size: 24pt;
+    cursor: pointer;
+    background-color: #4960a680;
+    border: 1px solid #5671c0a0;
+    border-radius: 15px;
+    backdrop-filter: blur(16px);
+    transition: background-color 0.15s ease-in-out;
+    pointer-events: all;
+}
+
+#rebirthButton1:hover {
+    background-color: #4d66b280;
+}
+
+#rebirthButton1:active {
+    background-color: #4960a680;
+}
+
+#rebirthButton2 {
+    width: 50%;
+    height: 100%;
+    font-size: 24pt;
+    cursor: pointer;
+    background-color: #75d45f80;
+    border: 1px solid #72d95ba0;
+    border-radius: 15px;
+    backdrop-filter: blur(16px);
+    transition: background-color 0.15s ease-in-out;
+    pointer-events: all;
+}
+
+#rebirthButton2:hover {
+    background-color: #75d45f88;
+}
+
+#rebirthButton2:active {
+    background-color: #75d45f80;
+}
+
+#rebirthButton3 {
+    width: 50%;
+    height: 100%;
+    font-size: 24pt;
+    cursor: pointer;
+    background-color: #b0608080;
+    border: 1px solid #b06080a0;
+    border-radius: 15px;
+    backdrop-filter: blur(16px);
+    transition: background-color 0.15s ease-in-out;
+    pointer-events: all;
+}
+
+#rebirthButton3:hover {
+    background-color: #b0608088;
+}
+
+#rebirthButton3:active {
+    background-color: #b0608080;
+}

@@ -1,0 +1,246 @@
+/**
+ * Skill tree upgrade definitions.
+ *
+ * Each upgrade has a cost (in skill points), a reward, optional connections
+ * (prerequisite upgrade names), and x/y coordinates for canvas placement.
+ *
+ * Reward formats:
+ *   - ["stat", multiplier, isExponent?]  — multiplies a stat
+ *   - "string"                             — special active effect
+ */
+
+import { D } from "../core/decimal.js";
+
+export const skillUpgrades = {
+  "Drywall Efficiency I": {
+    cost: [D(1), "skillPoints"],
+    reward: [D(2), "drywall"],
+    connects: false,
+    x: 0,
+    y: 0,
+  },
+  "Drywall Efficiency II": {
+    cost: [D(1.5), "skillPoints"],
+    reward: [D(3), "drywall"],
+    connects: ["Drywall Efficiency I"],
+    x: 0,
+    y: 200,
+  },
+  "Drywall Efficiency III": {
+    cost: [D(4), "skillPoints"],
+    reward: [D(5), "drywall"],
+    connects: ["Drywall Efficiency II"],
+    x: 0,
+    y: 400,
+  },
+  "Drywall Efficiency IV": {
+    cost: [D(15), "skillPoints"],
+    reward: [D(8), "drywall"],
+    connects: ["Drywall Efficiency III"],
+    x: -100,
+    y: 600,
+  },
+  "Drywall Efficiency V": {
+    cost: [D(80), "skillPoints"],
+    reward: [D(15), "drywall"],
+    connects: ["Drywall Efficiency IV"],
+    x: -200,
+    y: 800,
+  },
+  "Drywall Efficiency VI": {
+    cost: [D(6000), "skillPoints"],
+    reward: [D(50), "drywall"],
+    connects: ["Drywall Efficiency V"],
+    x: -200,
+    y: 1000,
+  },
+  "Arthritis I": {
+    cost: [D(8), "skillPoints"],
+    reward: [D(5), "drywallPC"],
+    connects: ["Drywall Efficiency III"],
+    x: 100,
+    y: 600,
+  },
+  "Arthritis II": {
+    cost: [D(45), "skillPoints"],
+    reward: [D(15), "drywallPC"],
+    connects: ["Arthritis I"],
+    x: 200,
+    y: 800,
+  },
+  "Arthritis III": {
+    cost: [D(800), "skillPoints"],
+    reward: [D(100), "drywallPC"],
+    connects: ["Arthritis II"],
+    x: 400,
+    y: 700,
+  },
+  "Arthritis IV": {
+    cost: [D(350).times(D(10).pow(6)), "skillPoints"],
+    reward: "Skill points boosts drywall/click (/100k, ^0.7)",
+    connects: ["Arthritis III"],
+    x: 400,
+    y: 500,
+  },
+  "Arthritis V": {
+    cost: [D(2).times(D(10).pow(9)), "skillPoints"],
+    reward: "Improve to /100 and ^0.9",
+    connects: ["Arthritis IV"],
+    x: 600,
+    y: 500,
+  },
+  "Arthritis VI": {
+    cost: [D(5).times(D(10).pow(55)), "skillPoints"],
+    reward: "Improve to no quotient (/1)",
+    connects: ["Arthritis V"],
+    x: 800,
+    y: 400,
+  },
+  "Arthritis VII": {
+    cost: [D(2).times(D(10).pow(57)), "skillPoints"],
+    reward: "Improve to no exponent (^1)",
+    connects: ["Arthritis V"],
+    x: 800,
+    y: 600,
+  },
+  "Arthritis VIII": {
+    cost: [D(1).times(D(10).pow(137)), "skillPoints"],
+    reward: "Improve the exponent to ^1.1",
+    connects: ["Arthritis VI", "Arthritis VII"],
+    x: 1000,
+    y: 500,
+  },
+  "Conversion I": {
+    cost: [D(150), "skillPoints"],
+    reward: "Drywall/click boosts drywall/sec (^0.2)",
+    connects: ["Arthritis II"],
+    x: 400,
+    y: 900,
+  },
+  "Conversion II": {
+    cost: [D(400), "skillPoints"],
+    reward: "Improve the drywall/sec boost exponent by +0.1",
+    connects: ["Conversion I"],
+    x: 600,
+    y: 900,
+  },
+  "Conversion III": {
+    cost: [D(2000), "skillPoints"],
+    reward: "Improve the drywall/sec boost exponent by +0.1",
+    connects: ["Conversion II"],
+    x: 800,
+    y: 900,
+  },
+  "Conversion IV": {
+    cost: [D(10).times(D(10).pow(9)), "skillPoints"],
+    reward: "Improve the drywall/sec boost exponent by +0.1",
+    connects: ["Conversion III"],
+    x: 1000,
+    y: 900,
+  },
+  "Conversion V": {
+    cost: [D(500).times(D(10).pow(12)), "skillPoints"],
+    reward: "Improve the drywall/sec boost exponent by +0.1",
+    connects: ["Conversion IV"],
+    x: 1200,
+    y: 800,
+  },
+  "Conversion VI": {
+    cost: [D(1).times(D(10).pow(40)), "skillPoints"],
+    reward: "Improve the drywall/sec boost exponent by +0.05",
+    connects: ["Conversion V"],
+    x: 1400,
+    y: 800,
+  },
+  "Full Circle I": {
+    cost: [D(10).times(D(10).pow(15)), "skillPoints"],
+    reward: "10% of drywall/sec turns into drywall/click",
+    connects: ["Conversion IV"],
+    x: 1200,
+    y: 1000,
+  },
+  "Exponential I": {
+    cost: [D(90000), "skillPoints"],
+    reward: [D(1.05), "drywall", true],
+    connects: ["Drywall Efficiency VI"],
+    x: -200,
+    y: 1200,
+  },
+  "Exponential II": {
+    cost: [D(300000), "skillPoints"],
+    reward: [D(1.01), "drywall", true],
+    connects: ["Exponential I"],
+    x: -200,
+    y: 1400,
+  },
+  "Exponential III": {
+    cost: [D(400000), "skillPoints"],
+    reward: [D(1.02), "drywall", true],
+    connects: ["Exponential II"],
+    x: -200,
+    y: 1600,
+  },
+  "Exponential IV": {
+    cost: [D(600000), "skillPoints"],
+    reward: [D(1.02), "drywall", true],
+    connects: ["Exponential III"],
+    x: -200,
+    y: 1800,
+  },
+  "Exponential V": {
+    cost: [D(900000), "skillPoints"],
+    reward: [D(1.03), "drywall", true],
+    connects: ["Exponential IV"],
+    x: 0,
+    y: 1800,
+  },
+  "Exponential VI": {
+    cost: [D(2).times(D(10).pow(12)), "skillPoints"],
+    reward: [D(1.03), "drywall", true],
+    connects: ["Exponential V"],
+    x: 200,
+    y: 1900,
+  },
+  "Exponential VII": {
+    cost: [D(250).times(D(10).pow(18)), "skillPoints"],
+    reward: [D(1.03), "drywall", true],
+    connects: ["Exponential VI"],
+    x: 400,
+    y: 2000,
+  },
+  "Self-boost I": {
+    cost: [D(100).times(D(10).pow(21)), "skillPoints"],
+    reward: "Drywall exponentiated by itself (^0.0001, max 1.15)",
+    connects: ["Exponential VI"],
+    x: 200,
+    y: 1700,
+  },
+  "Skill Enhancement I": {
+    cost: [D(2), "skillPoints"],
+    reward: [D(1.5), "skillPoints"],
+    connects: ["Drywall Efficiency I"],
+    x: -200,
+    y: 0,
+  },
+  "Skill Enhancement II": {
+    cost: [D(30000), "skillPoints"],
+    reward: [D(2), "skillPoints"],
+    connects: ["Skill Enhancement I"],
+    x: -400,
+    y: 0,
+  },
+  "Time-saver I": {
+    cost: [D(0), "skillPoints"],
+    reward: "Rebirth no longer resets. (settings)",
+    connects: ["Drywall Efficiency I"],
+    x: 200,
+    y: 0,
+  },
+  "Time-saver II": {
+    cost: [D(50).times(D(10).pow(9)), "skillPoints"],
+    reward: "Auto-rebirth.",
+    connects: ["Time-saver I"],
+    x: 400,
+    y: 0,
+  },
+};

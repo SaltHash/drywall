@@ -1,0 +1,108 @@
+/* Stats Display */
+#stats {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    left: 0;
+    top: 5px;
+    font-size: 28pt;
+    line-height: 0.85;
+    pointer-events: none;
+    filter: drop-shadow(2px 2px 2px #00000060);
+}
+
+#stats * {
+    text-shadow:
+        -1px -1px 0 #ddd,
+        1px -1px 0 #ddd,
+        -1px 1px 0 #ddd,
+        1px 1px 0 #ddd;
+    color: #202328;
+}
+
+/* Settings button (top-left floating) */
+#settingsButtonDiv {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+}
+
+#settingsButton {
+    border: 1px solid #606060a0;
+    background-color: #40404080;
+    backdrop-filter: blur(8px);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 20pt;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#settingsButton:hover {
+    background-color: #40404060;
+}
+
+#settingsButton:active {
+    background-color: #40404040;
+}
+
+/* Area selector (right-side navigation) */
+#areaSelect {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    width: 200px;
+    border-radius: 20px;
+    background-color: #202020b0;
+    backdrop-filter: blur(8px);
+    border: 1px solid #404040c0;
+    padding-inline: 12px;
+    padding-bottom: 12px;
+    padding-top: 4px;
+    text-align: center;
+}
+
+#areaSelectorsDiv {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+}
+
+#areaSelect h2 {
+    margin: 4px;
+    font-size: 32pt;
+    font-weight: 400;
+}
+
+#areaSelect button {
+    background-color: #bbbbbb15;
+    border: 1px solid #bbbbbb20;
+    width: 100%;
+    padding-block: 4px;
+    border-radius: 10px;
+    transition: background-color 0.15s ease-in-out;
+    font-size: 18pt;
+}
+
+#areaSelect button:hover {
+    background-color: #bbbbbb20;
+}
+
+#areaSelect button:active {
+    background-color: #bbbbbb10;
+}
+
+@keyframes flashButtonYellow {
+    0% { background-color: #bbbbbb15; }
+    20% { background-color: #f0d040a0; }
+    40% { background-color: #bbbbbb15; }
+    60% { background-color: #f0d040a0; }
+    100% { background-color: #bbbbbb15; }
+}
+
+.flashAreaSelector {
+    animation: flashButtonYellow 3s ease-in-out forwards;
+}

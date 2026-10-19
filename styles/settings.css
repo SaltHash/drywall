@@ -1,0 +1,126 @@
+/* Settings Panel */
+#settings {
+    position: fixed;
+    display: none;
+    left: 50%;
+    top: 50%;
+    width: 60%;
+    height: 80%;
+    background-color: #202020aa;
+    backdrop-filter: blur(24px);
+    border: 2px solid #00000060;
+    border-radius: 20px;
+    z-index: 1001;
+    padding: 10px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+#settings h3 {
+    padding-top: 5px;
+    padding-bottom: 10px;
+    font-size: 32pt;
+    width: 50%;
+    margin: auto;
+    text-decoration: underline;
+}
+
+#settings span {
+    color: #d0d0d0;
+}
+
+#settingsContent {
+    height: calc(100% - 150px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.settingRow {
+    display: flex;
+    width: fit-content;
+    flex-direction: row;
+    align-items: center;
+    margin-inline: auto;
+    margin-bottom: 10px;
+}
+
+#usernameSetting {
+    width: 200px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    background-color: #303030;
+    border: 2px solid #404040;
+    color: #f2f2f2;
+    font-size: 20pt;
+    margin-left: 20px;
+}
+
+#usernameSetting:focus {
+    outline: 1px solid #999;
+}
+
+#closeSettingsButton {
+    position: fixed;
+    cursor: pointer;
+    background-color: #90909040;
+    width: 150px;
+    height: 50px;
+    bottom: 10px;
+    left: 50%;
+    border: none;
+    font-size: 24pt;
+    border-radius: 10px;
+    transform: translate(-50%, 0);
+}
+
+/* Toggle switch */
+.switch {
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 62px;
+    height: 35px;
+    margin-left: 20px;
+}
+
+.switch input {
+    opacity: 1;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    background: #fff;
+    transition: 0.4s;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1.9em;
+    width: 1.9em;
+    border-radius: 16px;
+    left: 1.2px;
+    top: 0;
+    bottom: 0;
+    background-color: white;
+    box-shadow: 0 2px 5px #999999;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: #5fdd54;
+    border: 1px solid transparent;
+}
+
+input:checked + .slider:before {
+    transform: translateX(1.5em);
+}
