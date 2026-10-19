@@ -32,21 +32,19 @@
 }
 
 #settingsButton {
-    border: 1px solid #606060a0;
-    background-color: #40404080;
-    backdrop-filter: blur(8px);
     padding: 8px 16px;
-    border-radius: 8px;
     font-size: 20pt;
-    transition: background-color 0.15s ease-in-out;
+    transition:
+        filter 0.15s ease-in-out,
+        transform 0.15s ease-in-out;
 }
 
 #settingsButton:hover {
-    background-color: #40404060;
+    filter: brightness(1.15);
 }
 
 #settingsButton:active {
-    background-color: #40404040;
+    filter: brightness(0.95);
 }
 
 /* Area selector (right-side navigation) */
@@ -55,10 +53,6 @@
     right: 10px;
     top: 10px;
     width: 200px;
-    border-radius: 20px;
-    background-color: #202020b0;
-    backdrop-filter: blur(8px);
-    border: 1px solid #404040c0;
     padding-inline: 12px;
     padding-bottom: 12px;
     padding-top: 4px;
@@ -78,21 +72,21 @@
 }
 
 #areaSelect button {
-    background-color: #bbbbbb15;
-    border: 1px solid #bbbbbb20;
+    background-color: var(--control-bg);
+    border: var(--control-border);
     width: 100%;
     padding-block: 4px;
-    border-radius: 10px;
+    border-radius: var(--control-radius);
     transition: background-color 0.15s ease-in-out;
     font-size: 18pt;
 }
 
 #areaSelect button:hover {
-    background-color: #bbbbbb20;
+    background-color: var(--control-bg-hover);
 }
 
 #areaSelect button:active {
-    background-color: #bbbbbb10;
+    background-color: var(--control-bg-active);
 }
 
 @keyframes flashButtonYellow {

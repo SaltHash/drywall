@@ -1,0 +1,23 @@
+{
+  "name": "drywall",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Drywall Clicker - static game frontend plus a Cloudflare Worker API backed by Neon Postgres.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "node --env-file=.env db/migrate.mjs",
+    "db:smoke": "node --env-file=.env test/api.smoke.mjs",
+    "secret:put": "wrangler secret put DATABASE_URL"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=20.6"
+  }
+}

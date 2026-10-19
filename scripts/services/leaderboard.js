@@ -1,125 +1,179 @@
 /**
- * Leaderboard service (Supabase integration).
+ * Leaderboard + cloud-save service.
  *
- * Provides functions to load the global leaderboard, save the player's
- * scores, and generate display text for the leaderboard panel.
+ * Talks to the Drywall Worker API (see src/index.js), which is the only thing
+ * that can reach the Neon database. The browser never sees DATABASE_URL.
+ *
+ *   GET  /api/leaderboard  -> public projection (name + stats)
+ *   POST /api/connect      -> resolve a secret key and return the private save
+ *   POST /api/sync         -> create/update the caller's row
  */
 
 import { D } from "../core/decimal.js";
-import { gameState } from "../core/state.js";
-import { abbrevNum } from "../core/formatting.js";
+import { abbrevNum, formatMillis } from "../core/formatting.js";
 
-// Supabase client (uses the global `supabase` from the CDN script)
-const supabaseLib = window.supabase.createClient(
-  "https://qjoubqfypaaqmysotzfj.supabase.co",
-  "sb_publishable_AgIZgAJHS-5jetoeK4k6dA_KbpBCbt2",
-);
-
-// In-memory cache of all leaderboards (keyed by stat type)
-let leaderboards = {};
+const FETCH_TIMEOUT_MS = 8000;
 
 /**
- * Loads all leaderboard data from Supabase.
- * @returns {Promise<Object>} The leaderboard data
+ * Every leaderboard the dropdown offers.
+ *
+ * `key` must match the keys produced by buildStats() in src/index.js.
+ * `kind` selects the display formatter.
+ */
+export const LEADERBOARD_TYPES = [
+  { key: "drywall", label: "Drywall", kind: "decimal" },
+  { key: "rebirths", label: "Rebirths", kind: "decimal" },
+  { key: "skillPoints", label: "Skill Points", kind: "decimal" },
+  { key: "infinities", label: "Infinities", kind: "decimal" },
+  { key: "infinityPower", label: "Infinity Power", kind: "decimal" },
+  { key: "playtime", label: "Playtime", kind: "time" },
+  { key: "clicks", label: "Clicks", kind: "decimal" },
+  { key: "achievements", label: "Achievements", kind: "integer" },
+];
+
+const NUMBER_OF_ENTRIES = 10;
+
+const FORMATTERS = {
+  decimal: (value) => abbrevNum(value),
+  time: (value) => formatMillis(Number(value) || 0),
+  integer: (value) => Math.floor(Number(value) || 0).toLocaleString(),
+};
+
+// Sorted, filtered entries per leaderboard type: { [key]: { name, value }[] }
+let leaderboards = {};
+
+// Bumped whenever new data arrives so the renderer knows to repaint.
+export let leaderboardVersion = 0;
+
+/** fetch() with a timeout so a slow backend can't hang the game. */
+async function apiFetch(path, options = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(path, {
+      ...options,
+      signal: controller.signal,
+      headers: { "content-type": "application/json", ...(options.headers || {}) },
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Escapes text before it is interpolated into leaderboard innerHTML. */
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      default:
+        return "&#39;";
+    }
+  });
+}
+
+/**
+ * Fetches the public leaderboard and rebuilds every sorted list.
+ * Entries with a missing, zero, or invalid value are excluded.
  */
 export async function loadLeaderboard() {
-  const { data, error } = await supabaseLib.rpc("load_leaderboard");
+  const res = await apiFetch("/api/leaderboard", { method: "GET" });
+  if (!res.ok) throw new Error(`Leaderboard request failed (${res.status})`);
 
-  if (error) {
-    console.error("Error loading leaderboard:", error.message);
-    return {};
-  }
+  const { entries } = await res.json();
+  const rows = Array.isArray(entries) ? entries : [];
 
-  const leaderboardTypes = [
-    "drywall",
-    "rebirths",
-    "skill_points",
-    "infinities",
-    "achievements",
-  ];
-
-  let preLeaderboards = {};
-
-  for (const type of leaderboardTypes) {
-    preLeaderboards[type] = Object.values(data)
+  const next = {};
+  for (const type of LEADERBOARD_TYPES) {
+    next[type.key] = rows
       .map((entry) => {
-        const raw = entry.scores?.[type];
+        const raw = entry?.stats ? entry.stats[type.key] : null;
         if (raw === null || raw === undefined || raw === "") return null;
 
-        let val;
+        let value;
         try {
-          val = D(raw);
+          value = D(raw);
         } catch {
           return null;
         }
 
-        if (val.exponent > 1e9) return null;
+        // Skip null/zero stats and absurd/corrupt values.
+        if (value.lte(0) || value.exponent > 1e9) return null;
 
-        return {
-          display_name: entry.display_name,
-          value: val,
-        };
+        return { name: entry.name, value };
       })
-      .filter((x) => x !== null)
+      .filter((item) => item !== null)
       .sort((a, b) => b.value.cmp(a.value))
-      .slice(0, 10);
+      .slice(0, NUMBER_OF_ENTRIES);
   }
 
-  leaderboards = preLeaderboards;
-  return preLeaderboards;
+  leaderboards = next;
+  leaderboardVersion += 1;
+  return next;
+}
+
+/** Human-readable label for a leaderboard key. */
+export function getLeaderboardLabel(typeKey) {
+  return LEADERBOARD_TYPES.find((type) => type.key === typeKey)?.label ?? "Leaderboard";
 }
 
 /**
- * Uploads the player's current scores to Supabase.
+ * Renders a leaderboard as an HTML string.
+ * Returns null when leaderboard data has not loaded yet, so the caller can
+ * leave the "Loading..." placeholder in place.
  */
-export async function saveDataToLeaderboard() {
-  const player = gameState.player;
-  if (!player.mylbkey || player.username === "ICodeBugs (indev)") return;
+export function getLeaderboardText(typeKey) {
+  const type = LEADERBOARD_TYPES.find((item) => item.key === typeKey);
+  const list = leaderboards[typeKey];
 
-  const scores = {
-    drywall: D(player.drywall).toString(),
-    rebirths: D(player.rebirths).toString(),
-    skill_points: D(player.skillPoints).toString(),
-    infinities: D(player.infinities).toString(),
-    achievements: player.achievements.length,
-  };
+  if (!type || !list) return null;
+  if (list.length === 0) return "No entries yet.";
 
-  let { error } = await supabaseLib.rpc("save_scores", {
-    p_id: player.mylbkey,
-    p_edit_key: player.editKey,
-    p_scores: scores,
+  return list
+    .map((entry) => `${escapeHtml(entry.name)} - ${FORMATTERS[type.kind](entry.value)}`)
+    .join("<br>");
+}
+
+/** Fills a <select> element with one option per leaderboard type. */
+export function initLeaderboardSelect(select) {
+  if (!select) return;
+  select.innerHTML = LEADERBOARD_TYPES.map(
+    (type) => `<option value="${type.key}">${type.label}</option>`,
+  ).join("");
+  select.value = LEADERBOARD_TYPES[0].key;
+}
+
+/**
+ * Resolves a secret key to the private save document.
+ * @returns {Promise<Object|null>} The remote profile, or null if not found.
+ */
+export async function fetchRemoteSave(secret) {
+  const res = await apiFetch("/api/connect", {
+    method: "POST",
+    body: JSON.stringify({ secret }),
   });
-
-  if (error) {
-    console.error("Error saving score:", error.message);
-  } else {
-    console.log("Score saved!");
-  }
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Connect failed (${res.status})`);
+  return res.json();
 }
 
 /**
- * Generates the innerHTML for a leaderboard display.
- * @param {string} boardType - Which leaderboard to display
- * @returns {string} HTML string of ranked entries
+ * Uploads the caller's save. The backend ignores stale writes and mismatched
+ * secrets (403), so this never throws for those cases.
  */
-export function getLeaderboardText(boardType) {
-  let text = "";
-
-  if (Object.keys(leaderboards).length === 0) {
-    return text;
+export async function pushSave(payload) {
+  const res = await apiFetch("/api/sync", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok && res.status !== 403) {
+    throw new Error(`Sync failed (${res.status})`);
   }
-
-  let lb = leaderboards[boardType];
-
-  if (lb) {
-    for (let i of Object.keys(lb)) {
-      text += lb[i].display_name + " - " + abbrevNum(lb[i].value) + "<br>";
-    }
-  } else {
-    console.warn(
-      "Leaderboard '" + boardType + "' not found (something's broken)",
-    );
-  }
-
-  return text;
+  return res.json();
 }

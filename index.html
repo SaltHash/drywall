@@ -31,29 +31,44 @@
       <div class="areaBackground"></div>
       <p id="titleCredits">Game by ICodeBugs • Art by PNAPPL ♥</p>
       <h1>Drywall Clicker</h1>
-      <h3>v0.5.4</h3>
+      <h3>v1.0.0</h3>
       <button id="playButton">Play!</button>
-      <div id="changelogContainer">
-        <button id="changelogButton">
+      <div id="changelogContainer" class="darkPanel">
+        <button id="changelogButton" class="darkPanel">
           Changelog
         </button>
         <div id="changelogContent">
-          <h4>v0.5.4: Leaderboard Changes</h4>
-          <p>- Dropdown selection for leaderboards</p>
-          <p>- Backend improvements about how leaderboards are handled</p>
+          <h4>v1.0.0: Cloud Saves and Leaderboards</h4>
+          <p>- Cloud saves: sync your progress across devices with a secret key</p>
+          <p>- Leaderboard opt-in/opt-out with display name (refactor)</p>
+          <p>- Leaderboard dropdown covering every tracked stat</p>
+          <p>- Rebuilt backend using Cloudflare Workers + Neon (the GOATs)</p>
+          <p>- Leaderboards no longer pause (Supabase inactivity)</p>
         </div>
       </div>
     </div>
 
-    <div id="usernamePopup">
-      <h2>Select a username:</span>
-      <p>Select a username. This username will be used as your display name on leaderboards, among other gameplay aspects.</p>
-      <input id="usernamePopupInput" type="text" placeholder="Username..." maxlength=20></h2>
-      <h4>This can be changed later in settings.</h4>
-      <div id="optionsGrid">
-        <button id="cancelUsernameButton">Cancel</button>
-        <button id="saveUsernameButton">Save</button>
+    <div id="usernameBackdrop"></div>
+
+    <div id="usernamePopup" role="dialog" aria-modal="true" aria-labelledby="usernamePopupTitle">
+      <h2 id="usernamePopupTitle">Choose a name</h2>
+      <p id="usernamePopupSubtitle">This is how you'll show up on the leaderboards. Change it or hide yourself any time in Settings.</p>
+
+      <label id="usernamePopupLabel" for="usernamePopupInput">Display name</label>
+      <input id="usernamePopupInput" type="text" placeholder="Type a name..." maxlength="20"
+             autocomplete="off" autocapitalize="off" spellcheck="false">
+
+      <div id="usernamePreview" aria-hidden="true">
+        <span id="usernamePreviewRank">1</span>
+        <span id="usernamePreviewName">your name</span>
+        <span id="usernamePreviewScore">1.00m drywall</span>
       </div>
+
+      <div id="usernamePopupActions">
+        <button id="skipUsernameButton" class="popupButton">Skip for now</button>
+        <button id="saveUsernameButton" class="popupButton primary">Save name</button>
+      </div>
+      <h4 id="usernamePopupHint">Skipping keeps you off the leaderboard until you turn it on in Settings.</h4>
     </div>
 
     <div id="achievementNotification">
@@ -99,7 +114,7 @@
             <span class="slider"></span>
           </label>
         </div>
-        <h3>Automation</h3>
+        <h3 id="automationSettingsHeader">Automation</h3>
         <div class="settingRow">
           <span>Auto-rebirth:</span>
           <label class="switch">
@@ -129,10 +144,29 @@
             <span class="slider"></span>
           </label>
         </div>
-        <div class="settingRow" id="usernameSettingDiv">
-          <span>Username:</span>
-          <input id="usernameSetting" type="text" maxlength=20>
+        <h3>Leaderboard</h3>
+        <p id="leaderboardOptInHint">Turn this on and pick a name to show up on the global leaderboards.</p>
+        <button id="leaderboardToggleButton" class="inlineButton wideButton">
+          Show me on the leaderboard
+        </button>
+        <div class="settingRow" id="usernameSettingDiv" style="display: none">
+          <span>Display name:</span>
+          <input id="usernameSetting" type="text" maxlength="20" placeholder="Your name">
         </div>
+        <h3>Cloud Save</h3>
+        <p id="cloudSaveDisclaimer">Your secret key is the password for your save. Keep it private — anyone with it can use your save.</p>
+        <div class="settingRow" id="secretKeyRow">
+          <span>Secret key:</span>
+          <input id="secretKeySetting" type="password" readonly>
+          <button id="viewSecretKeyButton" class="inlineButton">View</button>
+          <button id="copySecretKeyButton" class="inlineButton">Copy</button>
+        </div>
+        <div class="settingRow" id="linkDeviceRow">
+          <span>Link device:</span>
+          <input id="linkDeviceInput" type="password" placeholder="Paste secret key...">
+          <button id="linkDeviceButton" class="inlineButton">Link</button>
+        </div>
+        <p id="linkDeviceStatus"></p>
         <h3>Stats</h3>
         <p id="clicksStat">Loading...</p>
         <p id="playtimeStat">Loading...</p>
@@ -143,8 +177,9 @@
 
     <div id="leaderboardArea">
         <div id="leaderboardContainer">
-            <div id="leaderboard" id="leaderboard1Div">
-                <h3>Drywall</h3>
+            <select id="leaderboardSelect"></select>
+            <div id="leaderboard">
+                <h3 id="leaderboardTitle">Drywall</h3>
                 <p>Loading...</p>
             </div>
         </div>
@@ -358,8 +393,7 @@
       </div>
     </div>
 
-    <!-- CDN globals: p5, supabase, and Decimal (break_infinity.js) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- CDN globals: p5 and Decimal (break_infinity.js) -->
     <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
 
     <!-- Game entry point (ES module)

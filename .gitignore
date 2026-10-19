@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Wrangler local state
+.wrangler/
+
+# Secrets / local environment (never commit these)
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+
+# Editor swap files
+*.swp
+*.kate-swp

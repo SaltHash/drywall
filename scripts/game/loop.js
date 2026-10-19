@@ -12,7 +12,7 @@ import { checkBoosts } from "./boosts.js";
 import { checkAllAchievements } from "./achievements.js";
 import { rebirth, getSkillPoints } from "./economy.js";
 import { saveData } from "./save.js";
-import { saveDataToLeaderboard } from "../services/leaderboard.js";
+import { pushSaveToCloud } from "./sync.js";
 import { updateAllText, render } from "./render.js";
 
 /**
@@ -34,6 +34,12 @@ export function updateMinigameStats() {
  */
 export function applySettings() {
   const player = gameState.player;
+
+  // Panels use the light-mode token set whenever dark mode is off.
+  document.documentElement.classList.toggle(
+    "lightMode",
+    !player.settings.darkMode,
+  );
 
   const areaIds = ["area1", "area2", "area3"];
   for (const id of areaIds) {
@@ -98,9 +104,10 @@ export function update(dt) {
 
   player.stats.playtime = player.stats.playtime.plus(dt);
 
-  // Periodic leaderboard upload
+  // Periodic cloud save upload (the same call also feeds the leaderboard,
+  // since the public projection is derived from the uploaded save).
   if (Date.now() - gameState.lastLeaderboardUpdate >= 60000) {
-    saveDataToLeaderboard();
+    pushSaveToCloud();
     gameState.lastLeaderboardUpdate = Date.now();
   }
 

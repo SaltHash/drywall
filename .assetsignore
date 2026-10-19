@@ -1,0 +1,17 @@
+# Files that must never be published as part of the static site.
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+.git
+.gitignore
+.assetsignore
+.wrangler
+node_modules
+package.json
+package-lock.json
+wrangler.jsonc
+src
+db
+test
+README.md

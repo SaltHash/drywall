@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "drywall",
+  "main": "src/index.js",
+  "compatibility_date": "2025-09-27",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "observability": {
+    "enabled": true
+  },
+
+  // Declares DATABASE_URL as a required secret. During `wrangler dev` its value
+  // is read automatically from .env (or .dev.vars); in production set it with
+  // `wrangler secret put DATABASE_URL`.
+  "secrets": {
+    "required": [
+      "DATABASE_URL"
+    ]
+  },
+
+  // The game itself is served as static assets from the same Worker, so the
+  // API is same-origin (no CORS) and the connection string never reaches the
+  // browser.
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  }
+}

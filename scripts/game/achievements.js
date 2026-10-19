@@ -157,8 +157,10 @@ export function updateAchievementGrid(init) {
 
       if (gameState.player.achievements.includes(key)) {
         box.style.backgroundImage = `url("assets/icons/${file}.png")`;
+        box.classList.remove("locked");
       } else {
         box.style.backgroundImage = "url(assets/icons/sillhouette.png)";
+        box.classList.add("locked");
       }
 
       box.classList.add("achievementBox");
@@ -190,8 +192,10 @@ export function updateAchievementImages() {
 
     if (gameState.player.achievements.includes(key)) {
       box.style.backgroundImage = `url("assets/icons/${file}.png")`;
+      box.classList.remove("locked");
     } else {
       box.style.backgroundImage = "url(assets/icons/sillhouette.png)";
+      box.classList.add("locked");
     }
   }
 

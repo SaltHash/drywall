@@ -11,13 +11,13 @@
 
 #titleCredits {
     font-size: 36pt;
-    color: #333;
+    color: #111111;
     font-weight: 700;
     text-shadow:
-        -1px -1px 0 #ddd,
-        1px -1px 0 #ddd,
-        -1px 1px 0 #ddd,
-        1px 1px 0 #ddd;
+        -1px -1px 0 #eee,
+        1px -1px 0 #eee,
+        -1px 1px 0 #eee,
+        1px 1px 0 #eee;
     text-align: center;
     position: absolute;
     top: 40px;
@@ -41,7 +41,7 @@
 
 #titleScreen > h1 {
     font-size: 128pt;
-    color: #202020;
+    color: #111111;
     text-shadow:
         -4px -4px 0 #eee,
         4px -4px 0 #eee,
@@ -53,7 +53,7 @@
 
 #titleScreen > h3 {
     font-size: 48pt;
-    color: #404040;
+    color: #111111;
     text-shadow:
         -2px -2px 0 #eee,
         2px -2px 0 #eee,
@@ -70,10 +70,6 @@
     position: fixed;
     left: calc(50vw - 250px);
     top: calc(50vh + 125px);
-    background-color: #40404060;
-    backdrop-filter: blur(24px);
-    border-radius: 20px;
-    border: 2px solid #00000020;
     transition: height 0.5s ease-in-out;
     overflow: hidden;
 }
@@ -85,25 +81,30 @@
 #changelogButton {
     width: 100%;
     height: 10vh;
-    background-color: #00000000;
-    border: none;
-    border-radius: 20px;
-    transition: background-color 0.2s ease-in-out;
+    transition:
+        filter 0.2s ease-in-out,
+        background-color 0.2s ease-in-out;
     font-size: 48pt;
+    border-radius: var(--panel-radius);
+    background: none;
+    border: none;
+    outline: none;
 }
 
 #changelogButton:hover {
+    filter: brightness(1.2);
     background-color: #00000020;
 }
 
 #changelogContent > h4 {
     font-size: 24pt;
-    margin-top: 8px;
+    margin-block: 8px;
     font-weight: 400;
 }
 
 #changelogContent > p {
     transform: scaleY(1.2);
+    margin-bottom: 12px;
 }
 
 #changelogContent {
@@ -111,7 +112,7 @@
     overflow-y: scroll;
     padding: 0 16px 16px 16px;
     font-size: 16pt;
-    line-height: 0.9;
+    line-height: 0.8;
     height: calc(30vh - 75px);
 }
 
@@ -123,16 +124,14 @@
     width: 400px;
     height: 150px;
     font-size: 64pt;
-    background-color: #00000070;
+    background-color: #040406b0;
     backdrop-filter: blur(24px);
     border: 2px solid #00000020;
     border-radius: 20px;
     transition:
-        background-color 0.3s ease-in-out,
-        transform 0.3s ease-out;
+        transform 0.2s ease-out;
 }
 
 #playButton:hover {
-    background: #00000078;
     transform: scale(1.02);
 }

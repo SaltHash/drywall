@@ -55,6 +55,16 @@ export function mergeAndFix(template, saved) {
 }
 
 /**
+ * Shows or hides the username setup popup (and its backdrop).
+ * @param {boolean} visible
+ */
+export function setUsernamePopupVisible(visible) {
+  const { usernamePopup, usernameBackdrop } = gameState.elts;
+  if (usernamePopup) usernamePopup.style.display = visible ? "block" : "none";
+  if (usernameBackdrop) usernameBackdrop.style.display = visible ? "block" : "none";
+}
+
+/**
  * Resets / loads the player object from localStorage.
  * @param {boolean} clear - If true, ignore saved data (hard reset)
  */
@@ -70,27 +80,71 @@ export function resetPlayer(clear = false) {
     }
   }
 
-  gameState.player = mergeAndFix(playerTemplate, raw);
-  gameState.player.username = raw.username || gameState.player.mylbkey;
+  const player = (gameState.player = mergeAndFix(playerTemplate, raw));
 
-  if (gameState.player.username === gameState.player.mylbkey && gameState.elts.usernamePopup) {
-    gameState.elts.usernamePopup.style.display = "block";
+  // An empty username means "not chosen yet"; don't fall back to the random id.
+  player.username =
+    typeof raw.username === "string" && raw.username.length > 0
+      ? raw.username
+      : null;
+
+  // Migrate saves made before the leaderboard opt-in existed: anyone who had
+  // already picked a name was implicitly on the leaderboard.
+  if (raw.usernameChosen === undefined) {
+    const hadName = player.username !== null;
+    player.usernameChosen = hadName;
+    player.leaderboardOptIn = hadName;
+  }
+
+  // First run only: ask the player to choose a name (or skip).
+  if (!player.usernameChosen) {
+    setUsernamePopupVisible(true);
   }
 }
 
 /**
  * Persists data to localStorage with a 1-second rate limit.
+ *
+ * The player's `updatedAt` timestamp is refreshed on every write so that cloud
+ * sync can tell which copy (local vs. remote) is newer.
+ *
  * @param {string} key - Storage key
  * @param {*} data - Data to store
+ * @param {boolean} force - Bypass the rate limit (e.g. after adopting a remote save)
  */
-export function saveData(key, data) {
+export function saveData(key, data, force = false) {
   const now = Date.now();
-  if (now - gameState.lastSave > 1000) {
+  if (force || now - gameState.lastSave > 1000) {
     try {
+      if (data && typeof data === "object") data.updatedAt = now;
       localStorage.setItem(key, JSON.stringify(data));
       gameState.lastSave = now;
     } catch (e) {
       console.warn("Unable to save data (storage might be full):", e);
     }
   }
+}
+
+/**
+ * Replaces the live player object in place with a merged copy of `source`.
+ *
+ * Mutating the existing object (instead of reassigning `gameState.player`)
+ * keeps every module's captured reference valid, which matters because event
+ * handlers close over `gameState.player` at setup time.
+ *
+ * @param {Object} source - A save document (e.g. pulled from the cloud)
+ * @param {{secret?: string, id?: string}} [identity] - Identity to preserve/apply
+ * @returns {Object} The updated live player object
+ */
+export function applyPlayerSave(source, { secret, id } = {}) {
+  const merged = mergeAndFix(playerTemplate, source || {});
+
+  // Some fields are intentionally not stored in the cloud copy.
+  if (secret) merged.editKey = secret;
+  if (id) merged.mylbkey = id;
+
+  const player = gameState.player;
+  for (const key of Object.keys(player)) delete player[key];
+  Object.assign(player, merged);
+  return player;
 }

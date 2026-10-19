@@ -24,8 +24,20 @@ import {
 import { checkInfinityProgress, getInfinityPoints } from "./boosts.js";
 import { getRebirthCost, getSkillPoints } from "./economy.js";
 import { checkAreaUnlocks } from "./areas.js";
-import { getLeaderboardText } from "../services/leaderboard.js";
+import {
+  getLeaderboardText,
+  getLeaderboardLabel,
+  leaderboardVersion,
+} from "../services/leaderboard.js";
 import { getConnections } from "./trees.js";
+
+// Tracks what the leaderboard panel currently shows so it is only repainted
+// when the selection or the underlying data changes (render() runs every tick).
+let renderedLeaderboardType = null;
+let renderedLeaderboardVersion = -1;
+
+// Tracks the leaderboard opt-in UI so it is only touched when it actually flips.
+let renderedLeaderboardOptIn = null;
 
 /**
  * Sets the click-handler text on regular upgrade buttons (upgrade1..upgrade24).
@@ -407,27 +419,60 @@ export function render() {
   }
 
   // --- Settings automation visibility ---
-  if (player.skillUpgrades.includes("Time-saver II")) {
-    elts.autoRebirthSetting.parentElement.parentElement.style.display = "";
-  } else {
-    elts.autoRebirthSetting.parentElement.parentElement.style.display = "none";
-  }
-  if (player.infinityTreeUpgrades.includes("Automation IV")) {
-    elts.autoInfinitySetting.parentElement.parentElement.style.display = "";
-  } else {
-    elts.autoInfinitySetting.parentElement.parentElement.style.display = "none";
-  }
-  if (
+  const autoRebirthUnlocked = player.skillUpgrades.includes("Time-saver II");
+  const autoInfinityUnlocked =
+    player.infinityTreeUpgrades.includes("Automation IV");
+  const autoSkillTreeUnlocked =
     player.infinityTreeUpgrades.includes("Automation II") ||
-    player.infinityTreeUpgrades.includes("Automation III")
-  ) {
-    elts.autoSkillTreeSetting.parentElement.parentElement.style.display = "";
-  } else {
-    elts.autoSkillTreeSetting.parentElement.parentElement.style.display = "none";
+    player.infinityTreeUpgrades.includes("Automation III");
+
+  elts.autoRebirthSetting.parentElement.parentElement.style.display =
+    autoRebirthUnlocked ? "" : "none";
+  elts.autoInfinitySetting.parentElement.parentElement.style.display =
+    autoInfinityUnlocked ? "" : "none";
+  elts.autoSkillTreeSetting.parentElement.parentElement.style.display =
+    autoSkillTreeUnlocked ? "" : "none";
+
+  // Hide the "Automation" header until the first automation is unlocked
+  elts.automationSettingsHeader.style.display =
+    autoRebirthUnlocked || autoInfinityUnlocked || autoSkillTreeUnlocked
+      ? ""
+      : "none";
+
+  // --- Leaderboard opt-in ---
+  const leaderboardOptIn = player.leaderboardOptIn === true;
+  if (leaderboardOptIn !== renderedLeaderboardOptIn) {
+    renderedLeaderboardOptIn = leaderboardOptIn;
+    if (elts.leaderboardToggleButton) {
+      elts.leaderboardToggleButton.textContent = leaderboardOptIn
+        ? "Opt out of the leaderboard"
+        : "Show me on the leaderboard";
+      elts.leaderboardToggleButton.classList.toggle("optedIn", leaderboardOptIn);
+    }
+    // Only reveal the display-name entry once the player is opted in.
+    if (elts.usernameSettingDiv) {
+      elts.usernameSettingDiv.style.display = leaderboardOptIn ? "" : "none";
+    }
   }
 
-  // --- Leaderboard text ---
-  elts.leaderboard.querySelector("p").innerHTML = getLeaderboardText("drywall");
+  // --- Leaderboard ---
+  const leaderboardType = elts.leaderboardSelect?.value || "drywall";
+  if (
+    leaderboardType !== renderedLeaderboardType ||
+    leaderboardVersion !== renderedLeaderboardVersion
+  ) {
+    const text = getLeaderboardText(leaderboardType);
+    // `null` means data is still loading; keep the current placeholder.
+    if (text !== null) {
+      renderedLeaderboardType = leaderboardType;
+      renderedLeaderboardVersion = leaderboardVersion;
+      if (elts.leaderboardTitle) {
+        elts.leaderboardTitle.textContent = getLeaderboardLabel(leaderboardType);
+      }
+      const content = elts.leaderboard.querySelector("p");
+      if (content) content.innerHTML = text;
+    }
+  }
 
   // --- Tree element states ---
   updateSkillTreeElements();

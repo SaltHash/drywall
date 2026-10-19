@@ -26,9 +26,11 @@ import {
 } from "../config/constants.js";
 import { rebirth, getSkillPoints } from "./economy.js";
 import { infinity } from "./economy.js";
-import { saveData } from "./save.js";
+import { saveData, setUsernamePopupVisible } from "./save.js";
 import { applySettings } from "./loop.js";
-import { updateAllText } from "./render.js";
+import { updateAllText, render } from "./render.js";
+import { checkBoosts } from "./boosts.js";
+import { linkAccount, pushSaveToCloud } from "./sync.js";
 import { redrawUpgradeLines } from "./trees.js";
 import { awardAchievement } from "./achievements.js";
 import { loadArea } from "./areas.js";
@@ -85,15 +87,58 @@ export function setupEventListeners() {
     }
   };
 
-  // --- Username popup ---
-  elts.saveUsernameButton.onclick = function () {
-    let inp = elts.usernamePopupInput.value;
-    if (inp != "") player.username = elts.usernamePopupInput.value;
-    elts.usernamePopup.style.display = "none";
+  // --- Username setup popup ---
+  // The rank-1 preview shows exactly how the name will read on the leaderboard.
+  const setPopupNamePreview = function () {
+    const name = elts.usernamePopupInput.value.trim();
+    elts.usernamePreviewName.textContent = name || "your name";
+    elts.usernamePreviewName.classList.toggle("placeholder", name === "");
   };
 
-  elts.cancelUsernameButton.onclick = function () {
-    elts.usernamePopup.style.display = "none";
+  const finishUsernameSetup = function (name) {
+    player.usernameChosen = true;
+    if (name) {
+      player.username = name;
+      player.leaderboardOptIn = true;
+    } else {
+      // Skipping keeps the player off the leaderboard until they opt in.
+      player.username = null;
+      player.leaderboardOptIn = false;
+    }
+    setUsernamePopupVisible(false);
+    elts.usernameSetting.value = player.username || "";
+    saveData("DRYWALL", player, true);
+    // Persist the decision right away instead of waiting for the next sync.
+    pushSaveToCloud();
+    render();
+  };
+
+  elts.usernamePopupInput.addEventListener("input", function () {
+    elts.usernamePopupInput.classList.toggle(
+      "empty",
+      elts.usernamePopupInput.value.trim() === "",
+    );
+    setPopupNamePreview();
+  });
+
+  elts.usernamePopupInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      elts.saveUsernameButton.click();
+    }
+  });
+
+  elts.saveUsernameButton.onclick = function () {
+    const name = elts.usernamePopupInput.value.trim();
+    if (!name) {
+      elts.usernamePopupInput.classList.add("empty");
+      elts.usernamePopupInput.focus();
+      return;
+    }
+    finishUsernameSetup(name);
+  };
+
+  elts.skipUsernameButton.onclick = function () {
+    finishUsernameSetup(null);
   };
 
   // --- Rebirth buttons ---
@@ -204,7 +249,6 @@ export function setupEventListeners() {
     let elt = elts.infinityTreeUpgrades[upgName];
 
     elt.onclick = function () {
-      console.log(upgName);
       if (upg.connects) {
         let connections = 0;
         for (
@@ -226,7 +270,6 @@ export function setupEventListeners() {
       ) {
         player.infinityTreeUpgrades.push(upgName);
         player[upgCost[1]] = player[upgCost[1]].minus(D(upgCost[0]));
-        console.log(upgCost[0]);
         elt.querySelector("h4").textContent = "Bought!";
         redrawUpgradeLines();
 
@@ -240,16 +283,100 @@ export function setupEventListeners() {
   // --- Settings ---
   applySettings();
 
-  elts.usernameSetting.value = player.username || player.mylbkey;
+  elts.usernameSetting.value = player.username || "";
   elts.usernameSetting.onchange = function () {
-    player.username = elts.usernameSetting.value;
+    player.username = elts.usernameSetting.value.trim() || null;
+    saveData("DRYWALL", player, true);
+    // Push the new display name promptly instead of waiting for the next sync.
+    pushSaveToCloud();
   };
 
+  elts.leaderboardToggleButton.onclick = function () {
+    const optingIn = !player.leaderboardOptIn;
+    // Opting out stays off the board but keeps the name for later; opting in
+    // reveals the display-name entry beneath the button.
+    player.leaderboardOptIn = optingIn;
+    saveData("DRYWALL", player, true);
+    pushSaveToCloud();
+    // Repaint first so the entry is visible, then focus it.
+    render();
+    if (optingIn) {
+      elts.usernameSetting.focus();
+      elts.usernameSetting.select();
+    }
+  };
+
+  // --- Secret key: view / copy / link another device ---
+  elts.secretKeySetting.value = player.editKey;
+
+  elts.viewSecretKeyButton.onclick = function () {
+    const button = elts.viewSecretKeyButton;
+    const isVisible = elts.secretKeySetting.type === "text";
+    elts.secretKeySetting.type = isVisible ? "password" : "text";
+    button.textContent = isVisible ? "View" : "Hide";
+  };
+
+  elts.copySecretKeyButton.onclick = async function () {
+    const button = elts.copySecretKeyButton;
+    try {
+      await navigator.clipboard.writeText(player.editKey);
+      button.textContent = "Copied!";
+    } catch {
+      // Clipboard access can be blocked; select the text so it can be copied.
+      elts.secretKeySetting.select();
+      button.textContent = "Press Ctrl+C";
+    }
+    setTimeout(() => {
+      button.textContent = "Copy";
+    }, 1500);
+  };
+
+  elts.linkDeviceButton.onclick = async function () {
+    const status = elts.linkDeviceStatus;
+    const secret = elts.linkDeviceInput.value.trim();
+
+    if (!secret) {
+      status.textContent = "Paste a secret key first.";
+      return;
+    }
+
+    status.textContent = "Linking...";
+    const result = await linkAccount(secret);
+
+    if (result.ok) {
+      status.textContent = "Linked! Cloud save loaded.";
+      elts.usernameSetting.value = player.username || "";
+      elts.secretKeySetting.value = player.editKey;
+      elts.linkDeviceInput.value = "";
+      // The linked profile already has a name; drop the setup prompt if open.
+      setUsernamePopupVisible(false);
+      checkBoosts();
+      applySettings();
+      updateAllText();
+      render();
+    } else if (result.reason === "not-found") {
+      status.textContent = "No profile exists for that secret key.";
+    } else if (result.reason === "offline") {
+      status.textContent = "Couldn't reach the server. Try again later.";
+    } else {
+      status.textContent = "Couldn't link that key.";
+    }
+  };
+
+  // Keep the secret key hidden again whenever settings are (re)opened.
+  function hideSecretKey() {
+    elts.secretKeySetting.type = "password";
+    elts.viewSecretKeyButton.textContent = "View";
+  }
+
   elts.settingsButton.onclick = function () {
-    elts.settings.style.display = "block";
+    const isOpen = elts.settings.style.display === "block";
+    if (!isOpen) hideSecretKey();
+    elts.settings.style.display = isOpen ? "none" : "block";
   };
 
   elts.closeSettingsButton.onclick = function () {
+    hideSecretKey();
     elts.settings.style.display = "none";
   };
 
@@ -329,4 +456,14 @@ export function setupEventListeners() {
     redrawUpgradeLines();
   });
   redrawUpgradeLines();
+
+  // --- Username prompt state ---
+  // reconcile() may have pulled a profile that already chose a name, so only
+  // keep the prompt open when the player really hasn't decided yet.
+  if (player.usernameChosen) {
+    setUsernamePopupVisible(false);
+  } else {
+    setPopupNamePreview();
+    elts.usernamePopupInput.focus();
+  }
 }

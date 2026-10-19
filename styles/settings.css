@@ -6,10 +6,6 @@
     top: 50%;
     width: 60%;
     height: 80%;
-    background-color: #202020aa;
-    backdrop-filter: blur(24px);
-    border: 2px solid #00000060;
-    border-radius: 20px;
     z-index: 1001;
     padding: 10px;
     text-align: center;
@@ -26,7 +22,13 @@
 }
 
 #settings span {
-    color: #d0d0d0;
+    color: var(--panel-text-muted);
+}
+
+/* Settings/Stats paragraphs (clicks, playtime) match the setting labels */
+#clicksStat,
+#playtimeStat {
+    color: var(--panel-text-muted);
 }
 
 #settingsContent {
@@ -47,10 +49,10 @@
 #usernameSetting {
     width: 200px;
     padding: 4px 8px;
-    border-radius: 10px;
-    background-color: #303030;
-    border: 2px solid #404040;
-    color: #f2f2f2;
+    border-radius: var(--control-radius);
+    background-color: var(--control-bg);
+    border: var(--control-border);
+    color: var(--panel-text-color);
     font-size: 20pt;
     margin-left: 20px;
 }
@@ -59,18 +61,117 @@
     outline: 1px solid #999;
 }
 
+/* Cloud-save settings: secret key + device linking */
+#secretKeySetting,
+#linkDeviceInput {
+    width: 300px;
+    padding: 4px 8px;
+    border-radius: var(--control-radius);
+    background-color: var(--control-bg);
+    border: var(--control-border);
+    color: var(--panel-text-color);
+    font-size: 18pt;
+    margin-left: 20px;
+}
+
+#secretKeySetting {
+    width: 280px;
+    user-select: text;
+}
+
+#linkDeviceStatus {
+    color: var(--panel-text-muted);
+    font-size: 18pt;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#cloudSaveDisclaimer {
+    color: var(--panel-text-muted);
+    font-size: 16pt;
+    width: 60%;
+    margin: 0 auto 10px auto;
+    text-align: center;
+}
+
+.inlineButton {
+    background-color: var(--control-bg);
+    border: var(--control-border);
+    border-radius: var(--control-radius);
+    color: var(--panel-text-color);
+    font-size: 18pt;
+    padding: 4px 16px;
+    margin-left: 12px;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.inlineButton:hover {
+    background-color: var(--control-bg-hover);
+}
+
+.inlineButton:active {
+    background-color: var(--control-bg-active);
+}
+
+/* Leaderboard opt-in */
+#leaderboardOptInHint {
+    color: var(--panel-text-muted);
+    font-size: 18pt;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.inlineButton.wideButton {
+    display: block;
+    margin: 0 auto 14px auto;
+    padding: 8px 28px;
+    font-size: 22pt;
+    font-weight: 700;
+}
+
+/* Opting in is the call to action; opting out is deliberately quieter. */
+#leaderboardToggleButton {
+    background-color: #60cc60;
+    border-color: #3f9a3f;
+    color: #10240f;
+}
+
+#leaderboardToggleButton:hover {
+    background-color: #6dd96d;
+}
+
+#leaderboardToggleButton.optedIn {
+    background-color: var(--control-bg);
+    border: var(--control-border);
+    color: var(--panel-text-color);
+    font-weight: 400;
+}
+
+#leaderboardToggleButton.optedIn:hover {
+    background-color: var(--control-bg-hover);
+}
+
 #closeSettingsButton {
     position: fixed;
     cursor: pointer;
-    background-color: #90909040;
+    background-color: var(--control-bg);
     width: 150px;
     height: 50px;
     bottom: 10px;
     left: 50%;
-    border: none;
+    border: var(--control-border);
     font-size: 24pt;
-    border-radius: 10px;
+    border-radius: var(--control-radius);
     transform: translate(-50%, 0);
+    transition: background-color 0.15s ease-in-out;
+}
+
+#closeSettingsButton:hover {
+    background-color: var(--control-bg-hover);
+}
+
+#closeSettingsButton:active {
+    background-color: var(--control-bg-active);
 }
 
 /* Toggle switch */

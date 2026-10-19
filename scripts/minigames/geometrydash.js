@@ -316,10 +316,6 @@ export function initGeometryDash() {
     };
 
     p.keyTyped = function () {
-      if (p.key == "f") {
-        p.fullscreen(!p.fullscreen());
-      }
-
       if (p.key == "p") {
         gdGameState = "menu";
       }
@@ -928,10 +924,6 @@ export function initGeometryDash() {
           camY += (GDPLAYER.y - camY) / 32;
         }
       }
-    }
-
-    function outputLevel() {
-      console.log(JSON.stringify(level));
     }
 
     // visual functions

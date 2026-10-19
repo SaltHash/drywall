@@ -4,9 +4,137 @@
     src: url(../assets/fonts/ByteBounce.ttf);
 }
 
-/* Root variables */
-:root {
+/* Root variables.
+   The dark token set is also exposed as the `.darkPanel` class so any
+   element can opt into the dark preset even while light mode is active. */
+:root,
+.darkPanel,
+:root.lightMode .darkPanel {
     --text-color: #eaeaea;
+
+    /* Base tint shared by every panel surface */
+    --panel-color: #151517;
+    --glass-blur: 16px;
+
+    /* Surface layer: the panel's own background */
+    --surface-opacity: 0.6;
+    --surface-border-color: #000001;
+    --surface-border-width: 2px;
+    --surface-border-opacity: 0.4;
+
+    /* Outline drawn just outside the surface border */
+    --outline-color: #ffffff;
+    --outline-width: 1px;
+    --outline-opacity: 0.12;
+
+    /* Drop shadow behind every panel */
+    --shadow-color: #000000;
+    --shadow-x: 0px;
+    --shadow-y: 8px;
+    --shadow-blur: 28px;
+    --shadow-opacity: 0.4;
+
+    /* Panel geometry */
+    --panel-radius: 20px;
+    --panel-radius-sm: 12px;
+    --panel-padding: 16px;
+
+    /* Text inside panels */
+    --panel-text-color: #eaeaea;
+    --panel-text-muted: #c0c0c0;
+
+    /* Controls (buttons/inputs) that live inside panels */
+    --control-color: #bbbbbb;
+    --control-bg-opacity: 0.09;
+    --control-hover-bg-opacity: 0.16;
+    --control-active-bg-opacity: 0.06;
+    --control-border-color: #bbbbbb;
+    --control-border-opacity: 0.14;
+    --control-radius: 10px;
+
+    /* --- Derived panel tokens (no need to edit directly) --- */
+    --panel-bg: color-mix(
+        in srgb,
+        var(--panel-color) calc(var(--surface-opacity) * 100%),
+        transparent
+    );
+    --panel-glass: color-mix(
+        in srgb,
+        var(--glass-color) calc(var(--glass-opacity) * 100%),
+        transparent
+    );
+    --panel-surface-border: var(--surface-border-width) solid
+        color-mix(
+            in srgb,
+            var(--surface-border-color) calc(var(--surface-border-opacity) * 100%),
+            transparent
+        );
+    --panel-outline: var(--outline-width) solid
+        color-mix(
+            in srgb,
+            var(--outline-color) calc(var(--outline-opacity) * 100%),
+            transparent
+        );
+    --panel-shadow: var(--shadow-x) var(--shadow-y) var(--shadow-blur)
+        color-mix(
+            in srgb,
+            var(--shadow-color) calc(var(--shadow-opacity) * 100%),
+            transparent
+        );
+
+    /* --- Derived control tokens --- */
+    --control-bg: color-mix(
+        in srgb,
+        var(--control-color) calc(var(--control-bg-opacity) * 100%),
+        transparent
+    );
+    --control-bg-hover: color-mix(
+        in srgb,
+        var(--control-color) calc(var(--control-hover-bg-opacity) * 100%),
+        transparent
+    );
+    --control-bg-active: color-mix(
+        in srgb,
+        var(--control-color) calc(var(--control-active-bg-opacity) * 100%),
+        transparent
+    );
+    --control-border: 1px solid
+        color-mix(
+            in srgb,
+            var(--control-border-color) calc(var(--control-border-opacity) * 100%),
+            transparent
+        );
+}
+
+/* Light-mode panel styling.
+   Toggled by adding the `lightMode` class to <html> (see applySettings()).
+   It only overrides the panel/control tokens, so panels switch to a light
+   glass surface with dark text while the rest of the UI is unaffected. */
+:root.lightMode {
+    --panel-color: #f4f4f4;
+    --glass-blur: 12px;
+
+    --surface-opacity: 0.72;
+    --surface-border-color: #000000;
+    --surface-border-opacity: 0.1;
+
+    --outline-color: #000000;
+    --outline-opacity: 0.08;
+
+    --shadow-color: #000000;
+    --shadow-y: 6px;
+    --shadow-blur: 24px;
+    --shadow-opacity: 0.18;
+
+    --panel-text-color: #202020;
+    --panel-text-muted: #5a5a5a;
+
+    --control-color: #202020;
+    --control-bg-opacity: 0.08;
+    --control-hover-bg-opacity: 0.14;
+    --control-active-bg-opacity: 0.05;
+    --control-border-color: #202020;
+    --control-border-opacity: 0.18;
 }
 
 /* Global reset & base styles */
@@ -25,7 +153,6 @@
         "Apple Color Emoji",
         "Segoe UI Emoji",
         "Segoe UI Symbol";
-    color: var(--text-color);
     user-select: none;
 }
 
@@ -33,10 +160,45 @@ html,
 body {
     background-color: #000;
     font-size: 32pt;
+    color: var(--text-color);
+}
+
+/* Form controls don't inherit color by default, so opt them in. This lets
+   them follow their panel's text colour instead of a UA default. */
+button,
+input,
+select,
+textarea {
+    color: inherit;
+    user-select: none;
 }
 
 button {
-    user-select: none;
+    cursor: pointer;
+}
+
+/* Shared panel surface
+   Every panel gets the same background, glass blur, border, outline,
+   shadow and radius from the tokens above. Layout (size, position,
+   padding) is left to each panel's own rule. */
+#usernamePopup,
+#leaderboard,
+#settings,
+#areaSelect,
+#settingsButton,
+#changelogContainer,
+#globalMessageBox,
+#achievementNotification,
+#achievementHover,
+#achievementsContainer {
+    background-color: var(--panel-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur)) blur(var(--glass-blur));
+    border: var(--panel-surface-border);
+    outline: var(--panel-outline);
+    box-shadow: var(--panel-shadow);
+    border-radius: var(--panel-radius);
+    color: var(--panel-text-color);
 }
 
 /* Layout helpers */

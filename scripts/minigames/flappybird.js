@@ -185,9 +185,6 @@ export function initFlappyBird() {
       if (p.key === " " || p.key == "ArrowUp") {
         p.mousePressed();
       }
-      if (p.key == "f") {
-        p.fullscreen(!p.fullscreen());
-      }
     };
 
     function checkCollisions() {
