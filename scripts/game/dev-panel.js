@@ -200,6 +200,9 @@ export async function initDevPanel() {
   };
 
   // --- Wiring ---
+  button.onclick = () => {
+    panel.style.display = panel.style.display === "none" ? "block" : "none";
+  };
   panel.querySelector("#devPanelClose").onclick = () => {
     panel.style.display = "none";
   };
