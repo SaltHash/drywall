@@ -10,6 +10,7 @@ Backend built (somewhat) securely with Neon and my beloved Cloudflare workers.
 | --- | --- |
 | `index.html`, `styles/`, `assets/` | Static game client |
 | `scripts/` | Client-side game logic (ES modules) |
+| `scripts/config/version.js` | Single source of truth for the game version |
 | `scripts/services/leaderboard.js` | Client for the Worker API |
 | `src/index.js` | Cloudflare Worker: static assets + `/api/*` |
 | `db/schema.sql` | Neon schema (one row per player, stats in JSON) |
@@ -48,6 +49,16 @@ npm run deploy                          # wrangler deploy (assets + API)
 Every player is one row. All of their stats live in a single `save` JSON
 document, so new stats never require a schema change. The secret key is
 SHA-256-hashed before storage and the browser never sees `DATABASE_URL`.
+
+## Releasing
+
+Bump `GAME_VERSION` in `scripts/config/version.js` — the title screen and the
+event-badge gating both read it — and keep the `version` in `package.json` in
+step. Add a matching entry to the changelogs in `index.html` and above.
+
+Limited-time event badges (Alpha/Beta Tester) stop being awarded automatically
+once `GAME_VERSION` moves past the version they closed at, so no further code
+change is required.
 
 # Stats
 There are currently:

@@ -10,6 +10,7 @@ import { gameState } from "../core/state.js";
 import { abbrevNum, displayNames } from "../core/formatting.js";
 import { achievements } from "../config/achievements.js";
 import { infinityTreeUpgrades } from "../config/infinity-tree.js";
+import { isBadgeObtainable } from "../config/version.js";
 
 /**
  * Checks all achievements against the player's current stats and
@@ -36,8 +37,12 @@ export function checkAllAchievements(toBeShown) {
           awardAchievement(name);
         }
       }
-    } else if (name == "Beta Tester") {
-      awardAchievement("Beta Tester");
+    } else if (achievement.maxVersion) {
+      // Limited-time event badge (Alpha/Beta Tester). It can only be earned
+      // while the running build is not newer than the version it closed at.
+      if (isBadgeObtainable(achievement.maxVersion)) {
+        awardAchievement(name);
+      }
     } else if (name == "Infinity Tree Completionist") {
       if (
         gameState.player.infinityTreeUpgrades.length ===

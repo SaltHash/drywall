@@ -20,6 +20,7 @@
 
 import { gameState } from "./core/state.js";
 import { initDOM } from "./core/init.js";
+import { GAME_VERSION } from "./config/version.js";
 import { resetPlayer } from "./game/save.js";
 import { checkBoosts } from "./game/boosts.js";
 import { setupUpgradeButtons } from "./game/render.js";
@@ -40,6 +41,11 @@ import { initFlappyBird } from "./minigames/flappybird.js";
 
 // ── 1. DOM initialisation ───────────────────────────────────────────
 initDOM();
+
+// Keep the title-screen version in step with the version constant.
+if (gameState.elts.versionLabel) {
+  gameState.elts.versionLabel.textContent = "v" + GAME_VERSION;
+}
 
 // ── 2. Player save load / reset ───────────────────────────────────────
 resetPlayer(false);

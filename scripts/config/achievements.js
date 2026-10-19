@@ -232,10 +232,14 @@ export const achievements = {
   "Alpha Tester": {
     description: "Play before the v0.5.0 release of the game.",
     tier: 0,
+    // Event badge: no longer obtainable once the game moves past this version.
+    maxVersion: "0.5.0",
   },
   "Beta Tester": {
-    description: "Play before the v1.0.0 release of the game.",
+    description: "Play on version v1.0.0 or before.",
     tier: 0,
+    // Event badge: awarded while the running build is v1.0.0 or older.
+    maxVersion: "1.0.0",
   },
   "Informed Voter": {
     reward: { amount: D(1), type: "drywall" },
