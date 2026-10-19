@@ -13,6 +13,7 @@ import { loadLeaderboard } from "../services/leaderboard.js";
 import {
   devSendGlobalMessage,
   devLookupPlayer,
+  devListPlayers,
   devRemovePlayer,
   devRestorePlayer,
   devResetPlayer,
@@ -86,6 +87,12 @@ function buildPanel(panel) {
       <button id="devLookupButton" class="inlineButton">Search</button>
     </div>
     <div id="devLookupResults" class="devResults"></div>
+
+    <h3>All players</h3>
+    <div class="devRow">
+      <button id="devListButton" class="inlineButton wideButton">List all players</button>
+    </div>
+    <div id="devListResults" class="devResults"></div>
 
     <h3>Selected player</h3>
     <div id="devPlayerInfo" class="devPlayerInfo">No player selected.</div>
@@ -199,6 +206,126 @@ export async function initDevPanel() {
     return true;
   };
 
+  /** Shows a full detail overlay for one player: id, secret hash, every
+   *  major stat and flag from both the save and the database row. */
+  function showPlayerDetail(player) {
+    const overlay = document.createElement("div");
+    overlay.className = "devDetailOverlay";
+    const close = () => overlay.remove();
+    overlay.innerHTML = `
+      <div class="devDetailBox">
+        <div class="devDetailHeader">
+          <h3>Player detail</h3>
+          <button class="devDetailClose inlineButton">Close</button>
+        </div>
+        <div class="devDetailBody"></div>
+      </div>`;
+    overlay.querySelector(".devDetailClose").onclick = close;
+    document.body.appendChild(overlay);
+
+    const body = overlay.querySelector(".devDetailBody");
+    const fmt = (v) => {
+      if (v == null) return "—";
+      if (v instanceof Decimal) return v.toString();
+      if (typeof v === "object") return JSON.stringify(v, null, 2);
+      return String(v);
+    };
+    const save = player.save && typeof player.save === "object" ? player.save : {};
+
+    const sections = [
+      {
+        title: "Identity",
+        rows: [
+          ["id", player.id],
+          ["displayName", player.displayName],
+          ["secretHash", player.secretHash],
+        ],
+      },
+      {
+        title: "Database flags",
+        rows: [
+          ["leaderboardOptIn", player.leaderboardOptIn],
+          ["leaderboardBanned", player.leaderboardBanned],
+          ["forceReset", player.forceReset],
+          ["saveUpdatedAt", player.saveUpdatedAt],
+          ["createdAt", player.createdAt],
+          ["updatedAt", player.updatedAt],
+          ["pendingStatsRev", player.pendingStatsRev],
+        ],
+      },
+      {
+        title: "Pending stat deltas",
+        rows: Object.entries(player.pendingStats || {}).map(([k, v]) => [k, v]),
+      },
+      {
+        title: "Save — primary counters",
+        rows: [
+          ["drywall", save.drywall],
+          ["drywallPS", save.drywallPS],
+          ["drywallPC", save.drywallPC],
+          ["rebirths", save.rebirths],
+          ["skillPoints", save.skillPoints],
+          ["infinities", save.infinities],
+          ["infinityPoints", save.infinityPoints],
+          ["infinityPower", save.infinityPower],
+        ],
+      },
+      {
+        title: "Save — stats",
+        rows: [
+          ["playtime", save.stats?.playtime],
+          ["clicks", save.stats?.clicks],
+        ],
+      },
+      {
+        title: "Save — misc",
+        rows: [
+          ["areasUnlocked", save.areasUnlocked],
+          ["globalToken", save.globalToken],
+          ["username", save.username],
+          ["usernameChosen", save.usernameChosen],
+          ["leaderboardOptIn", save.leaderboardOptIn],
+          ["updatedAt", save.updatedAt],
+        ],
+      },
+    ];
+
+    for (const section of sections) {
+      const h = document.createElement("h4");
+      h.textContent = section.title;
+      body.appendChild(h);
+      for (const [key, value] of section.rows) {
+        const row = document.createElement("div");
+        row.className = "devDetailRow";
+        row.innerHTML = `<span class="devDetailKey">${key}</span><pre class="devDetailVal">${fmt(value)}</pre>`;
+        body.appendChild(row);
+      }
+    }
+  }
+
+  async function runList() {
+    setStatus("Loading all players...");
+    try {
+      const { players } = await devListPlayers(devSecret());
+      const results = panel.querySelector("#devListResults");
+      results.innerHTML = "";
+      if (!players || players.length === 0) {
+        setStatus("No players found.", true);
+        return;
+      }
+      for (const player of players) {
+        const item = document.createElement("button");
+        item.className = "devResultItem inlineButton";
+        item.textContent = `${player.displayName || "(no name)"} — ${player.id}`;
+        item.onclick = () => showPlayerDetail(player);
+        results.appendChild(item);
+      }
+      setStatus(`${players.length} player(s).`);
+    } catch (err) {
+      setStatus(err.message, true);
+    }
+  }
+
   // --- Wiring ---
   button.onclick = () => {
     panel.style.display = panel.style.display === "none" ? "block" : "none";
@@ -229,6 +356,7 @@ export async function initDevPanel() {
   };
 
   panel.querySelector("#devLookupButton").onclick = runLookup;
+  panel.querySelector("#devListButton").onclick = runList;
   panel.querySelector("#devLookupQuery").addEventListener("keydown", (e) => {
     if (e.key === "Enter") runLookup();
   });

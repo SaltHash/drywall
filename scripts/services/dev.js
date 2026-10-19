@@ -63,3 +63,8 @@ export function devResetPlayer(secret, id) {
 export function devAddStats(secret, id, stats) {
   return postDev("/api/dev/add-stats", { secret, id, stats });
 }
+
+/** Fetch every player row (full save + DB flags + secret hash). */
+export function devListPlayers(secret) {
+  return postDev("/api/dev/list", { secret });
+}

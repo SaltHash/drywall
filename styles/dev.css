@@ -11,8 +11,6 @@
     padding: 8px 16px;
     font-size: 20pt;
     background-color: #5a2b6e;
-    border: 1px solid #8a4aa3;
-    border-radius: var(--control-radius);
     color: #f4e9ff;
     transition:
         filter 0.15s ease-in-out,
@@ -30,8 +28,8 @@
 #devPanel {
     position: fixed;
     display: none;
-    right: 12px;
-    top: 12px;
+    left: 8px;
+    top: 60px;
     width: min(540px, 94vw);
     max-height: 92vh;
     overflow-y: auto;
@@ -119,12 +117,13 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    max-height: 160px;
+    max-height: 200px;
     overflow-y: auto;
 }
 
 .devResultItem {
     text-align: left;
+    line-height: 1.4;
 }
 
 .devPlayerInfo {
@@ -152,6 +151,76 @@
 .devStatField input {
     font-size: 14pt;
     padding: 2px 8px;
+}
+
+/* Full-player detail overlay */
+.devDetailOverlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background-color: rgba(0, 0, 0, 0.55);
+    z-index: 1100;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.devDetailBox {
+    width: min(720px, 94vw);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 20px 24px;
+    text-align: left;
+    background-color: var(--panel-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur)) blur(var(--glass-blur));
+    border: var(--panel-surface-border);
+    outline: var(--panel-outline);
+    box-shadow: var(--panel-shadow);
+    border-radius: var(--panel-radius);
+    color: var(--panel-text-color);
+}
+
+.devDetailHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.devDetailHeader h3 {
+    margin: 0;
+    font-size: 22pt;
+}
+
+.devDetailBody h4 {
+    margin: 14px 0 4px;
+    font-size: 16pt;
+    border-bottom: 1px solid var(--panel-surface-border);
+    padding-bottom: 2px;
+}
+
+.devDetailRow {
+    display: flex;
+    gap: 12px;
+    margin: 4px 0;
+    font-size: 14pt;
+    align-items: flex-start;
+}
+
+.devDetailKey {
+    flex: 0 0 180px;
+    color: var(--panel-text-muted);
+    word-break: break-all;
+}
+
+.devDetailVal {
+    flex: 1;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 14pt;
+    font-family: monospace;
 }
 
 /* In-panel confirmation dialog */

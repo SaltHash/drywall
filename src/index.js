@@ -384,6 +384,37 @@ async function devReset(sql, request) {
   return json({ ok: true, id: rows[0].id });
 }
 
+/** POST /api/dev/list - every player row, for the dev panel's full roster view. */
+async function devList(sql, request) {
+  const body = await readJson(request);
+  if (!(await requireDev(body?.secret))) return json({ error: "forbidden" }, 403);
+
+  const rows = await sql`
+    select id, display_name, secret_hash, stats, save, save_updated_at,
+           leaderboard_opt_in, leaderboard_banned, force_reset,
+           pending_stats, pending_stats_rev, created_at, updated_at
+    from public.players
+    order by updated_at desc
+  `;
+  return json({
+    players: rows.map((row) => ({
+      id: row.id,
+      displayName: row.display_name,
+      secretHash: row.secret_hash,
+      stats: row.stats,
+      save: row.save,
+      saveUpdatedAt: Number(row.save_updated_at) || 0,
+      leaderboardOptIn: row.leaderboard_opt_in === true,
+      leaderboardBanned: row.leaderboard_banned === true,
+      forceReset: row.force_reset === true,
+      pendingStats: row.pending_stats ?? {},
+      pendingStatsRev: Number(row.pending_stats_rev) || 0,
+      createdAt: Number(row.created_at) || 0,
+      updatedAt: Number(row.updated_at) || 0,
+    })),
+  });
+}
+
 /** POST /api/dev/add-stats - queue stat deltas to apply to a player once. */
 async function devAddStats(sql, request) {
   const body = await readJson(request);
@@ -461,6 +492,9 @@ export default {
       }
       if (url.pathname === "/api/dev/lookup" && request.method === "POST") {
         return await devLookup(sql, request);
+      }
+      if (url.pathname === "/api/dev/list" && request.method === "POST") {
+        return await devList(sql, request);
       }
       if (url.pathname === "/api/dev/remove" && request.method === "POST") {
         return await devSetRemoved(sql, request, true);
